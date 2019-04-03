@@ -8,14 +8,15 @@
 // +----------------------------------------------------------------------
 // | Author: NickBai <1902822973@qq.com>
 // +----------------------------------------------------------------------
-namespace app\admin\model;
+namespace app\admin\validate;
 
-use think\Model;
+use think\Validate;
 
-class UserDetailModel extends Model
+class CipherValidate extends Validate
 {
-
-     // 确定链接表名
-     protected $table = 'snake_user_detail';
+    protected $rule = [
+        ['used', 'require', '原密码不能为空'],
+        ['password', 'require|confirm', '新密码不能为空|新支付密码与确认密码不一致']
+    ];
 
 }
