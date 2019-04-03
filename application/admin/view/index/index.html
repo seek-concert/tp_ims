@@ -1,25 +1,272 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ylsw后台</title>
-    <link rel="shortcut icon" href="favicon.ico"> 
-	<link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
 
     <link href="__CSS__/animate.min.css" rel="stylesheet">
     <link href="__CSS__/style.min.css?v=4.1.0" rel="stylesheet">
+    <style>
+        .admin_info,.kucun,.order_manage,.user_money {
+            width: 300px;
+            margin: 50px 0 0 50px;
+        }
+        
+    </style>
 </head>
 
 <body class="gray-bg">
-    <div class="middle-box text-center animated fadeInDown">
-        <h1>Dym</h1>
-        <div class="error-desc">
-			<h3> homepage : http://www.dym.com </h3>
+    <div class="text-center animated fadeInDown" style="display: inline-flex;">
+        <div class="admin_info">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>个人信息</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>用户名</td>
+                        <td>{$admin_info['real_name']}</td>
+                    </tr>
+                    <tr>
+                        <td>角色</td>
+                        <td>{$admin_info['role_id']}</td>
+                    </tr>
+                    <tr>
+                        <td>邮箱</td>
+                        <td>{$admin_info['email']}</td>
+                    </tr>
+                    <tr>
+                        <td>联系电话</td>
+                        <td>{$admin_info['phone']}</td>
+                    </tr>
+                    <tr>
+                        <td>登录账号</td>
+                        <td>{$admin_info['user_name']}</td>
+                    </tr>
+                    <tr>
+                        <td>账户余额</td>
+                        <td>{$admin_info['balance']}</td>
+                    </tr>
+                    <tr>
+                        <td>冻结资金</td>
+                        <td>{$admin_info['funds']}</td>
+                    </tr>
+                    <tr>
+                        <td>会员到期时间</td>
+                        <td>{$admin_info['duetime']|date="Y-m-d H:i:s",###}</td>
+                    </tr>
+                    <tr>
+                        <td>创建时间</td>
+                        <td>{$admin_info['input_time']|date="Y-m-d H:i:s",###}</td>
+                    </tr>
+                    <tr>
+                        <td>最近登录时间</td>
+                        <td>{$admin_info['last_login_time']|date="Y-m-d H:i:s",###}</td>
+                    </tr>
+                    <tr>
+                        <td>累计登录次数</td>
+                        <td>{$admin_info['login_times']}</td>
+                    </tr>
+                   
+                </tbody>
+            </table>
         </div>
+        <div class="kucun">
+                <table class="table">
+                        <thead>
+                            <tr>
+                                <th>库存管理</th>
+        
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>库存总量</td>
+                                <td>Bangalore</td>
+                            </tr>
+                            <tr>
+                                <td>未使用</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            <tr>
+                                <td>发布中</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            <tr>
+                                <td>已出库</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            <tr>
+                                <td>使用中</td>
+                                <td>Mumbai</td>
+                            </tr>
+                           
+                           
+                        </tbody>
+                    </table>
+        </div>
+        <div class="user_money">
+                <table class="table">
+                        <thead>
+                            <tr>
+                                <th>用户余额</th>
+        
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>累计充值</td>
+                                <td>Bangalore</td>
+                            </tr>
+                            <tr>
+                                <td>累计消费</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            <tr>
+                                <td>用户余额</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            <tr>
+                                    <td>冻结资金</td>
+                                    <td>Mumbai</td>
+                                </tr>
+                           
+                        </tbody>
+                    </table>
+        </div>
+        <div class="order_manage">
+                <table class="table">
+                        <thead>
+                            <tr>
+                                <th>订单管理</th>
+        
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>订单总数</td>
+                                <td>Bangalore</td>
+                            </tr>
+                            <tr>
+                                <td>购买次数</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            <tr>
+                                <td>完成订单</td>
+                                <td>Mumbai</td>
+                            </tr>
+                            
+                           
+                        </tbody>
+                    </table>
+        </div>
+
+      
     </div>
+    <span style="    float: left;height: auto;border: 0.5px solid #dadada;width: 100%;"></span>
+
+    {if $admin_info['role_id'] == 1}
+    <div class="text-center animated fadeInDown" style="display: inline-flex;">
+            <div class="admin_info">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>总充值</th>
+    
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>充值单数</td>
+                            <td>Bangalore</td>
+                        </tr>
+                        <tr>
+                            <td>等待审核</td>
+                            <td>Mumbai</td>
+                        </tr>
+                        <tr>
+                            <td>审核完成</td>
+                            <td>Mumbai</td>
+                        </tr>
+                        <tr>
+                            <td>累计消费</td>
+                            <td>Mumbai</td>
+                        </tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+            <div class="kucun">
+                    <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>充值单数</th>
+            
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>总充值</td>
+                                    <td>Bangalore</td>
+                                </tr>
+                                <tr>
+                                    <td>等待验证</td>
+                                    <td>Mumbai</td>
+                                </tr>
+                                <tr>
+                                    <td>充值成功</td>
+                                    <td>Mumbai</td>
+                                </tr>
+                                <tr>
+                                    <td>总金额</td>
+                                    <td>Mumbai</td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+            </div>
+            <div class="user_money">
+                    <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>手续费</th>
+            
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>出库手续费</td>
+                                    <td>Bangalore</td>
+                                </tr>
+                                <tr>
+                                    <td>交易市场手续费</td>
+                                    <td>Mumbai</td>
+                                </tr>
+                                <tr>
+                                    <td>用户余额</td>
+                                    <td>Mumbai</td>
+                                </tr>
+                                <tr>
+                                        <td>冻结资金</td>
+                                        <td>Mumbai</td>
+                                    </tr>
+                               
+                            </tbody>
+                        </table>
+            </div>
+           
+        </div>
+    {/if}
     <script src="__JS__/jquery.min.js?v=2.1.4"></script>
     <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
 </body>
+
 </html>
