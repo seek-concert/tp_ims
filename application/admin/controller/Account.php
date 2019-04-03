@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 use app\admin\model\LoginLogModel;
 use app\admin\model\UserDetailModel;
+use app\admin\model\UserModel;
 use think\Db;
 
 class Account extends Base
@@ -78,7 +79,10 @@ class Account extends Base
                 ->where([
                     'uid' => $param['uid']
                 ])
-                ->setField('password',$param['password']);
+                ->setField([
+                    'password' => $param['password'],
+                    'update_time' => time()
+                ]);
             if($flag){
                 return msg(1, url('account/cipher'), '修改成功');
             }else{
@@ -90,6 +94,139 @@ class Account extends Base
             'id' => $id
         ]);
         return $this->fetch();
+    }
+
+    /*
+     * 全部子用户
+     */
+    public function allsubusers(){
+        if(request()->isAjax()){
+
+            $param = input('param.');
+
+            $limit = $param['pageSize'];
+            $offset = ($param['pageNumber'] - 1) * $limit;
+
+            $where = [];
+            $where['pid'] = ['>','0'];
+            if (!empty($param['searchText'])) {
+                $where['user_name'] = ['like', '%' . $param['searchText'] . '%'];
+            }
+            $user = new UserModel();
+            $selectResult = $user->getUsersByWhere($where, $offset, $limit);
+
+            // 拼装参数
+            foreach($selectResult as $key=>$vo){
+                $selectResult[$key]['input_time'] = date('Y-m-d H:i:s', $vo['input_time']);
+                $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id']));
+            }
+
+            $return['total'] = $user->getAllUsers($where);  //总数据
+            $return['rows'] = $selectResult;
+
+            return json($return);
+        }
+        return $this->fetch();
+    }
+
+    /*
+     * 全部子用户 -- 改密
+     */
+    public function editallsubusers()
+    {
+        if(request()->isPost()){
+            $param = input('post.');
+            //验证数据
+            $result = $this->validate($param, 'EditallSubusersValidate');
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                return msg(-1, '', $result);
+            }
+            $param['used'] = md5($param['used']);
+            $param['password'] = md5($param['password']);
+
+            $user = new UserModel();
+            //获取信息
+            $detail = $user
+                ->where([
+                    'id' => $param['id']
+                ])
+                ->find();
+            //验证旧密码是否正确
+            if($detail['password'] != $param['used']){
+                return msg(-1, '', '原密码错误！');
+            }
+            //修改密码
+            $flag = $user
+                ->where([
+                    'id' => $param['id']
+                ])
+                ->setField([
+                    'password' => $param['password'],
+                    'update_time' => time()
+                ]);
+            if($flag){
+                return msg(1, url('account/allsubusers'), '修改成功');
+            }else{
+                return msg(-1, '', '修改失败');
+            }
+        }
+
+        $id = input('param.id');
+        $this->assign([
+            'id' => $id
+        ]);
+        return $this->fetch();
+    }
+
+    /*
+     * 全部子用户 -- 删除
+     */
+    public function delallsubusers()
+    {
+        $id = input('param.id');
+        //开启事务
+        Db::startTrans();
+        try{
+            $user =  Db::name('user')->where('id', $id)->delete();
+            $user_detail = Db::name('user_detail')->where('uid', $id)->delete();
+            if($user && $user_detail){
+                // 提交事务
+                Db::commit();
+                return msg(1, url('account/allsubusers'), '删除成功');
+            }else{
+                // 回滚事务
+                Db::rollback();
+                return msg(-1, '', '删除失败');
+            }
+        }catch(\Exception $e){
+            // 回滚事务
+            Db::rollback();
+            return msg(-2, '', '删除失败');
+        }
+    }
+
+    /**
+     * 拼装操作按钮
+     * @param $id
+     * @return array
+     */
+    private function makeButton($id)
+    {
+        return [
+            '改密' => [
+                'auth' => 'account/editallsubusers',
+                'href' => url('account/editallsubusers', ['id' => $id]),
+                'btnStyle' => 'primary',
+                'icon' => 'fa fa-paste'
+            ],
+            '删除' => [
+                'auth' => 'account/delallsubusers',
+                'href' => "javascript:delallsubusers(" .$id .")",
+                'btnStyle' => 'danger',
+                'icon' => 'fa fa-trash-o'
+            ]
+        ];
     }
 
 }

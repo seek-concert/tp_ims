@@ -71,13 +71,14 @@ class User extends Base
             }
 
             $param['password'] = md5($param['password']);
+            $param['input_time'] = time();
             //开启事务
             Db::startTrans();
             try{
                 $user =  Db::name('user')->insertGetId($param);
                 $user_detail = Db::name('user_detail')
                     ->insert([
-                        'uid' => $result,
+                        'uid' => $user,
                         'password' => $param['password'],
                         'input_time' => time()
                     ]);
@@ -120,6 +121,7 @@ class User extends Base
             }else{
                 $param['password'] = md5($param['password']);
             }
+            $param['update_time'] = time();
             $flag = $user->editUser($param);
 
             return json(msg($flag['code'], $flag['data'], $flag['msg']));
@@ -140,10 +142,25 @@ class User extends Base
     public function userDel()
     {
         $id = input('param.id');
-
-        $role = new UserModel();
-        $flag = $role->delUser($id);
-        return json(msg($flag['code'], $flag['data'], $flag['msg']));
+        //开启事务
+        Db::startTrans();
+        try{
+            $user =  Db::name('user')->where('id', $id)->delete();
+            $user_detail = Db::name('user_detail')->where('uid', $id)->delete();
+            if($user && $user_detail){
+                // 提交事务
+                Db::commit();
+                return msg(1, url('user/index'), '删除成功');
+            }else{
+                // 回滚事务
+                Db::rollback();
+                return msg(-1, '', '删除失败');
+            }
+        }catch(\Exception $e){
+            // 回滚事务
+            Db::rollback();
+            return msg(-2, '', '删除失败');
+        }
     }
 
     /**
