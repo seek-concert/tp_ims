@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
+use app\admin\model\LoginLogModel;
 use app\admin\model\RoleModel;
 use app\admin\model\UserModel;
 use app\admin\model\UserType;
@@ -73,6 +74,17 @@ class Login extends Controller
         $res = $userModel->updateStatus($param, $hasUser['id']);
         if(1 != $res['code']){
             return json(msg(-6, '', $res['msg']));
+        }
+
+        //写入登录日志
+        $login_log = new LoginLogModel();
+        $log = $login_log->insertLoginLog([
+            'real_name' => $hasUser['real_name'],
+            'last_login_time' => time(),
+            'operate' => '登陆系统',
+        ]);
+        if(1 != $log['code']){
+            return json(msg(-7, '', $res['msg']));
         }
 
         // ['code' => 1, 'data' => url('index/index'), 'msg' => '登录成功']
