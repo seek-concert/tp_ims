@@ -131,4 +131,18 @@ class UserModel extends Model
             return msg(-1, '', $e->getMessage());
         }
     }
+
+    
+    /**
+     * 获取用户详细信息
+     * @param array $param
+     */
+    public function getAdminDetail($id){
+        $return_data = [];
+        $return_data = $this->where(['id'=>$id])->find()->toArray();
+        $userdetailModel = new UserDetailModel();
+        $return_data = array_merge($return_data,$userdetailModel->where(['uid'=>$id])->find()->toArray());
+
+        return $return_data;
+    }
 }
