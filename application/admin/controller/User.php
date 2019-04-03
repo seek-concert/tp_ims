@@ -74,13 +74,14 @@ class User extends Base
             //开启事务
             Db::startTrans();
             try{
-                $result =  Db::name('user')->insertGetId($param);
+                $user =  Db::name('user')->insertGetId($param);
                 $user_detail = Db::name('user_detail')
                     ->insert([
                         'uid' => $result,
+                        'password' => $param['password'],
                         'input_time' => time()
                     ]);
-                if($result && $user_detail){
+                if($user && $user_detail){
                     // 提交事务
                     Db::commit();
                     return msg(1, url('user/index'), '添加用户成功');
