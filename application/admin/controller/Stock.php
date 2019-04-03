@@ -45,13 +45,13 @@ class Stock extends Base
     // 我的库存
     public function selfStock()
     {
-        return "this is selfStock!";
+        return "this is selfStock";
     }
 
     // Pid改名
     public function pidRename()
     {
-        return "this is pidRename!";
+        return "this is pidRename";
     }
 
     

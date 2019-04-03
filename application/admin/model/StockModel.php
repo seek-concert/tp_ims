@@ -32,7 +32,7 @@ class StockModel extends Model
         
         /**
          * 根据搜索条件获取所有的库存数量
-         * @param $where
+         * @param $where 
          */
         public function getAllStock($where)
         {
