@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 use app\admin\model\NodeModel;
-
+use app\admin\model\RoleModel;
+use think\Session;
 class Index extends Base
 {
+
     public function index()
     {
         // 获取权限菜单
@@ -30,8 +32,10 @@ class Index extends Base
      */
     public function indexPage()
     {
+        $role_model = new RoleModel();
         $admin_id = session('id');
         $admin_info = model('admin/UserModel')->getAdminDetail($admin_id);
+        $admin_info['role_name'] = $role_model->getOneRole($admin_info['role_id'])['role_name'];
         $return_data = [];
         $return_data['admin_info'] = $admin_info;
         return view('index',$return_data);
