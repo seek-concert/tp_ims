@@ -3,3 +3,4 @@ composer.lock
 runtime
 *.log
 *.sql
+/application/database.php
