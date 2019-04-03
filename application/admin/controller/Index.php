@@ -30,6 +30,10 @@ class Index extends Base
      */
     public function indexPage()
     {
-        return $this->fetch('index');
+        $admin_id = session('id');
+        $admin_info = model('admin/UserModel')->getAdminDetail($admin_id);
+        $return_data = [];
+        $return_data['admin_info'] = $admin_info;
+        return view('index',$return_data);
     }
 }

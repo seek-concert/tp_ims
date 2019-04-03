@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>添加管理员</title>
+    <title>二级密码</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
@@ -17,58 +17,35 @@
         <div class="col-sm-8">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>添加管理员</h5>
+                    <h5>二级密码</h5>
                 </div>
                 <div class="ibox-content">
-                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('user/useradd')}">
-
+                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('account/cipher')}">
+                        <input type="hidden" name="uid" value="{$id}">
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">管理员账号：</label>
+                            <label class="col-sm-3 control-label">原支付密码：</label>
                             <div class="input-group col-sm-4">
-                                <input id="username" type="text" class="form-control" name="user_name" required="" aria-required="true">
+                                <input id="username" type="text" class="form-control" name="used" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">管理员角色：</label>
-                            <div class="input-group col-sm-4">
-                                <select class="form-control" name="role_id" required="" aria-required="true">
-                                    <option value="">请选择</option>
-                                    {if !empty($role)}
-                                    {foreach name="role" item="vo"}
-                                    <option value="{$vo.id}">{$vo.role_name}</option>
-                                    {/foreach}
-                                    {/if}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">登录密码：</label>
+                            <label class="col-sm-3 control-label">新支付密码：</label>
                             <div class="input-group col-sm-4">
                                 <input id="password" type="text" class="form-control" name="password" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">用户名称：</label>
+                            <label class="col-sm-3 control-label">确认密码：</label>
                             <div class="input-group col-sm-4">
-                                <input id="real_name" type="text" class="form-control" name="real_name" required="" aria-required="true">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">是否启用：</label>
-                            <div class="input-group col-sm-6">
-                                {foreach name='status' item='vo' key='key'}
-                                <div class="radio i-checks col-sm-4">
-                                    <label>
-                                        <input type="radio" value="{$key}" {if condition="$key == 1 " }checked{/if} name="status"> <i></i> {$vo}</label>
-                                </div>
-                                {/foreach}
+                                <input id="real_name" type="text" class="form-control" name="password_confirm" required="" aria-required="true">
+
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-6">
                                 <!--<input type="button" value="提交" class="btn btn-primary" id="postform"/>-->
                                 <button class="btn btn-primary" type="submit">提交</button>
-                                <a href="{:url('index')}"><button class="btn btn-success" type="button">返回</button></a>
+                                <!--<a href="{:url('index')}"><button class="btn btn-success" type="button">返回</button></a>-->
                             </div>
                         </div>
                     </form>
