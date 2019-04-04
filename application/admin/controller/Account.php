@@ -232,9 +232,9 @@ class Account extends Base
             $power = config('user_power');
             // 拼装参数
             foreach ($selectResult as $key => $vo) {
-                $selectResult[$key]['power'] = $power[$vo['power']];
                 $selectResult[$key]['input_time'] = date('Y-m-d H:i:s', $vo['input_time']);
-                $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id'],'subuser'));
+                $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id'],'subuser',$vo['power']));
+                $selectResult[$key]['power'] = $power[$vo['power']];
             }
 
             $return['total'] = $user->getAllUsers($where);  //总数据
@@ -259,11 +259,16 @@ class Account extends Base
                 // 验证失败 输出错误信息
                 return msg(-1, '', $result);
             }
-
+            $pid = session('id');
+            //获取子用户数量
+            $count = Db::name('user')->where(['pid'=>$pid])->count();
+            if($count >= 10){
+                return msg(-1, '', '子用户已达上限');
+            }
             $param['password'] = md5($param['password']);
             $param['status'] = 1;
             $param['role_id'] = 3;
-            $param['pid'] = session('id');
+            $param['pid'] = $pid;
             $param['input_time'] = time();
             //开启事务
             Db::startTrans();
@@ -302,22 +307,71 @@ class Account extends Base
      * @param $id
      * @return array
      */
-    private function makeButton($id,$url)
+    private function makeButton($id,$url,$power=0)
     {
-        return [
-            '改密' => [
-                'auth' => 'account/editallsubusers',
-                'href' => url('account/editallsubusers', ['id' => $id ,'url' => $url]),
-                'btnStyle' => 'primary',
-                'icon' => 'fa fa-paste'
-            ],
-            '删除' => [
-                'auth' => 'account/delallsubusers',
-                'href' => "javascript:delallsubusers(" . $id . ")",
-                'btnStyle' => 'danger',
-                'icon' => 'fa fa-trash-o'
-            ]
-        ];
+        if($power == 0){
+            return [
+                '改密' => [
+                    'auth' => 'account/editallsubusers',
+                    'href' => url('account/editallsubusers', ['id' => $id ,'url' => $url]),
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-paste'
+                ],
+                '删除' => [
+                    'auth' => 'account/delallsubusers',
+                    'href' => "javascript:delallsubusers(" . $id . ")",
+                    'btnStyle' => 'danger',
+                    'icon' => 'fa fa-trash-o'
+                ]
+            ];
+        }else if($power == 1){
+            return [
+                '改密' => [
+                    'auth' => 'account/editallsubusers',
+                    'href' => url('account/editallsubusers', ['id' => $id ,'url' => $url]),
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-paste'
+                ],
+                '删除' => [
+                    'auth' => 'account/delallsubusers',
+                    'href' => "javascript:delallsubusers(" . $id . ")",
+                    'btnStyle' => 'danger',
+                    'icon' => 'fa fa-trash-o'
+                ],
+                '查看库存' => [
+                    'auth' => 'account/stockdetail',
+                    'href' => url('account/editallsubusers', ['id' => $id]),
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-trash-o'
+                ]
+            ];
+        }else if($power == 2){
+            return [
+                '改密' => [
+                    'auth' => 'account/editallsubusers',
+                    'href' => url('account/editallsubusers', ['id' => $id ,'url' => $url]),
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-paste'
+                ],
+                '删除' => [
+                    'auth' => 'account/delallsubusers',
+                    'href' => "javascript:delallsubusers(" . $id . ")",
+                    'btnStyle' => 'danger',
+                    'icon' => 'fa fa-trash-o'
+                ],
+                '分配库存' => [
+                    'auth' => 'account/stockallocation',
+                    'href' => url('account/editallsubusers', ['id' => $id]),
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-trash-o'
+                ],
+                '查看库存' => [
+                    'auth' => 'account/stockdetail',
+                    'href' => url('account/editallsubusers', ['id' => $id]),
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-trash-o'
+                ]
+            ];
+        }
     }
-
 }
