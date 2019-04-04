@@ -34,7 +34,7 @@ class StockModel extends Model
      * @param $where  查询条件
      */
     public function getAllStock($page,$limit,$where){
-        $obj_lists  = $this->where($where)->page($page,$limit)->select();       
+        $obj_lists  = $this->where($where)->page($page,$limit)->select();    
         return objToArray($obj_lists);
     }
 
@@ -46,4 +46,12 @@ class StockModel extends Model
         $obj_lists  = $this->where($where)->count();
         return $obj_lists;
      }
+     /**
+     * 获取某一条库存数据信息
+     * @param $where 
+     */
+    public function getOneStock($where = []){
+        $obj_info = $this->where($where)->find();
+        return objToArray($obj_info);
+    }
 }

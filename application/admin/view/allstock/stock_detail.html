@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员列表</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__CSS__/bootstrapSwitch.css" rel="stylesheet">
+    <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__CSS__/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__CSS__/animate.min.css" rel="stylesheet">
+    <link href="__CSS__/style.min.css?v=4.1.0" rel="stylesheet">
+    <link href="__CSS__/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="__CSS__/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>查看库存详情</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="form-group">
+                    <table class="table" style="width: 29%;">
+
+                        <tbody>
+                            <tr>
+                                <td>id</td>
+                                <td>{$info['id']}</td>
+                            </tr>
+                            <tr>
+                                <td>应用名</td>
+                                <td>{$info['bname']}</td>
+                            </tr>
+                            <tr>
+                                <td>应用ID</td>
+                                <td>{$info['bid']}</td>
+                            </tr>
+                            <tr>
+                                <td>产品ID</td>
+                                <td>{$info['pname']}</td>
+                            </tr>
+                            <tr>
+                                <td>交易id</td>
+                                <td>{$info['pid']}</td>
+                            </tr>
+                            <tr>
+                                <td>归属人</td>
+                                <td>{$info['user']}</td>
+                            </tr>
+                            <tr>
+                                <td>入库人</td>
+                                <td>{$info['input_user']}</td>
+                            </tr>
+                            <tr>
+                                <td>出库人</td>
+                                <td>{$info['out_user']}</td>
+                            </tr>
+                            <tr>
+                                <td>入库时间</td>
+                                <td>{$info['id']}</td>
+                            </tr>
+                            <tr>
+                                <td>出库时间</td>
+                                <td>{$info['id']}</td>
+                            </tr>
+                            <tr>
+                                <td>入库价格</td>
+                                <td>{$info['id']}</td>
+                            </tr>
+                            <tr>
+                                <td>面值</td>
+                                <td>{$info['price']}</td>
+                            </tr>
+                            <tr>
+                                <td>库存量</td>
+                                <td>{$info['num']}</td>
+                            </tr>
+                            <tr>
+                                <td>状态</td>
+                                <td>{if $info['status']== -1}交易失败 {elseif $info['status'] == 1}未使用{elseif $info['status']==2}使用中{elseif $info['status']==3}发布中{elseif $info['status']==4}{/if}</td>
+                            </tr>
+                            <tr>
+                                <td>备注</td>
+                                <td>{$info['note']}</td>
+                            </tr>
+                            <tr>
+                                <td>入库审核</td>
+                                <td>{if $info['is_check']== 1}审核{else}不审核{/if}</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                   
+                        <a href="/admin/role/index.html"><button class="btn btn-success" type="button">返回</button></a>
+                   
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+    </div>
+    <script src="__JS__/jquery.min.js?v=2.1.4"></script>
+    <script src="__JS__/bootstrapSwitch.js"></script>
+    <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+    <script src="__JS__/content.min.js?v=1.0.0"></script>
+    <script src="__JS__/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="__JS__/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="__JS__/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="__JS__/plugins/suggest/bootstrap-suggest.min.js"></script>
+    <script src="__JS__/plugins/layer/laydate/laydate.js"></script>
+    <script src="__JS__/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="__JS__/plugins/layer/layer.min.js"></script>
+    <script src="__JS__/moment-with-locales.min.js"></script>
+    <script src="__JS__/plugins/datapicker/bootstrap-datetimepicker.min.js"></script>
+
+</body>
+
+</html>

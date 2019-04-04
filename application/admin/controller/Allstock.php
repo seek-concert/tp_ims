@@ -12,6 +12,7 @@ use app\admin\model\StockModel;
 
 class Allstock extends Base
 {
+
     public function index(){
         return view();
     }
@@ -51,12 +52,101 @@ class Allstock extends Base
         
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         foreach ($lists as $key => $value) {
-            $lists[$key]['is_check'] = '<div class="switch" data-animated="false" data-on-label="SI" data-off-label="NO"> <input type="checkbox" checked /> </div>';
+            $lists[$key]['is_check'] = '<div class="switch" data-animated="false" data-on-label="启用" data-off-label="禁用"> <input type="checkbox"'; 
+            if($value['is_check'] == 1){
+                $lists[$key]['is_check'] .= 'checked';
+            }
+            $lists[$key]['is_check'] .=' /> </div>';
+            $lists[$key]['pid'] = ' <a>修改PID</a> ';
+            $lists[$key]['uid'] = ' <a>修改UID</a> ';
+            $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
         }
-        $return['total'] = $stock_model->getAllStockCount();  //总数据
-        $return['rows'] = $lists;
 
+        $return['total'] = $stock_model->getAllStockCount($sqlmap);  //总数据
+        $return['rows'] = $lists;
         return json($return);
        
+    }
+
+
+    public function stock_detail($id = 0){
+        $stock_model = new StockModel();
+        if($id == 0){
+            $this->error('请勿非法访问');
+        }
+        $sqlmap = [];
+        $sqlmap['id'] = $id;
+        $info = $stock_model->getOneStock();
+        $return_data = [];
+        $return_data['info'] = $info;
+        return view('',$return_data);
+    }
+
+    public function get_succ(){
+        $stock_model = new StockModel();
+        $param = input('post.');
+        $id = isset($param['id'])?$param['id']:0;
+        if($id == 0){
+            $this->error('请勿非法访问');
+        }
+        $ret = $stock_model->where(['id'=>$id])->setField('status',4);
+        if($ret){
+            $this->success('修改成功');
+        }else{
+            $this->error('修改出错,请重试');
+        }
+        
+    }
+    
+    public function get_return(){
+        $stock_model = new StockModel();
+        $param = input('post.');
+        $id = isset($param['id'])?$param['id']:0;
+        if($id == 0){
+            $this->error('请勿非法访问');
+        }
+        $ret = $stock_model->where(['id'=>$id])->setField('status',1);
+        if($ret){
+            $this->success('修改成功');
+        }else{
+            $this->error('修改出错,请重试');
+        }
+        
+    }
+
+
+    /**
+     * 拼装操作按钮
+     * @param $id
+     * @return array
+     */
+    private function makeButton($id)
+    {
+        return [
+            '查看' => [
+                'auth' => 'user/useredit',
+                'href' => url('allstock/stock_detail', ['id' => $id]),
+                'btnStyle' => 'primary',
+                'icon' => 'fa fa-paste',
+            ],
+            '成功' => [
+                'auth' => 'user/userdel',
+                'href' => "javascript:get_succ(" .$id .")",
+                'btnStyle' => 'success',
+                'icon' => 'glyphicon glyphicon-pencil'
+            ],
+            '还原状态' => [
+                'auth' => 'user/userdel',
+                'href' => "javascript:get_return(" .$id .")",
+                'btnStyle' => 'warning',
+                'icon' => 'glyphicon glyphicon-repeat'
+            ],
+            '删除' => [
+                'auth' => 'user/userdel',
+                'href' => "javascript:userDel(" .$id .")",
+                'btnStyle' => 'danger',
+                'icon' => 'glyphicon glyphicon-trash'
+            ]
+        ];
     }
 }

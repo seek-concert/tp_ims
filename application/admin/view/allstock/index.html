@@ -20,16 +20,10 @@
     <!-- Panel Other -->
     <div class="ibox float-e-margins">
         <div class="ibox-title">
-            <h5>管理员列表</h5>
+            <h5>全部库存</h5>
         </div>
         <div class="ibox-content">
-            <div class="form-group clearfix col-sm-1">
-                {if authCheck('user/useradd') }
-                <a href="{:url('user/userAdd')}">
-                    <button class="btn btn-outline btn-primary" type="button">添加管理员</button>
-                </a>
-                {/if}
-            </div>
+            
             <!--搜索框开始-->
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
@@ -50,19 +44,28 @@
                         </div>
 
                         <label>出库时间查询：</label>
-                        <div class='input-group date' id='datetimepicker1'>
+                        <div class='input-group date' id='datetimepicker3'>
                             <input type='text' class="form-control" id="out_time_start" name="out_time_start"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
                         ----
-                        <div class='input-group date' id='datetimepicker2'>
+                        <div class='input-group date' id='datetimepicker4'>
                             <input type='text' class="form-control" id="out_time_end" name="out_time_end"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
+                        <label>状态：</label>
+                        <select name="status" class="form-control" id="">
+                            <option>所有</option>
+                            <option>未使用</option>
+                            <option>使用中</option>
+                            <option>发布中</option>
+                            <option>交易失败</option>
+                            <option>已出库</option>
+                        </select>
                     </div>
                   
                     <div class="form-group">
@@ -78,8 +81,8 @@
                         <thead>
                         <th data-field="id">id</th>
                         <th data-field="bname">库存名</th>
-                        <th data-field="role_name">修改pid</th>
-                        <th data-field="login_times">修改uid</th>
+                        <th data-field="pid">修改pid</th>
+                        <th data-field="uid">修改uid</th>
                         <th data-field="user">归属人</th>
                         <th data-field="input_time">入库时间</th>
                         <th data-field="out_user">出库人</th>
@@ -148,6 +151,7 @@
                     window.location.reload();
                 }
                 layer.msg("加载成功", {time : 1000});
+                get_swich();
             },
             onLoadError: function(){  //加载失败时执行
                 layer.msg("加载数据失败");
@@ -194,7 +198,55 @@ $(function () {
         format: 'YYYY-MM-DD',
         locale: moment.locale('zh-cn')
     });
+    $('#datetimepicker3').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: moment.locale('zh-cn')
+    });
+    $('#datetimepicker4').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: moment.locale('zh-cn')
+    });
 })
+
+
+function get_swich(){
+    $(".switch").bootstrapSwitch({  
+            onText : "上线",      // 设置ON文本  
+            offText : "下线",    // 设置OFF文本  
+            onColor : "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
+            offColor : "danger",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
+            size : "mini",    // 设置控件大小,从小到大  (mini/small/normal/large)  
+            handleWidth:"35",//设置控件宽度
+            // 当开关状态改变时触发  
+            onSwitchChange : function(event, state) {  
+                var ProductId = event.target.defaultValue;
+                if (state == true) {
+                    //上线
+                    updateProductStatus(ProductId,'AOB');
+                    /* alert("ON"); */
+                } else {
+                    //下线
+                    updateProductStatus(ProductId,'AOC');
+                    /* alert("OFF"); */
+                }  
+            }  
+    });  
+}
+
+function get_succ(id){
+  
+    $.post("{:url('admin/allstock/get_succ')}",{id:id},function(ret){
+        if(ret.code == 1){
+            
+        }
+        console.log(ret);
+    })
+}
+function get_return(id){
+    $.post("{:url('admin/allstock/get_return')}",{id:id},function(ret){
+        console.log(ret);
+    })
+}
 </script>
 </body>
 </html>
