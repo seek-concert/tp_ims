@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编辑管理员</title>
+    <title>改密</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
@@ -17,59 +17,35 @@
         <div class="col-sm-8">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>编辑管理员</h5>
+                    <h5>改密</h5>
                 </div>
                 <div class="ibox-content">
-                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('user/userEdit')}">
-                        <input type="hidden" name="id" value="{$user.id}">
+                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('account/editallsubusers')}">
+                        <input type="hidden" name="id" value="{$id}">
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">管理员账号：</label>
+                            <label class="col-sm-3 control-label">原密码：</label>
                             <div class="input-group col-sm-4">
-                                <input id="username" type="text" class="form-control" name="user_name" required="" aria-required="true" value="{$user.user_name}">
+                                <input id="used" type="text" class="form-control" name="used" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">管理员角色：</label>
+                            <label class="col-sm-3 control-label">新密码：</label>
                             <div class="input-group col-sm-4">
-                                <select class="form-control" name="role_id" required="" aria-required="true">
-                                    <option value="0">请选择</option>
-                                    {if !empty($role)}
-                                    {foreach name="role" item="vo"}
-                                    <option value="{$vo.id}" {if condition="$user['role_id'] eq $vo['id']"}selected{/if}>{$vo.role_name}</option>
-                                    {/foreach}
-                                    {/if}
-                                </select>
+                                <input id="password" type="text" class="form-control" name="password" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">登录密码：</label>
+                            <label class="col-sm-3 control-label">确认密码：</label>
                             <div class="input-group col-sm-4">
-                                <input id="password" type="text" class="form-control" name="password"  placeholder="再次输入修改密码">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">用户名称：</label>
-                            <div class="input-group col-sm-4">
-                                <input id="real_name" type="text" class="form-control" name="real_name" required="" aria-required="true" value="{$user.real_name}">
+                                <input id="password_confirm" type="text" class="form-control" name="password_confirm" required="" aria-required="true">
 
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">是否启用：</label>
-                            <div class="input-group col-sm-4">
-                                {foreach name='status' item='vo' key='key'}
-                                <div class="radio i-checks col-sm-4">
-                                    <label>
-                                        <input type="radio" value="{$key}" {if condition="$key == $user['status'] " }checked{/if} name="status"> <i></i> {$vo}</label>
-                                </div>
-                                {/foreach}
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-6">
                                 <!--<input type="button" value="提交" class="btn btn-primary" id="postform"/>-->
                                 <button class="btn btn-primary" type="submit">提交</button>
-                                <a href="{:url('index')}"><button class="btn btn-success" type="button">返回</button></a>
+                                <a href="{:url('allsubusers')}"><button class="btn btn-success" type="button">返回</button></a>
                             </div>
                         </div>
                     </form>
