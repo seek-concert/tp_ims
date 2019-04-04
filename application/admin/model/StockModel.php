@@ -46,7 +46,24 @@ class StockModel extends Model
         $obj_lists  = $this->where($where)->count();
         return $obj_lists;
      }
-     /**
+
+    /**
+     * 撤销分配
+     * @param $id
+     */
+    public function returnGive($id)
+    {
+        try{
+
+            $this->where('id', $id)->setField('user',0);
+            return msg(1, '', '撤销分配成功');
+
+        }catch(\Exception $e){
+            return msg(-1, '', $e->getMessage());
+        }
+    }
+
+/**
      * 获取某一条库存数据信息
      * @param $where 
      */
