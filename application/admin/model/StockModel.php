@@ -15,45 +15,35 @@ use think\Model;
 class StockModel extends Model
 {
 
-        // 确定链接表名
-        protected $table = 'snake_stock';
+    // 确定链接表名
+    protected $table = 'snake_stock';
+
+
+
+
+    // 获取所有的库存信息
+    public function getStock()
+    {
+        return $this->select();
+    }
 
         /**
-         * 根据搜索条件获取库存列表(总览)信息
-         * @param $where
-         * @param $offset
-         * @param $limit
-         */
-        public function getStockByWhere($where, $offset, $limit)
-        {
-    
-            return $this->where($where)->limit($offset, $limit)->order('id desc')->select();
-        }
-        
-        /**
-         * 根据搜索条件获取所有的库存数量
-         * @param $where 
-         */
-        public function getAllStock($where)
-        {
-            return $this->where($where)->count();
-        }
-
-
-        // 获取所有的库存信息
-        public function getStock()
-        {
-            return $this->select();
-        }
-
-  public function getAllStock($page,$limit,$data){
-        $obj_lists  = $this->where($data)->page($page,$limit)->select();       
+     * 根据搜索条件获取库存列表(总览)信息
+     * @param $page  当前页码
+     * @param $limit 每页个数
+     * @param $where  查询条件
+     */
+    public function getAllStock($page,$limit,$where){
+        $obj_lists  = $this->where($where)->page($page,$limit)->select();       
         return objToArray($obj_lists);
-     }
+    }
 
-
-     public function getAllStockCount(){
-        $obj_lists  = $this->count();
+    /**
+     * 根据搜索条件获取所有的库存数量
+     * @param $where 
+     */
+     public function getAllStockCount($where=[]){
+        $obj_lists  = $this->where($where)->count();
         return $obj_lists;
      }
 }
