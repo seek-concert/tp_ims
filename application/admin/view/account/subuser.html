@@ -61,6 +61,46 @@
 </div>
 <!-- End Panel Other -->
 </div>
+
+<!-- 查看库存 -->
+<div class="modal fade" id="stockdetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title-kdetail" >查看库存</h4>
+            </div>
+            <div class="modal-body">
+                <table id="kallocationTable">
+                    <thead>
+                    <th data-field="id">ID</th>
+                    <th data-field="bid">应用id</th>
+                    <th data-field="pid">档位id</th>
+                    <th data-field="num">剩余数量</th>
+                    <th data-field="operate">操作</th>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 分配库存 -->
+<div class="modal fade" id="stockallocation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title-kallocation">分配库存</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="__JS__/jquery.min.js?v=2.1.4"></script>
 <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
 <script src="__JS__/content.min.js?v=1.0.0"></script>
@@ -117,6 +157,74 @@
         //当点击查询按钮的时候执行
         $("#search").bind("click", initTable);
     });
+
+    //查看库存
+    function stockdetail(id) {
+        $('#stockdetail').modal('show');
+        //先销毁表格
+        $('#kallocationTable').bootstrapTable('destroy');
+        //初始化表格,动态从服务器加载数据
+        $("#kallocationTable").bootstrapTable({
+            method: "get",  //使用get请求到服务器获取数据
+            url: "{:url('account/stockdetail')}", //获取数据的地址
+            striped: true,  //表格显示条纹
+            pagination: true, //启动分页
+            pageSize: 10,  //每页显示的记录数
+            pageNumber:1, //当前第几页
+            pageList: [5, 10, 15, 20, 25],  //记录数可选列表
+            sidePagination: "server", //表示服务端请求
+            paginationFirstText: "首页",
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+            paginationLastText: "尾页",
+            queryParamsType : "undefined",
+            queryParams: function queryParams(params) {   //设置查询参数
+                var param = {
+                    pageNumber: params.pageNumber,
+                    pageSize: params.pageSize,
+                    id:id
+                };
+                return param;
+            },
+            onLoadSuccess: function(res){  //加载成功时执行
+                if(111 == res.code){
+                    window.location.reload();
+                }
+                layer.msg("加载成功", {time : 1000});
+            },
+            onLoadError: function(){  //加载失败时执行
+                layer.msg("加载数据失败");
+            }
+        });
+    }
+
+    //分配库存
+    function stockallocation(id) {
+        $('#stockallocation').modal('show');
+
+    }
+
+    //撤销分配
+    function return_give(id){
+        layer.confirm('确认撤销?', {icon: 3, title:'提示'}, function(index){
+            //do something
+            $.getJSON("{:url('account/return_give')}", {'id' : id}, function(res){
+                if(1 == res.code){
+                    layer.alert(res.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                        $('#stockdetail').modal('hide');
+                        initTable();
+                    });
+                }else if(111 == res.code){
+                    window.location.reload();
+                }else{
+                    layer.alert(res.msg, {title: '友情提示', icon: 2});
+                }
+            });
+
+            layer.close(index);
+        })
+
+    }
 </script>
 </body>
 </html>
