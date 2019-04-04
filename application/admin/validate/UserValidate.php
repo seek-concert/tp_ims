@@ -15,7 +15,7 @@ use think\Validate;
 class UserValidate extends Validate
 {
     protected $rule = [
-        ['user_name', 'unique:user', '管理员已经存在']
+        ['user_name', 'unique:user', '账号已经存在']
     ];
 
 }

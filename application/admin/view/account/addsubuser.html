@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>改密</title>
+    <title>添加子用户</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
@@ -17,35 +17,44 @@
         <div class="col-sm-8">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>改密</h5>
+                    <h5>添加子用户</h5>
                 </div>
                 <div class="ibox-content">
-                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('account/editallsubusers')}">
-                        <input type="hidden" name="id" value="{$id}">
+                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('account/addsubuser')}">
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">原密码：</label>
+                            <label class="col-sm-3 control-label">管理员账号：</label>
                             <div class="input-group col-sm-4">
-                                <input id="used" type="text" class="form-control" name="used" required="" aria-required="true">
+                                <input id="username" type="text" class="form-control" name="user_name" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">新密码：</label>
+                            <label class="col-sm-3 control-label">登录密码：</label>
                             <div class="input-group col-sm-4">
                                 <input id="password" type="text" class="form-control" name="password" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">确认密码：</label>
+                            <label class="col-sm-3 control-label">用户名称：</label>
                             <div class="input-group col-sm-4">
-                                <input id="password_confirm" type="text" class="form-control" name="password_confirm" required="" aria-required="true">
-
+                                <input id="real_name" type="text" class="form-control" name="real_name" required="" aria-required="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">权限：</label>
+                            <div class="input-group col-sm-6">
+                                {foreach name='power' item='vo' key='key'}
+                                <div class="radio i-checks col-sm-4">
+                                    <label>
+                                        <input type="radio" value="{$key}" {if condition="$key == 1 " }checked{/if} name="power"> <i></i> {$vo}</label>
+                                </div>
+                                {/foreach}
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-6">
                                 <!--<input type="button" value="提交" class="btn btn-primary" id="postform"/>-->
                                 <button class="btn btn-primary" type="submit">提交</button>
-                                <a href="{:url($url)}"><button class="btn btn-success" type="button">返回</button></a>
+                                <a href="{:url('subuser')}"><button class="btn btn-success" type="button">返回</button></a>
                             </div>
                         </div>
                     </form>
@@ -61,6 +70,7 @@
 <script src="__JS__/plugins/validate/jquery.validate.min.js"></script>
 <script src="__JS__/plugins/validate/messages_zh.min.js"></script>
 <script src="__JS__/plugins/iCheck/icheck.min.js"></script>
+<script src="__JS__/plugins/layer/laydate/laydate.js"></script>
 <script src="__JS__/plugins/layer/layer.min.js"></script>
 <script src="__JS__/jquery.form.js"></script>
 <script type="text/javascript">
@@ -76,9 +86,9 @@
         layer.ready(function(){
             layer.close(index);
             if(1 == res.code){
-                layer.alert(res.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
-                    window.location.href = res.data;
-                });
+               layer.alert(res.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                   window.location.href = res.data;
+               });
             }else if(111 == res.code){
                 window.location.reload();
             }else{
@@ -87,11 +97,10 @@
         });
     }
 
-
     $(document).ready(function(){
         $(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green",});
 
-        // 编辑管理员
+        // 添加管理员
         var options = {
             beforeSubmit:showStart,
             success:showSuccess
