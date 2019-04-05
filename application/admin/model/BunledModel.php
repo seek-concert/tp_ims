@@ -25,4 +25,16 @@ class BunledModel extends Model
         return $this->where(['id'=>$id])->value('bname');
         
     }
+
+    public function get_bunled_id($id = 0){
+        if($id == 0){
+            return false;
+        }
+        return $this->where(['id'=>$id])->value('bid');
+        
+    }
+
+    public function update_data($where,$data){
+        return $this->where($where)->update($data);
+    }
 }

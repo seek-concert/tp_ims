@@ -19,10 +19,42 @@ class ProductModel extends Model
 
 
     public function get_product_name($id = 0){
-        if($Id == 0){
+        
+        if($id == 0){
             return false;
         }
-        return $this->where(['id'=>$id])->value('bname');
+       
+        return $this->where(['id'=>$id])->value('pname');
         
+    }
+    public function get_product_id($id = 0){
+        if($id == 0){
+            return false;
+        }
+        return $this->where(['id'=>$id])->value('pid');
+        
+    }
+
+    public function update_data($where=[],$data=[]){
+       return  $this->where($where)->update($data);
+    }
+
+    public function getAllProduct($page,$limit,$where){
+        $obj_lists  = $this->where($where)->page($page,$limit)->select();    
+        return objToArray($obj_lists);
+    }
+
+    public function getAllProductCount($where=[]){
+        $obj_lists  = $this->where($where)->count();
+        return $obj_lists;
+    }
+
+    public function getProductInfo($where){
+        $obj_info = $this->where($where)->find();
+        return objToArray($obj_info);
+    }
+
+    public function del($where = []){
+        return $this->where($where)->delete();
     }
 }

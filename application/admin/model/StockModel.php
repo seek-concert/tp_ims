@@ -63,7 +63,7 @@ class StockModel extends Model
         }
     }
 
-/**
+    /**
      * 获取某一条库存数据信息
      * @param $where 
      */
@@ -71,4 +71,22 @@ class StockModel extends Model
         $obj_info = $this->where($where)->find();
         return objToArray($obj_info);
     }
+
+     /**
+     * 获取按档位分组的库存
+     * @param $where 
+     */
+    public function getStockGroup($page=1,$limit=10,$where = [],$group=''){
+        $obj_info = $this->group($group)->where($where)->page($page,$limit)->column('id,bunled_id,product_id,status,count(*) as count');
+        return objToArray($obj_info);
+    }
+
+    /**
+     * 获取按档位分组的库存所有
+     * @param $where 
+     */
+    public function getStockGroupCount($where=[],$group=''){
+        return $this->group($group)->where($where)->count();
+    }
+
 }

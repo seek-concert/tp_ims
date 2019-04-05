@@ -28,35 +28,12 @@
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
                     <div class="form-group">
-                        <label>入库时间查询：</label>
+                       
                         <div class='input-group date' id='datetimepicker1'>
-                            <input type='text' class="form-control" id="input_time_start" name="input_time_start"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                        ----
-                        <div class='input-group date' id='datetimepicker2'>
-                            <input type='text' class="form-control" id="input_time_end" name="input_time_end"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
+                            <input type='text' placeholder="关键字" class="form-control" id="keywords" name="keywords"/>
+                          
                         </div>
 
-                        <label>出库时间查询：</label>
-                        <div class='input-group date' id='datetimepicker3'>
-                            <input type='text' class="form-control" id="out_time_start" name="out_time_start"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                        ----
-                        <div class='input-group date' id='datetimepicker4'>
-                            <input type='text' class="form-control" id="out_time_end" name="out_time_end"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
 
                     </div>
                   
@@ -86,21 +63,39 @@
 <!-- End Panel Other -->
 </div>
 <div class="modal fade" id="stockallocation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title-kallocation">分配库存</h4>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">提交</button>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title-kallocation">修改UID名称</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal m-t" id="kallocationForm" method="post" action="">
+                        <input type="hidden" id="uid" name="uid">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">UID：</label>
+                            <div class="input-group col-sm-4">
+                                <input type="hidden" name="id" id="id">
+                                <input type="text" name="pid" id="pid" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">UNAME：</label>
+                            <div class="input-group col-sm-4">
+                                <input type="text" name="pname" id="pname">
+                            </div>
+                        </div>
+                       
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-6">
+                                <button class="btn btn-primary" type="button" onclick="get_edit_pid()">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 <script src="__JS__/jquery.min.js?v=2.1.4"></script>
 <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
 <script src="__JS__/content.min.js?v=1.0.0"></script>
@@ -112,7 +107,6 @@
 <script src="__JS__/plugins/sweetalert/sweetalert.min.js"></script>
 <script src="__JS__/plugins/layer/layer.min.js"></script>
 <script src="__JS__/moment-with-locales.min.js"></script>
-<script src="__JS__/plugins/datapicker/bootstrap-datetimepicker.min.js"></script>
 <script src="__JS__/bootstrapSwitch.js"></script>
 <script type="text/javascript">
     function initTable() {
@@ -137,7 +131,7 @@
                 var param = {
                     pageNumber: params.pageNumber,
                     pageSize: params.pageSize,
-                    input_time_start:$('#keywords').val(),
+                    keywords:$('#keywords').val(),
                 };
                 return param;
             },
@@ -164,7 +158,7 @@
     function stockDel(id){
         layer.confirm('确认删除此条数据?该操作不可逆,请谨慎操作！', {icon: 3, title:'提示'}, function(index){
             //do something
-            $.getJSON("{:url('admin/allstock/del')}", {'id' : id}, function(res){
+            $.getJSON("{:url('del')}", {'id' : id}, function(res){
                 if(1 == res.code){
                     layer.alert(res.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
                         initTable();
@@ -182,31 +176,32 @@
     }
 
 
-
-$(function () {
-    $('#datetimepicker1').datetimepicker({
-        format: 'YYYY-MM-DD',
-        locale: moment.locale('zh-cn')
-    });
-    $('#datetimepicker2').datetimepicker({
-        format: 'YYYY-MM-DD',
-        locale: moment.locale('zh-cn')
-    });
-    $('#datetimepicker3').datetimepicker({
-        format: 'YYYY-MM-DD',
-        locale: moment.locale('zh-cn')
-    });
-    $('#datetimepicker4').datetimepicker({
-        format: 'YYYY-MM-DD',
-        locale: moment.locale('zh-cn')
-    });
-
-     
-})
    //分配库存
-   function stockallocation(id) {
-        $('#stockallocation').modal('show');
+   function edit_pid(id) {
+       $.post("{:url('get_product_info')}",{id:id},function(ret){
+           $("#id").val(ret.id);
+            $("#pid").val(ret.pid);
+            $("#pname").val(ret.pname);
+            $('#stockallocation').modal('show');
+       })
+       
+    }
 
+    function get_edit_pid(){
+        var id = $("#id").val();
+        var pname = $("#pname").val();
+        $.post("{:url('get_edit_pid')}",{id:id,pname:pname},function(ret){
+            if(ret.code == 1){
+                layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
+                    $('#stockallocation').modal('hide');
+                        initTable();
+                    });
+            }else{
+                layer.alert(ret.msg, {title: '提示', icon: 2}, function(){
+                        initTable();
+                    });
+            }
+        })
     }
 
 
