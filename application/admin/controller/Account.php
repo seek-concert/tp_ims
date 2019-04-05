@@ -321,17 +321,21 @@ class Account extends Base
         if (request()->isAjax()) {
             $param = input('param.');
             $limit = $param['pageSize'];
+            $page = $param['pageNumber'];
 
-            $where = [];
-            $where['user'] = ['=', $param['id']];
             $stock = new StockModel();
-            $selectResult = $stock->getAllStock($param['pageNumber'], $limit, $where);
-
+            $selectResult = $stock
+                ->where(['user'=>$param['id']])
+                ->field('id,bundle_id')
+                ->group('bundle_id')
+                ->page($page,$limit)
+                ->select();
+//            $selectResult = objToArray($selectResult);
             // 拼装参数
             foreach ($selectResult as $key => $vo) {
-                $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id'],3));
+                $selectResult[$key]['operate'] = showOperate($this->makeButton($param['id'],3,'',$vo['bundle_id']));
             }
-
+            dump(objToArray($selectResult));exit;
             $return['total'] = $stock->getAllStockCount($where);  //总数据
             $return['rows'] = $selectResult;
 
@@ -355,7 +359,80 @@ class Account extends Base
      */
     public function stockallocation()
     {
+        $param = input('post.');
+        //验证数据
+        $result = $this->validate($param,'StockAllocationValidate');
+        if (true !== $result) {
+            // 验证失败 输出错误信息
+            return msg(-1, '', $result);
+        }
+//        $stock = new StockModel();
 
+    }
+
+    /*
+     * 查询应用名称
+     */
+    public function query_bname()
+    {
+        $id = input('param.id');
+        //相关用户id
+        $uid = $this->get_user($id);
+        $stock = new StockModel();
+        //查找相关库存--应用名称
+        $where['input_user'] = ['in',$uid];
+        $where['status'] = ['eq',1];
+        $stocks = $stock
+            ->where($where)
+            ->field('bunled_id')
+            ->group('bunled_id')
+            ->select();
+        dump($stocks);exit;
+        return $stocks;
+    }
+
+    /*
+    * 查询档位名称与对应数量
+    */
+    public function query_pname()
+    {
+        $id = input('param.id');
+        $bid = input('param.bid');
+        //相关用户id
+        $uid = $this->get_user($id);
+        $stock = new StockModel();
+        //查找相关库存--档位名称与对应数量
+        $where['input_user'] = ['in',$uid];
+        $where['bid'] = ['eq',$bid];
+        $where['status'] = ['eq',1];
+        $stocks = $stock
+            ->where($where)
+            ->field('pid,pname,count(*) as num')
+            ->group('pid')
+            ->select();
+        return $stocks;
+    }
+
+    /*
+     * 查询档位对应数量
+     */
+    public function query_num()
+    {
+        $id = input('param.id');
+        $bid = input('param.bid');
+        $pid = input('param.pid');
+        //相关用户id
+        $uid = $this->get_user($id);
+        $stock = new StockModel();
+        //查找相关库存--档位名称与对应数量
+        $where['input_user'] = ['in',$uid];
+        $where['bid'] = ['eq',$bid];
+        $where['pid'] = ['eq',$pid];
+        $where['status'] = ['eq',1];
+        $stocks = $stock
+            ->where($where)
+            ->count();
+        return $stocks;
     }
 
     /**
@@ -363,7 +440,7 @@ class Account extends Base
      * @param $id
      * @return array
      */
-    private function makeButton($id,$power=0,$url='')
+    private function makeButton($id,$power=0,$url='',$bid='')
     {
         if($power == 0){
             return [
@@ -432,7 +509,7 @@ class Account extends Base
             return [
                 '撤销分配' => [
                     'auth' => 'account/return_give',
-                    'href' => "javascript:return_give(" . $id . ")",
+                    'href' => "javascript:return_give(" . $id.",".$bid . ")",
                     'btnStyle' => 'primary',
                     'icon' => 'fa fa-paste'
                 ]

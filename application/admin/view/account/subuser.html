@@ -93,10 +93,38 @@
                 <h4 class="modal-title-kallocation">分配库存</h4>
             </div>
             <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">提交</button>
+                <form class="form-horizontal m-t" id="kallocationForm" method="post" action="">
+                    <input type="hidden" id="uid" name="uid">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">应用名称：</label>
+                        <div class="input-group col-sm-4">
+                            <select class="form-control" id="bid" name="bid">
+                                <option value="">请选择！</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">档位：</label>
+                        <div class="input-group col-sm-4">
+                            <select class="form-control" id="pid" name="pid">
+                                <option value="">请选择！</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">数量：</label>
+                        <div class="input-group col-sm-4">
+                            <select class="form-control" id="num" name="num">
+                                <option value="">请选择！</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-6">
+                            <button class="btn btn-primary" type="button" onclick="allocation()">提交</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -160,6 +188,7 @@
 
     //查看库存
     function stockdetail(id) {
+        //显示模态框
         $('#stockdetail').modal('show');
         //先销毁表格
         $('#kallocationTable').bootstrapTable('destroy');
@@ -198,10 +227,73 @@
         });
     }
 
-    //分配库存
+    //分配库存 -- 显示页
     function stockallocation(id) {
-        $('#stockallocation').modal('show');
 
+        //显示模态框
+        $('#stockallocation').modal('show');
+        //赋值id
+        $('#uid').val(id);
+
+        $.post("{:url('admin/account/query_bname')}",{id:id},function(result){
+            $.each(result,function (k, v) {
+                $('#bid').append('<option value="'+v.bid+'">'+v.bname+'</option>');
+            })
+        });
+
+        //查询档位和对应数量
+        $("#bid").change(function(){
+            var phtml = '<option value="">请选择！</option>';
+            var nhtml = '<option value="">请选择！</option>';
+            var options=$("#bid option:selected");
+            var bid = options.val();
+            if(bid != ''){
+                $('#num').html(nhtml);
+                $.post("{:url('admin/account/query_pname')}",{id:id,bid:bid},function(result){
+                    $.each(result,function (k, v) {
+                        phtml += '<option value="'+v.pid+'">'+v.pname+'（数量'+v.num+'）</option>';
+                    })
+                    $('#pid').html(phtml);
+                })
+            }else{
+                $('#pid').html(phtml);
+                $('#num').html(nhtml);
+            }
+        })
+
+        $('#pid').change(function () {
+            var nhtml = '<option value="">请选择！</option>';
+            var boptions=$("#bid option:selected");
+            var poptions=$("#pid option:selected");
+            var bid = boptions.val();
+            var pid = poptions.val();
+            if(pid != ''){
+                $.post("{:url('admin/account/query_num')}",{id:id,bid:bid,pid:pid},function(result){
+                    for (var i = 1;i <= result;i++){
+                        nhtml += '<option value="'+i+'">'+i+'</option>';
+                    }
+                    $('#num').html(nhtml);
+                })
+            }else{
+                $('#num').html(nhtml);
+            }
+        })
+    }
+
+    //分配库存 -- 提交
+    function allocation() {
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "{:url('account/stockallocation')}",
+            data: $('#kallocationForm').serialize(),// 你的formid
+            async: false,
+            success: function(data) {
+                if(data.code = -1){
+                    layer.alert(data.msg, {title: '友情提示', icon: 2});
+                }
+            }
+        });
     }
 
     //撤销分配
@@ -211,6 +303,7 @@
             $.getJSON("{:url('account/return_give')}", {'id' : id}, function(res){
                 if(1 == res.code){
                     layer.alert(res.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                        //关闭模态框
                         $('#stockdetail').modal('hide');
                         initTable();
                     });
