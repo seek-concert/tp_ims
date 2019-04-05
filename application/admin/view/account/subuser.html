@@ -73,9 +73,8 @@
             <div class="modal-body">
                 <table id="kallocationTable">
                     <thead>
-                    <th data-field="id">ID</th>
-                    <th data-field="bid">应用id</th>
-                    <th data-field="pid">档位id</th>
+                    <th data-field="bname">应用名称</th>
+                    <th data-field="pname">档位名称</th>
                     <th data-field="num">剩余数量</th>
                     <th data-field="operate">操作</th>
                     </thead>
@@ -237,7 +236,7 @@
 
         $.post("{:url('admin/account/query_bname')}",{id:id},function(result){
             $.each(result,function (k, v) {
-                $('#bid').append('<option value="'+v.bid+'">'+v.bname+'</option>');
+                $('#bid').append('<option value="'+v.bunled_id+'">'+v.bname+'</option>');
             })
         });
 
@@ -251,7 +250,7 @@
                 $('#num').html(nhtml);
                 $.post("{:url('admin/account/query_pname')}",{id:id,bid:bid},function(result){
                     $.each(result,function (k, v) {
-                        phtml += '<option value="'+v.pid+'">'+v.pname+'（数量'+v.num+'）</option>';
+                        phtml += '<option value="'+v.product_id+'">'+v.pname+'（数量'+v.num+'）</option>';
                     })
                     $('#pid').html(phtml);
                 })
@@ -289,7 +288,13 @@
             data: $('#kallocationForm').serialize(),// 你的formid
             async: false,
             success: function(data) {
-                if(data.code = -1){
+                if(data.code == 1){
+                    layer.alert(data.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                        //关闭模态框
+                        $('#stockallocation').modal('hide');
+                        initTable();
+                    });
+                }else{
                     layer.alert(data.msg, {title: '友情提示', icon: 2});
                 }
             }

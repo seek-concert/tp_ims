@@ -9,7 +9,9 @@
 namespace app\admin\controller;
 
 
+use app\admin\model\BunledModel;
 use app\admin\model\LoginLogModel;
+use app\admin\model\ProductModel;
 use app\admin\model\StockModel;
 use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
@@ -325,18 +327,25 @@ class Account extends Base
 
             $stock = new StockModel();
             $selectResult = $stock
-                ->where(['user'=>$param['id']])
-                ->field('id,bundle_id')
-                ->group('bundle_id')
+                ->where(['user'=>$param['id'],'status'=>1])
+                ->field('id,bunled_id,product_id')
+                ->group('product_id')
                 ->page($page,$limit)
                 ->select();
-//            $selectResult = objToArray($selectResult);
+            $bunled = new BunledModel();
+            $product = new ProductModel();
             // 拼装参数
             foreach ($selectResult as $key => $vo) {
-                $selectResult[$key]['operate'] = showOperate($this->makeButton($param['id'],3,'',$vo['bundle_id']));
+                $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id'],3));
+                $selectResult[$key]['bname'] = $bunled->where(['id'=>$vo['bunled_id']])->value('bname');
+                $selectResult[$key]['pname'] = $product->where(['id'=>$vo['product_id']])->value('pname');
             }
-            dump(objToArray($selectResult));exit;
-            $return['total'] = $stock->getAllStockCount($where);  //总数据
+            $total = $stock
+                ->where(['user'=>$param['id'],'status'=>1])
+                ->field('id,bunled_id,product_id')
+                ->group('product_id')
+                ->count();
+            $return['total'] = $total;  //总数据
             $return['rows'] = $selectResult;
 
             return json($return);
@@ -366,8 +375,24 @@ class Account extends Base
             // 验证失败 输出错误信息
             return msg(-1, '', $result);
         }
-//        $stock = new StockModel();
-
+        $stock = new StockModel();
+        //查询要分配的库存
+        $stock_id = $stock
+            ->where([
+                'bunled_id' => $param['bid'],
+                'product_id' => $param['pid']
+            ])
+            ->limit($param['num'])
+            ->column('id');
+        $stock_id = implode(',', $stock_id);
+        $stocks = $stock
+            ->where('id','in',$stock_id)
+            ->setField('user',$param['uid']);
+        if($stocks){
+            return msg(1, '', '分配成功');
+        }else{
+            return msg(-1, '', '分配失败');
+        }
     }
 
     /*
@@ -382,12 +407,19 @@ class Account extends Base
         //查找相关库存--应用名称
         $where['input_user'] = ['in',$uid];
         $where['status'] = ['eq',1];
+        $where['user'] = ['eq',0];
         $stocks = $stock
             ->where($where)
             ->field('bunled_id')
             ->group('bunled_id')
             ->select();
-        dump($stocks);exit;
+        $bunled = new BunledModel();
+        foreach ($stocks as $k=>$v){
+            $bunleds = $bunled
+                ->where(['id'=>$v['bunled_id']])
+                ->find();
+            $stocks[$k]['bname'] = $bunleds['bname'];
+        }
         return $stocks;
     }
 
@@ -403,13 +435,21 @@ class Account extends Base
         $stock = new StockModel();
         //查找相关库存--档位名称与对应数量
         $where['input_user'] = ['in',$uid];
-        $where['bid'] = ['eq',$bid];
+        $where['bunled_id'] = ['eq',$bid];
         $where['status'] = ['eq',1];
+        $where['user'] = ['eq',0];
         $stocks = $stock
             ->where($where)
-            ->field('pid,pname,count(*) as num')
-            ->group('pid')
+            ->field('product_id,count(*) as num')
+            ->group('product_id')
             ->select();
+        $product = new ProductModel();
+        foreach ($stocks as $k=>$v){
+            $products = $product
+                ->where(['id'=>$v['product_id']])
+                ->find();
+            $stocks[$k]['pname'] = $products['pname'];
+        }
         return $stocks;
     }
 
@@ -426,9 +466,10 @@ class Account extends Base
         $stock = new StockModel();
         //查找相关库存--档位名称与对应数量
         $where['input_user'] = ['in',$uid];
-        $where['bid'] = ['eq',$bid];
-        $where['pid'] = ['eq',$pid];
+        $where['bunled_id'] = ['eq',$bid];
+        $where['product_id'] = ['eq',$pid];
         $where['status'] = ['eq',1];
+        $where['user'] = ['eq',0];
         $stocks = $stock
             ->where($where)
             ->count();
@@ -440,7 +481,7 @@ class Account extends Base
      * @param $id
      * @return array
      */
-    private function makeButton($id,$power=0,$url='',$bid='')
+    private function makeButton($id,$power=0,$url='',$bid='',$pid='')
     {
         if($power == 0){
             return [
@@ -509,7 +550,7 @@ class Account extends Base
             return [
                 '撤销分配' => [
                     'auth' => 'account/return_give',
-                    'href' => "javascript:return_give(" . $id.",".$bid . ")",
+                    'href' => "javascript:return_give(" . $id . ")",
                     'btnStyle' => 'primary',
                     'icon' => 'fa fa-paste'
                 ]
