@@ -48,10 +48,58 @@ class Stock extends Base
         return "this is selfStock";
     }
 
+
+  
     // Pid改名
     public function pidRename()
     {
         return view();
+    }
+
+    public function getpname(){
+       
+        $user = new StockModel();
+        $param = input('param.');
+        $page = isset($param['pageNumber'])?(int)$param['pageNumber']:1;
+        $limit = isset($param['pageSize'])?(int)$param['pageSize']:10;
+        $keywords = isset($param['keywords'])?$param['keywords']:'';
+        $sqlmap = [];
+        if(!empty($keywords)){
+            $sqlmap['pid|panme'] = ['like', '%' . $keywords . '%'];
+        }
+
+        $lists = $user->getAllStock($page, $limit, $sqlmap);
+        foreach ($lists as $key => $value) {
+            $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
+        }
+        $return['total'] = $user->getAllStockCount($sqlmap);  // 总数据
+        $return['rows'] = $lists;
+        return json($return);
+    }
+
+
+    
+    /**
+     * 拼装操作按钮
+     * @param $id
+     * @return array
+     */
+    private function makeButton($id)
+    {
+        return [
+            '修改' => [
+                'auth' => 'user/useredit',
+                'href' => url('allstock/stock_detail', ['id' => $id]),
+                'btnStyle' => 'primary',
+                'icon' => 'fa fa-paste',
+            ],
+            '删除' => [
+                'auth' => 'user/userdel',
+                'href' => "javascript:stockDel(" .$id .")",
+                'btnStyle' => 'danger',
+                'icon' => 'glyphicon glyphicon-trash'
+            ]
+        ];
     }
 
     

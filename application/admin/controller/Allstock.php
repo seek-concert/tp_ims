@@ -8,7 +8,7 @@
 
 namespace app\admin\controller;
 use app\admin\model\StockModel;
-
+use app\admin\model\BunledModel;
 
 class Allstock extends Base
 {
@@ -19,6 +19,7 @@ class Allstock extends Base
 
     public function getallstock(){
         $stock_model = new StockModel();
+        $bunled_model = new BunledModel();
         $param = input('');
         $input_time_start = isset($param['input_time_start'])?strtotime($param['input_time_start']):'';
         $input_time_end = isset($param['input_time_end'])?strtotime($param['input_time_end']):'';
@@ -52,13 +53,14 @@ class Allstock extends Base
         
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         foreach ($lists as $key => $value) {
+            $lists[$key]['bunled_name'] = $bunled_model->get_bunled_name($value['bunled_id']);
             $lists[$key]['is_check'] = '<input name ="my_stock" value="'.$value['id'].'"  type="checkbox"';
             if($value['is_check'] == 1){
                 $lists[$key]['is_check'] .= 'checked';
             }
             $lists[$key]['is_check'] .=' /> </div>';
-            $lists[$key]['pid'] = ' <a href="'.url('stock/pidrename',['id'=>$value['id']]).'">修改PID</a> ';
-            $lists[$key]['uid'] = ' <a>修改UID</a> ';
+            $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid">修改PID</a> ';
+            $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid">修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
         }
 
