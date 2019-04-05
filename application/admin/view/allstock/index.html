@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理员列表</title>
     <link rel="shortcut icon" href="favicon.ico">
-    <link href="__CSS__/bootstrapSwitch.css" rel="stylesheet">
+
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/bootstrapSwitch.css" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
     <link href="__CSS__/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="__CSS__/animate.min.css" rel="stylesheet">
@@ -207,13 +208,13 @@ $(function () {
     });
 
      
-})
+});
 
 
 function get_swich(){
-    $(".switch").bootstrapSwitch({  
-            onText : "上线",      // 设置ON文本  
-            offText : "下线",    // 设置OFF文本  
+    $("[name ='my_stock']").bootstrapSwitch({  
+            onText : "启用",      // 设置ON文本  
+            offText : "禁用",    // 设置OFF文本  
             onColor : "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
             offColor : "danger",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
             size : "mini",    // 设置控件大小,从小到大  (mini/small/normal/large)  
@@ -221,22 +222,11 @@ function get_swich(){
             state:true,
             // 当开关状态改变时触发  
             onSwitchChange : function(event, state) {
-                var ProductId = event.target.defaultValue;
-                console.log(ProductId);
-                if (state == true) {
-                    //上线
-                    updateProductStatus(ProductId,'AOB');
-                    /* alert("ON"); */
-                } else {
-                    //下线
-                    updateProductStatus(ProductId,'AOC');
-                    /* alert("OFF"); */
-                }  
+                console.log('11');
+
             }  
     });
-    // $('swich').bootstrapSwitch("onSwitchChange",function(event,state){
-    //     console.log()
-    // })
+
     
 }
 
@@ -267,22 +257,7 @@ function get_return(id){
         console.log(1);
     }
 
-    // $(document).on('click','.switch-right',function(){
-    //     console.log(111);
-    // })
-    // $(document).on('click','label',function(){
-    //     console.log(1112222);
-    // })
-    // $('.switch .switch-left').click(function(){
-    //     console.log(1);
-    // })
-    // $('.switch .switch-right').click(function(){
-    //     console.log(2);
-    // })
-    // $('.switch lable').click(function(){
-    //     console.log(3);
-    // })
- 
+
 
     // function get_check(id){
     //     console.log(this);
