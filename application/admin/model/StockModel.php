@@ -27,7 +27,7 @@ class StockModel extends Model
         return $this->select();
     }
 
-        /**
+    /**
      * 根据搜索条件获取库存列表(总览)信息
      * @param $page  当前页码
      * @param $limit 每页个数
