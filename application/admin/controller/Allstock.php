@@ -52,7 +52,7 @@ class Allstock extends Base
         
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         foreach ($lists as $key => $value) {
-            $lists[$key]['is_check'] = '<div class="switch" data-animated="false"  data-on-label="启用" data-off-label="禁用"> <input  type="checkbox"'; 
+            $lists[$key]['is_check'] = '<div class="switch" data-animated="false"  data-on-label="启用" data-off-label="禁用"> <input name ="my_stock"  type="checkbox"';
             if($value['is_check'] == 1){
                 $lists[$key]['is_check'] .= 'checked';
             }
