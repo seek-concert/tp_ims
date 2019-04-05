@@ -59,8 +59,8 @@ class Allstock extends Base
                 $lists[$key]['is_check'] .= 'checked';
             }
             $lists[$key]['is_check'] .=' /> </div>';
-            $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid">修改PID</a> ';
-            $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid">修改UID</a> ';
+            $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid('.$value['id'].')">修改PID</a> ';
+            $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid('.$value['id'].')">修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
         }
 
