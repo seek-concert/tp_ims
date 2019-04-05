@@ -52,7 +52,7 @@ class Allstock extends Base
         
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         foreach ($lists as $key => $value) {
-            $lists[$key]['is_check'] = '<div class="switch" data-animated="false" data-on-label="启用" data-off-label="禁用"> <input type="checkbox"'; 
+            $lists[$key]['is_check'] = '<div class="switch" data-animated="false"  data-on-label="启用" data-off-label="禁用"> <input  type="checkbox"'; 
             if($value['is_check'] == 1){
                 $lists[$key]['is_check'] .= 'checked';
             }
@@ -97,7 +97,7 @@ class Allstock extends Base
         }
         
     }
-    
+
     public function get_return(){
         $stock_model = new StockModel();
         $param = input('post.');
@@ -113,6 +113,42 @@ class Allstock extends Base
         }
         
     }
+
+
+    public function del(){
+        $stock_model = new StockModel();
+        $param = input('');
+        $id = isset($param['id'])?$param['id']:0;
+        if($id == 0){
+            $this->error('请勿非法访问');
+        }
+        $ret = $stock_model->where(['id'=>$id])->delete();
+        if($ret){
+            $this->success('删除成功');
+        }else{
+            $this->error('删除出错,请重试');
+        }
+        
+    }
+
+    public function get_check(){
+        $stock_model = new StockModel();
+        $param = input('');
+        $id = isset($param['id'])?$param['id']:0;
+        if($id == 0){
+            $this->error('请勿非法访问');
+        }
+        $info = $stock_model->where(['id'=>$id])->find();
+        if($info['status'] == 1){
+            $status = -1;
+        }else{
+            $status = 1;
+        }
+       $stock_model->where(['id'=>$id])->setField('status',$status);
+       
+    }
+
+
 
 
     /**
@@ -143,7 +179,7 @@ class Allstock extends Base
             ],
             '删除' => [
                 'auth' => 'user/userdel',
-                'href' => "javascript:userDel(" .$id .")",
+                'href' => "javascript:stockDel(" .$id .")",
                 'btnStyle' => 'danger',
                 'icon' => 'glyphicon glyphicon-trash'
             ]

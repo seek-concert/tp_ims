@@ -78,10 +78,6 @@
                                 <td>{$info['price']}</td>
                             </tr>
                             <tr>
-                                <td>库存量</td>
-                                <td>{$info['num']}</td>
-                            </tr>
-                            <tr>
                                 <td>状态</td>
                                 <td>{if $info['status']== -1}交易失败 {elseif $info['status'] == 1}未使用{elseif $info['status']==2}使用中{elseif $info['status']==3}发布中{elseif $info['status']==4}{/if}</td>
                             </tr>
