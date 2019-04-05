@@ -37,8 +37,10 @@ class Stock extends Base
         $pname = isset($param['pname'])?$param['pname']:'';
         $sqlamp = [];
 
-        if (!empty($param['searchText'])) {
-            $sqlamp['bname'] = ['like', '%' . $pname . '%'];
+        if (!empty($pname)) {
+            $searchsql['bname'] = ['like', '%' . $pname . '%'];
+            $bunled_ids = $bunled_model->get_like_name($searchsql);
+           $sqlamp['bunled_id'] = ['in',$bunled_ids];
         }
         
         

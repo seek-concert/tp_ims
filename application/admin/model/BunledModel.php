@@ -37,4 +37,8 @@ class BunledModel extends Model
     public function update_data($where,$data){
         return $this->where($where)->update($data);
     }
+
+    public function get_like_name($where){
+        return $this->where($where)->column('id');
+    }
 }
