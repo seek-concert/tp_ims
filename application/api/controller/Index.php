@@ -1,4 +1,5 @@
 <?php
+/*========================【库存接口】===========================*/
 namespace app\api\controller;
 use app\api\model\StockModel;
 use app\api\model\UserModel;
@@ -18,7 +19,7 @@ class Index extends Controller
 //            $this->is_https=false;
 //        }
     }
-    /*========================【库存接口】===========================*/
+
     //登陆
     public function login()
     {
@@ -233,7 +234,7 @@ class Index extends Controller
         //检测状态
         $out_info =  StockModel::field(['id','tid','receipt','status'])->where($where)->find();
         if($out_info['status']==1){
-            return msg(1,'使用中');
+            return msg(1,'正在使用中，出库失败');
         }
         //出库
         $rs = model('StockModel')->save($data,$where);
@@ -244,6 +245,7 @@ class Index extends Controller
 
         return msg(0,'出库成功');
     }
+
 
 
 
