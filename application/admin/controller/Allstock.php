@@ -57,7 +57,7 @@ class Allstock extends Base
                 $lists[$key]['is_check'] .= 'checked';
             }
             $lists[$key]['is_check'] .=' /> </div>';
-            $lists[$key]['pid'] = ' <a>修改PID</a> ';
+            $lists[$key]['pid'] = ' <a href="'.url('stock/pidrename',['id'=>$value['id']]).'">修改PID</a> ';
             $lists[$key]['uid'] = ' <a>修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
         }

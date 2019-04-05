@@ -51,7 +51,7 @@ class Stock extends Base
     // Pid改名
     public function pidRename()
     {
-        return "this is pidRename";
+        return view();
     }
 
     
