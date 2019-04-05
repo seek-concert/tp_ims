@@ -52,12 +52,12 @@ class Allstock extends Base
         
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         foreach ($lists as $key => $value) {
-            $lists[$key]['is_check'] = '<div class="switch" data-animated="false"  data-on-label="启用" data-off-label="禁用"> <input name ="my_stock"  type="checkbox"';
+            $lists[$key]['is_check'] = '<input name ="my_stock" value="'.$value['id'].'"  type="checkbox"';
             if($value['is_check'] == 1){
                 $lists[$key]['is_check'] .= 'checked';
             }
             $lists[$key]['is_check'] .=' /> </div>';
-            $lists[$key]['pid'] = ' <a>修改PID</a> ';
+            $lists[$key]['pid'] = ' <a href="'.url('stock/pidrename',['id'=>$value['id']]).'">修改PID</a> ';
             $lists[$key]['uid'] = ' <a>修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
         }
@@ -139,13 +139,14 @@ class Allstock extends Base
             $this->error('请勿非法访问');
         }
         $info = $stock_model->where(['id'=>$id])->find();
-        if($info['status'] == 1){
+        if(!empty($info['is_check']) && $info['is_check'] == 1){
             $status = -1;
         }else{
             $status = 1;
         }
-       $stock_model->where(['id'=>$id])->setField('status',$status);
        
+       $stock_model->where(['id'=>$id])->setField('is_check',$status);
+       echo $stock_model->getlastsql();
     }
 
 
