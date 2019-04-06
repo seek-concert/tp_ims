@@ -12,15 +12,25 @@ namespace app\admin\model;
 
 use think\Model;
 
-class UserDetailModel extends Model
+class OrderModel extends Model
 {
+    // 确定链接表名
+    protected $table = 'snake_order';
 
-     // 确定链接表名
-     protected $table = 'snake_user_detail';
+    /**
+     * 获取订单列表
+     */
+    public function getAllLists($page,$limit,$where){
+        $lists = $this->where($where)->page($page,$limit)->select();
+        return objToArray($lists);
+    }
 
 
-     //获取用户某一个值
-     public function get_user_one($id,$value){
-          return $this->where(['uid'=>$id])->value($value);
-     }
+    /**
+     * 获取订单总数
+     */
+    public function getAllCount($where){
+        return $this->where($where)->count();
+    }
+
 }
