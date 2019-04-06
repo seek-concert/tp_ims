@@ -14,6 +14,7 @@ use app\admin\model\ConsumerLogModel;
 use app\admin\model\PrepaidLogModel;
 use app\admin\model\ProductModel;
 use app\admin\model\UserModel;
+use think\Db;
 
 class Personal extends Base
 {
@@ -194,9 +195,41 @@ class Personal extends Base
                 return msg(-1, '', $result);
             }
             $param['update_time'] = time();
-            $prepaidlog = new PrepaidLogModel();
-            $flag = $prepaidlog->VerifyPrepaidLog($param);
-            return json(msg($flag['code'], $flag['data'], $flag['msg']));
+            if($param['status'] == 2){
+                //开启事务
+                Db::startTrans();
+                try {
+                    //获取交易记录信息
+                    $prepaidlog = Db::name('prepaid_log')
+                        ->where(['id'=>$param['id']])
+                        ->find();
+                    //修改交易记录表
+                    $prepaidlog_update = Db::name('prepaid_log')
+                        ->where(['id'=>$param['id']])
+                        ->update($param);
+                    //修改用户账户余额
+                    $user_detail_update = Db::name('user_detail')
+                        ->where(['uid'=>$prepaidlog['user_id']])
+                        ->setInc('balance',$prepaidlog['money']);
+                    if ($prepaidlog_update && $user_detail_update) {
+                        // 提交事务
+                        Db::commit();
+                        return msg(1, url('personal/prepaidlog_management'), '验证成功');
+                    } else {
+                        // 回滚事务
+                        Db::rollback();
+                        return msg(-1, '', '验证失败');
+                    }
+                } catch (\Exception $e) {
+                    // 回滚事务
+                    Db::rollback();
+                    return msg(-2, '', '验证失败');
+                }
+            }else{
+                $prepaidlog = new PrepaidLogModel();
+                $flag = $prepaidlog->VerifyPrepaidLog($param);
+                return json(msg($flag['code'], $flag['data'], $flag['msg']));
+            }
         }
         $id = input('param.id');
         $this->assign(['id' =>$id]);

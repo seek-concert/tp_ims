@@ -100,7 +100,7 @@ class PrepaidLogModel extends Model
             return msg(1, url('personal/prepaidlog_management'), '验证成功');
 
         }catch(\Exception $e){
-            return msg(-1, '', $e->getMessage());
+            return msg(-1, '', '验证失败');
         }
     }
 
