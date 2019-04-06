@@ -9,7 +9,10 @@
 namespace app\admin\controller;
 
 
+use app\admin\model\BunledModel;
+use app\admin\model\ConsumerLogModel;
 use app\admin\model\PrepaidLogModel;
+use app\admin\model\ProductModel;
 use app\admin\model\UserModel;
 
 class Personal extends Base
@@ -210,6 +213,50 @@ class Personal extends Base
         $flag = $prepaidlog->delPrepaidLog($id);
         return json(msg($flag['code'], $flag['data'], $flag['msg']));
     }
+
+    /*
+     * 消费记录
+     */
+    public function consumerlog()
+    {
+        if (request()->isAjax()) {
+            $param = input('param.');
+            $limit = $param['pageSize'];
+            $offset = ($param['pageNumber'] - 1) * $limit;
+            $uid = session('id');
+            $bname = isset($param['bname'])?$param['bname']:'';
+            $sqlmap = [];
+            $bunled = new BunledModel();
+            //产品
+            if (!empty($bname)) {
+                $bid = $bunled->where(['bname'=>$bname])->value('id');
+                $sqlmap['bunled_id'] = ['eq', $bid];
+            }
+            $sqlmap['user_id'] = ['eq',$uid];
+            $consumerlog = new ConsumerLogModel();
+            $user = new UserModel();
+            $product = new ProductModel();
+            $selectResult = $consumerlog->getConsumerLogByWhere($sqlmap, $offset, $limit);
+            $status = config('consumer_status');
+            //拼装参数
+            foreach ($selectResult as $key => $vo) {
+                if(!empty($vo['input_time'])){
+                    $selectResult[$key]['input_time'] = date('Y-m-d H:i:s', $vo['input_time']);
+                }
+                $selectResult[$key]['bname'] = $bunled->where(['id'=>$vo['bunled_id']])->value('bname');
+                $selectResult[$key]['pname'] = $product->where(['id'=>$vo['product_id']])->value('pname');
+                $selectResult[$key]['status'] = $status[$vo['status']];
+                $selectResult[$key]['seller_id'] = $user->getOneRealName($vo['seller_id']);
+            }
+            $return['total'] = $consumerlog->getAllConsumerLog($sqlmap);  //总数据
+            $return['counts'] = $consumerlog->getConsumerLogMoney(['user_id'=>$uid,'status'=>1]);  //统计消费
+            $return['rows'] = $selectResult;
+
+            return json($return);
+        }
+        return $this->fetch();
+    }
+
 
     /**
      * 拼装操作按钮
