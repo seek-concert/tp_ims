@@ -69,4 +69,5 @@ class Base extends Controller
         $uid = implode(',', $uid);
         return $uid;
     }
+
 }

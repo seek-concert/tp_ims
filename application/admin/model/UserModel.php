@@ -146,4 +146,11 @@ class UserModel extends Model
         return $return_data;
     }
 
+    /**
+     * 获取单个用户名称
+     * @param $id
+     */
+    public function getOneRealName($id){
+       return $this->where(['id'=>$id])->value('real_name');
+    }
 }

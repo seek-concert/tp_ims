@@ -468,6 +468,56 @@ class Account extends Base
         return $stocks;
     }
 
+    /*
+     * 会员充值
+     */
+    public function vip_recharge()
+    {
+        if(request()->isPost()){
+            $param = input('param.');
+            //验证数据
+            $result = $this->validate($param, 'VipRechargeValidate');
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                return msg(-1, '', $result);
+            }
+            if($param['num'] <= 0){
+                return msg(-1, '', '请输入正整数');
+            }
+            $user_detail = new UserDetailModel();
+            $duetime = $user_detail->where(['uid'=>$param['user_id']])->value('duetime');
+            if(empty($duetime)){
+                $time = strtotime(date('Y-m-d'));
+                $times = $time+($param['num'] * 86400);
+            }else{
+                $times = $duetime+($param['num'] * 86400);
+            }
+            $flag = $user_detail->where(['uid'=>$param['user_id']])->setField('duetime',$times);
+            if($flag){
+                return msg(1, url('account/vip_recharge'), '充值成功');
+            }else{
+                return msg(-2, '', '充值失败');
+            }
+        }
+        $user = new UserModel();
+        $user_detail = new UserDetailModel();
+        $time = strtotime(date('Y-m-d'));
+        $row = $user->field('id,real_name')->select();
+        foreach ($row as $k=>$v){
+            $duetime = $user_detail->where('uid',$v['id'])->value('duetime');
+            if(empty($duetime)){
+                $times = 0;
+            }else{
+                $times = intval(($duetime-$time)/86400);
+            }
+            $row[$k]['duetime'] = $times;
+        }
+        $this->assign([
+            'row' => $row
+        ]);
+        return $this->fetch();
+    }
+
     /**
      * 拼装操作按钮
      * @param $id
