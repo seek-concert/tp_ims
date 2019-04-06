@@ -325,13 +325,9 @@ class Account extends Base
             $limit = $param['pageSize'];
             $page = $param['pageNumber'];
 
+            $where = ['user'=>$param['id'],'status'=>1];
             $stock = new StockModel();
-            $selectResult = $stock
-                ->where(['user'=>$param['id'],'status'=>1])
-                ->field('id,bunled_id,product_id')
-                ->group('product_id')
-                ->page($page,$limit)
-                ->select();
+            $selectResult = $stock->getStockGroup($page,$limit,$where,'product_id ');
             $bunled = new BunledModel();
             $product = new ProductModel();
             // 拼装参数
@@ -340,13 +336,9 @@ class Account extends Base
                 $selectResult[$key]['bname'] = $bunled->where(['id'=>$vo['bunled_id']])->value('bname');
                 $selectResult[$key]['pname'] = $product->where(['id'=>$vo['product_id']])->value('pname');
             }
-            $total = $stock
-                ->where(['user'=>$param['id'],'status'=>1])
-                ->field('id,bunled_id,product_id')
-                ->group('product_id')
-                ->count();
+            $total = $stock->getStockGroupCount($where,'product_id');
             $return['total'] = $total;  //总数据
-            $return['rows'] = $selectResult;
+            $return['rows'] = array_values($selectResult);
 
             return json($return);
         }
