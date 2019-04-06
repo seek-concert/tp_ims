@@ -58,11 +58,11 @@ class PrepaidLogModel extends Model
 
     /**
      * 统计充值
-     * @param $id
+     * @param array $where
      */
-    public function getPrepaidLogMoney($id)
+    public function getPrepaidLogMoney($where)
     {
-        return $this->where(['user_id'=>$id,'status'=>2])->count('money');
+        return $this->where($where)->sum('money');
     }
 
     /**
@@ -72,6 +72,36 @@ class PrepaidLogModel extends Model
     public function getOnePrepaidLog($id)
     {
         return $this->where('id', $id)->find();
+    }
+
+    /**
+     * 删除
+     * @param $id
+     */
+    public function delPrepaidLog($id)
+    {
+        try{
+            $this->where('id', $id)->delete();
+            return msg(1, '', '删除成功');
+
+        }catch(\Exception $e){
+            return msg(-1, '', $e->getMessage());
+        }
+    }
+
+    /**
+     * 验证
+     * @param array $param
+     */
+    public function VerifyPrepaidLog($param)
+    {
+        try{
+            $this->save($param, ['id' => $param['id']]);
+            return msg(1, url('personal/prepaidlog_management'), '验证成功');
+
+        }catch(\Exception $e){
+            return msg(-1, '', $e->getMessage());
+        }
     }
 
 }

@@ -523,7 +523,7 @@ class Account extends Base
      * @param $id
      * @return array
      */
-    private function makeButton($id,$power=0,$url='',$bid='',$pid='')
+    private function makeButton($id,$power=0,$url='')
     {
         if($power == 0){
             return [
