@@ -18,6 +18,10 @@ class ProductModel extends Model
     protected $table = 'snake_product';
 
 
+    /**
+     * 查询产品id
+     * @param $id
+     */
     public function get_product_name($id = 0){
         
         if($id == 0){
@@ -27,6 +31,10 @@ class ProductModel extends Model
         return $this->where(['id'=>$id])->value('pname');
         
     }
+    /**
+     * 查询pid
+     * @param $id
+     */
     public function get_product_id($id = 0){
         if($id == 0){
             return false;
@@ -34,26 +42,45 @@ class ProductModel extends Model
         return $this->where(['id'=>$id])->value('pid');
         
     }
-
+    /**
+     * 更新
+     * @param $id
+     */
     public function update_data($where=[],$data=[]){
        return  $this->where($where)->update($data);
     }
 
+    /**
+     * 查询所有
+     * @param $id
+     */
     public function getAllProduct($page,$limit,$where){
         $obj_lists  = $this->where($where)->page($page,$limit)->select();    
         return objToArray($obj_lists);
     }
 
+    /**
+     * 统计查询
+     * @param $id
+     */
     public function getAllProductCount($where=[]){
         $obj_lists  = $this->where($where)->count();
         return $obj_lists;
     }
 
+    /**
+     * 查询单条数据
+     * @param $id
+     */
     public function getProductInfo($where){
         $obj_info = $this->where($where)->find();
         return objToArray($obj_info);
     }
 
+    /**
+     * 删除数据
+     * @param $id
+     */
     public function del($where = []){
         return $this->where($where)->delete();
     }
