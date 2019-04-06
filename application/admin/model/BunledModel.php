@@ -17,7 +17,10 @@ class BunledModel extends Model
     // 确定链接表名
     protected $table = 'snake_bunled';
 
-
+    /**
+     * 查询bname
+     * @param $id
+     */
     public function get_bunled_name($id = 0){
         if($id == 0){
             return false;
@@ -26,6 +29,10 @@ class BunledModel extends Model
         
     }
 
+    /**
+     * 查询bid
+     * @param $id
+     */
     public function get_bunled_id($id = 0){
         if($id == 0){
             return false;
@@ -34,10 +41,18 @@ class BunledModel extends Model
         
     }
 
+    /**
+     * 更新
+     * @param $id
+     */
     public function update_data($where,$data){
         return $this->where($where)->update($data);
     }
 
+    /**
+     * 查询ID列
+     * @param $id
+     */
     public function get_like_name($where){
         return $this->where($where)->column('id');
     }

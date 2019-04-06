@@ -146,4 +146,22 @@ class UserModel extends Model
         return $return_data;
     }
 
+    /**
+     * 根据ID获取用户某条信息
+     * @param array $param
+     */
+    public function get_user_one_data($id,$value){
+        return $this->where(['id'=>$id])->value($value);
+    }
+
+
+     /**
+     * 根据ID获取子账户
+     * @param array $param
+     */
+    public function get_child_lists($id){
+        $user_lists = $this->where(['pid'=>$id])->column('user_name','id');
+        
+        return objToArray($user_lists);
+    }
 }

@@ -59,13 +59,13 @@
                             </span>
                         </div>
                         <label>状态：</label>
-                        <select name="status" class="form-control" id="">
-                            <option>所有</option>
-                            <option>未使用</option>
-                            <option>使用中</option>
-                            <option>发布中</option>
-                            <option>交易失败</option>
-                            <option>已出库</option>
+                        <select name="status" class="form-control" id="status">
+                            <option >所有</option>
+                            <option value="1">未使用</option>
+                            <option value="2">使用中</option>
+                            <option value="3">发布中</option>
+                            <option value="-1">交易失败</option>
+                            <option value="4">已出库</option>
                         </select>
                     </div>
                   
@@ -210,6 +210,7 @@
                     input_time_end:$('#input_time_end').val(),
                     out_time_start:$('#out_time_start').val(),
                     out_time_end:$('#out_time_end').val(),
+                    status:$('#status').val(),
                 };
                 return param;
             },
