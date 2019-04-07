@@ -1,8 +1,6 @@
 <?php
 /*========================【库存接口】===========================*/
 namespace app\api\controller;
-use app\api\model\BunledModel;
-use app\api\model\ProductModel;
 use app\api\model\StockModel;
 use app\api\model\UserModel;
 use app\admin\model\ProductModel;
