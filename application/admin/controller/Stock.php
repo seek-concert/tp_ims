@@ -72,12 +72,11 @@ class Stock extends Base
         //实例化模型
         $stock_model = new StockModel();
         $user_model = new UserModel();
-        $all_price = $stock_model->max('tprice');
-        $sqlmap = [];
         //获取所有子用户列表
         $id = session('id');
+        $uid = $this->get_user($id);
+        $all_price = $stock_model->where('input_user','in',$uid)->sum('tprice');
         $child_lists = $user_model->get_child_lists($id);
-        
         $return_data = [];
         $return_data['all_price'] = $all_price;
         $return_data['child_lists'] = $child_lists;
