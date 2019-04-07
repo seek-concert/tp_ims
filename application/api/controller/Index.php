@@ -27,6 +27,7 @@ class Index extends Controller
     //登陆
     public function login()
     {
+       //检测协议
         if(false==$this->is_https){
             return msg(-1,'当前接口暂不支持此协议');
         }
@@ -103,6 +104,13 @@ class Index extends Controller
             if($token['power']==2){
                 return msg(1,'暂无入库权限');
             }
+        }
+        //检测权限
+        $contrl_name = strtolower(Request()->controller());
+        $action_name = strtolower(Request()->action());
+        $result = check_node($token,$contrl_name,$action_name);
+        if(false==$result){
+            return msg(-1,'暂无权限');
         }
         //数据过滤
         $data = [];
@@ -198,7 +206,13 @@ class Index extends Controller
                 return msg(0,'暂无出库权限');
             }
         }
-
+        //检测权限
+        $contrl_name = strtolower(Request()->controller());
+        $action_name = strtolower(Request()->action());
+        $result = check_node($token,$contrl_name,$action_name);
+        if(false==$result){
+            return msg(-1,'暂无权限');
+        }
         //数据过滤
         $where = [];
         $where['bid'] = stripTags(input('post.bid/s'));
@@ -286,6 +300,13 @@ class Index extends Controller
             if($token['power']==1){
                 return msg(1,'暂无出库权限');
             }
+        }
+        //检测权限
+        $contrl_name = strtolower(Request()->controller());
+        $action_name = strtolower(Request()->action());
+        $result = check_node($token,$contrl_name,$action_name);
+        if(false==$result){
+            return msg(-1,'暂无权限');
         }
         //数据过滤
         $where = [];

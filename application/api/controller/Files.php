@@ -84,6 +84,13 @@ class Files extends Controller
         if(!$token){
             return msg(1,'token令牌不存在');
         }
+        //检测权限
+        $contrl_name = strtolower(Request()->controller());
+        $action_name = strtolower(Request()->action());
+        $result = check_node($token,$contrl_name,$action_name);
+        if(false==$result){
+            return msg(-1,'暂无权限');
+        }
         //数据过滤
         $bid = stripTags(input('post.bid/s'));
         //获取应用ID
@@ -137,6 +144,13 @@ class Files extends Controller
         if(!$token){
             return msg(1,'token令牌不存在');
         }
+        //检测权限
+        $contrl_name = strtolower(Request()->controller());
+        $action_name = strtolower(Request()->action());
+        $result = check_node($token,$contrl_name,$action_name);
+        if(false==$result){
+            return msg(-1,'暂无权限');
+        }
         //数据过滤
         $data = [];
         $data['pname'] = stripTags(input('post.name/s'));
@@ -170,6 +184,13 @@ class Files extends Controller
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
             return msg(1,'token令牌不存在');
+        }
+        //检测权限
+        $contrl_name = strtolower(Request()->controller());
+        $action_name = strtolower(Request()->action());
+        $result = check_node($token,$contrl_name,$action_name);
+        if(false==$result){
+            return msg(-1,'暂无权限');
         }
         //数据过滤
         $where = [];
