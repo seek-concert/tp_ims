@@ -114,4 +114,46 @@ class Login extends Controller
 
         $this->redirect(url('index'));
     }
+
+    //修改密码
+    public function edit_password()
+    {
+        if (request()->isPost()) {
+            $param = input('post.');
+            //验证数据
+            $result = $this->validate($param, 'CipherValidate');
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                return msg(-1, '', $result);
+            }
+            $id = session('id');
+            $param['used'] = md5($param['used']);
+            $param['password'] = md5($param['password']);
+            $user = new UserModel();
+            //获取信息
+            $users = $user
+                ->where([
+                    'id' => $id
+                ])
+                ->find();
+            //验证旧密码是否正确
+            if ($users['password'] != $param['used']) {
+                return msg(-1, '', '原密码错误！');
+            }
+            //修改密码
+            $flag = $user
+                ->where([
+                    'id' => $id
+                ])
+                ->setField([
+                    'password' => $param['password'],
+                    'update_time' => time()
+                ]);
+            if ($flag) {
+                return msg(1, url('login/loginOut'), '修改成功');
+            } else {
+                return msg(-1, '', '修改失败');
+            }
+        }
+    }
 }
