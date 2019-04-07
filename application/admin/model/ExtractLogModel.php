@@ -42,7 +42,7 @@ class ExtractLogModel extends Model
      * @param $offset
      * @param $limit
      */
-    public function getExtractLogModelByWhere($where, $offset, $limit)
+    public function getExtractLogByWhere($where, $offset, $limit)
     {
         return $this->where($where)->limit($offset, $limit)->order('id desc')->select();
     }
@@ -51,17 +51,23 @@ class ExtractLogModel extends Model
      * 根据搜索条件获取所有的数量
      * @param $where
      */
-    public function getAllExtractLogModel($where)
+    public function getAllExtractLog($where)
     {
         return $this->where($where)->count();
     }
 
     /**
-     * 统计充值
-     * @param array $where
+     * 删除
+     * @param $id
      */
-    public function getExtractLogModelMoney($where)
+    public function delExtractLog($id)
     {
-        return $this->where($where)->sum('price');
+        try{
+            $this->where('id', $id)->delete();
+            return msg(1, '', '删除成功');
+
+        }catch(\Exception $e){
+            return msg(-1, '', $e->getMessage());
+        }
     }
 }

@@ -1,17 +1,15 @@
 <?php
-/* +----------------------------------------------------------------------
-// | 用户模型
+/*+----------------------------------------------------------------------
+// | 应用模型
 // +----------------------------------------------------------------------*/
 namespace app\api\model;
-
 use think\Model;
 
-class UserModel extends Model
+class BunledModel extends Model
 {
-    protected $table = 'snake_user';
+    protected $table = 'snake_bunled';
     protected $field=true;
     protected $type = [
 
     ];
-
 }

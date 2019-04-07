@@ -12,11 +12,11 @@ namespace app\admin\validate;
 
 use think\Validate;
 
-class PrepaidValidate extends Validate
+class ExtractLogVerifyValidate extends Validate
 {
     protected $rule = [
-        ['money', 'require|confirm', '充值金额不能为空|充值金额与确认金额不一致'],
-        ['btc', 'require', '付款地址不能为空']
+        ['remark', 'require', '备注不能为空'],
+        ['status', 'require', '状态不能为空']
     ];
 
 }

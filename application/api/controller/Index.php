@@ -1,6 +1,8 @@
 <?php
 /*========================【库存接口】===========================*/
 namespace app\api\controller;
+use app\api\model\BunledModel;
+use app\api\model\ProductModel;
 use app\api\model\StockModel;
 use app\api\model\UserModel;
 use app\admin\model\ProductModel;
@@ -18,10 +20,10 @@ class Index extends Controller
     public function __construct()
     {
         parent::__construct();
-//        $is_https = is_https();
-//        if(false===$is_https){
-//            $this->is_https=false;
-//        }
+        $is_https = is_https();
+        if(false===$is_https){
+            $this->is_https=false;
+        }
     }
 
     //登陆
@@ -91,7 +93,6 @@ class Index extends Controller
         }
         //token检测
         $token = stripTags(input('post.token/s'));
-//        $token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C3F';
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
             return msg(1,'token令牌不存在');
@@ -107,30 +108,61 @@ class Index extends Controller
         }
         //数据过滤
         $data = [];
-        $data['bid'] = stripTags(input('post.bid/s'));
-        $data['pname'] = stripTags(input('post.pname/s'));
-        $data['pid'] = stripTags(input('post.pid/s'));
+        //应用
+        $bid = stripTags(input('post.bid/s'));
+        $bname = input('post.bname')?stripTags(input('post.bname/s')):'';
+        //产品档位
+        $pname = stripTags(input('post.pname/s'));
+        $pid = stripTags(input('post.pid/s'));
+
+        $data['account'] = input('post.account')?stripTags(input('post.account/s')):'';
         $data['tid'] = stripTags(input('post.tid/s'));
         $data['tprice'] = stripTags(input('post.tprice/s'));
         $data['tcurrency'] = stripTags(input('post.tcurrency/s'));
         $data['tdate'] = stripTags(input('post.tdate/s'));
         $data['receipt'] = stripTags(input('post.receipt/s'));
+        $data['input_user'] = $token['id'];
         $data['input_time'] = time();
-
-//        $data['bid'] = 1;
-//        $data['pname'] = 'test';
-//        $data['pid'] = 2;
-//        $data['tid'] = 3;
-//        $data['tprice'] = '12.50';
-//        $data['tcurrency'] = '111';
-//        $data['tdate'] = time();
-//        $data['receipt'] = '2350';
-        //入库
-        $rs = model('StockModel')->save($data);
-        if(!$rs){
-            return msg(1,'入库失败');
+        $data['status'] = 1;
+        Db::startTrans();
+        try{
+            //获取应用ID
+            $bunled_info = BunledModel::where(['bid'=>$bid])->find();
+            if(!$bunled_info){
+                if(!$bname){
+                    throw new \Exception('请传入应用名称',404404);
+                }
+                $insert_bunled =  Db::name('bunled')->insert(['bid'=>$bid,'bname'=>$bname]);
+                if(!$insert_bunled){
+                    throw new \Exception('暂无应用数据',404404);
+                }
+            }
+            $data['bunled_id'] = isset($bunled_info['id'])?$bunled_info['id']:Db::name('bunled')->getLastInsID();
+            //获取产品ID（档位ID）
+            $product_info = ProductModel::where(['pid'=>$pid])->find();
+            if(!$product_info){
+                $insert_product =  Db::name('product')->insert(['pid'=>$pid,'pname'=>$pname]);
+                if(!$insert_product){
+                    throw new \Exception('暂无档位数据',404404);
+                }
+            }
+            $data['product_id'] = isset($product_info['id'])?$product_info['id']:Db::name('product')->getLastInsID();
+            //取得面值与入库价格
+            $data['price'] = bcmul($data['tprice'],6.7,2);
+            //入库
+            $rs = model('StockModel')->save($data);
+            if(!$rs){
+                return msg(1,'入库失败');
+            }
+            $errno = 0;
+            $txt = '入库成功';
+            Db::commit();
+        }catch (\Exception $e){
+            $errno = 1;
+            $txt = $e->getCode()==404404?$e->getMessage():'网络异常，请稍后再试！';
+            Db::rollback();
         }
-        return msg(0,'入库成功');
+        return msg($errno,$txt);
     }
 
 

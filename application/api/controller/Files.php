@@ -1,6 +1,9 @@
 <?php
 /*========================【档位接口】===========================*/
 namespace app\api\controller;
+use app\api\model\BunledModel;
+use app\api\model\ProductModel;
+use app\api\model\StockModel;
 use app\api\model\UserModel;
 use think\Controller;
 
@@ -13,10 +16,10 @@ class Files extends Controller
     public function __construct()
     {
         parent::__construct();
-//        $is_https = is_https();
-//        if(false===$is_https){
-//            $this->is_https=false;
-//        }
+        $is_https = is_https();
+        if(false===$is_https){
+            $this->is_https=false;
+        }
     }
 
     //登陆
@@ -77,20 +80,40 @@ class Files extends Controller
         }
         //token检测
         $token = stripTags(input('post.token/s'));
-//        $token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C3F';
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
             return msg(1,'token令牌不存在');
         }
-        //查询档位
-
+        //数据过滤
+        $bid = stripTags(input('post.bid/s'));
+        //获取应用ID
+        $bunled_info = BunledModel::where(['bid'=>$bid])->find();
+        if(!$bunled_info){
+            return msg(1,'获取应用失败');
+        }
+        //获取所有的PID与档位名称
+         $product_info = StockModel::field(['id','bunled_id','product_id'])->with(['ProductModel'])->where(['bunled_id'=>$bunled_info['id']])->select();
+         if(!$product_info){
+             return msg(1,'获取档位失败');
+         }
+        $new_arr = [];
+         $i=0;
+         $repeat_arr = [];
+        foreach(objToArray($product_info) as $k=>$v){
+            if(!in_array($v['product_model']['id'],array_unique($repeat_arr))){
+                $new_arr[$i]['id'] = $v['product_model']['id'];
+                $new_arr[$i]['name'] = $v['product_model']['pname'];
+                $new_arr[$i]['identifer'] = $v['product_model']['pid'];
+            }
+            $repeat_arr[$i] = $v['product_model']['id'];
+           $i++;
+        }
 
         $errno = 0;
         $txt = '查询成功';
-        $products = '';
+        $products = json_encode($new_arr,true);
 
         return json(compact('errno','txt','products'));
-
     }
 
     //档位修改
@@ -101,7 +124,7 @@ class Files extends Controller
         //数据检测
         $rule = [
             ['token', 'require', '请输入token令牌!'],
-            ['id', 'require', '请填写档位ID!'],
+            ['id', 'require', '请填写档位记录ID!'],
             ['name', 'require', '请填写档位名称!']
         ];
         $result = $this->validate(input('post.'), $rule);
@@ -110,17 +133,19 @@ class Files extends Controller
         }
         //token检测
         $token = stripTags(input('post.token/s'));
-//        $token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C3F';
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
             return msg(1,'token令牌不存在');
         }
+        //数据过滤
+        $data = [];
+        $data['pname'] = stripTags(input('post.name/s'));
+        $where['id'] = stripTags(input('post.id/s'));
         //修改档位
-        $rs = 1;
+        $rs = model('ProductModel')->save($data,$where);
         if(!$rs){
             return msg(1,'修改失败');
         }
-
 
         return msg(0,'修改成功');
 
@@ -142,13 +167,15 @@ class Files extends Controller
         }
         //token检测
         $token = stripTags(input('post.token/s'));
-//        $token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C3F';
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
             return msg(1,'token令牌不存在');
         }
+        //数据过滤
+        $where = [];
+        $where['id'] = stripTags(input('post.id/s'));
         //删除档位
-        $rs = 1;
+        $rs = ProductModel::where($where)->delete();
         if(!$rs){
             return msg(1,'删除失败');
         }
