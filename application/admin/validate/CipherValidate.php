@@ -16,7 +16,7 @@ class CipherValidate extends Validate
 {
     protected $rule = [
         ['used', 'require', '原密码不能为空'],
-        ['password', 'require|confirm', '新密码不能为空|新支付密码与确认密码不一致']
+        ['password', 'require|confirm', '新密码不能为空|新密码与确认密码不一致']
     ];
 
 }

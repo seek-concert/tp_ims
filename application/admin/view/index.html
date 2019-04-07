@@ -38,6 +38,9 @@
                         </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
                             <li>
+                                <a href="javascript:edit_password()">修改密码</a>
+                            </li>
+                            <li>
                                 <a href="{:url('admin/login/loginOut')}">安全退出</a>
                             </li>
                         </ul>
@@ -218,6 +221,44 @@
     <!--右侧边栏结束-->
     <!--mini聊天窗口开始-->
 </div>
+<!-- 修改密码 -->
+<div class="modal fade" id="edit_password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title-kallocation">密码修改</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal m-t" id="edit_passwordForm" method="post" action="">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">原密码：</label>
+                        <div class="input-group col-sm-4">
+                            <input id="used" type="text" class="form-control" name="used" required="" aria-required="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">新密码：</label>
+                        <div class="input-group col-sm-4">
+                            <input id="password" type="text" class="form-control" name="password" required="" aria-required="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">确认密码：</label>
+                        <div class="input-group col-sm-4">
+                            <input id="password_confirm" type="text" class="form-control" name="password_confirm" required="" aria-required="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-6">
+                            <button class="btn btn-primary" type="button" onclick="password_submit()">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="__JS__/jquery.min.js?v=2.1.4"></script>
 <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
 <script src="__JS__/plugins/metisMenu/jquery.metisMenu.js"></script>
@@ -227,6 +268,33 @@
 <!--<script type="text/javascript" src="__JS__/contabs.min.js"></script>-->
 <script type="text/javascript" src="__JS__/contabs.js"></script>
 <script src="__JS__/plugins/pace/pace.min.js"></script>
+<script type="text/javascript">
+    //修改密码--模态框
+    function edit_password() {
+        //显示模态框
+        $('#edit_password').modal('show');
+    }
+    //修改密码 -- 提交
+    function password_submit() {
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "{:url('admin/login/edit_password')}",
+            data: $('#edit_passwordForm').serialize(),// 你的formid
+            async: false,
+            success: function(data) {
+                if(data.code == 1){
+                    layer.alert(data.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                        //关闭模态框
+                        $('#stockallocation').modal('hide');
+                        window.location.href = data.data;
+                    });
+                }else{
+                    layer.alert(data.msg, {title: '友情提示', icon: 2});
+                }
+            }
+        });
+    }
+</script>
 </body>
-
 </html>
