@@ -14,6 +14,7 @@ use app\admin\model\ConsumerLogModel;
 use app\admin\model\ExtractLogModel;
 use app\admin\model\PrepaidLogModel;
 use app\admin\model\ProductModel;
+use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
 use think\Db;
 
@@ -33,6 +34,9 @@ class Personal extends Base
             $flag = $prepaid->insertLog($param);
             return json(msg($flag['code'], $flag['data'], $flag['msg']));
         }
+        $user = new UserDetailModel();
+        $btc = $user->where(['uid'=>1])->value('btc');
+        $this->assign('btc',$btc);
         return $this->fetch();
     }
 

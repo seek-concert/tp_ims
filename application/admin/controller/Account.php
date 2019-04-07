@@ -518,6 +518,26 @@ class Account extends Base
         return $this->fetch();
     }
 
+    /*
+     * btc地址修改
+     */
+    public function btc()
+    {
+        $user_detail = new UserDetailModel();
+        if(request()->isPost()){
+            $param = input('param.');
+            $flag = $user_detail->where(['uid'=>1])->setField('btc',$param['btc']);
+            if($flag){
+                return msg(1,'','修改成功');
+            }else{
+                return msg(-1,'','修改失败');
+            }
+        }
+        $btc = $user_detail->where(['uid'=>1])->value('btc');
+        $this->assign('btc',$btc);
+        return $this->fetch();
+    }
+
     /**
      * 拼装操作按钮
      * @param $id
