@@ -346,18 +346,20 @@ class Buysell extends Base
         $consumer_sql['remark'] = $note;
         $consumer_sql['input_time'] = time();
         $consumer_sql['status'] = 1;
+
         //开启事务
         Db::startTrans();
         try {
             $edit_order_status = Db::name('order')->where(['id'=>$order_id])->update($sqlmap);
-            $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid]);
+            $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid,'tprice'=>$order_info['price']]);
             
             $insert_consumer = Db::name('consumer_log')->insert($consumer_sql);
            
-            $seller_detail_edit = Db::name('user_detail')->where(['id'=>$order_info['user_id']])->setInc('balance',$real_price);
+            $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->setInc('balance',$real_price);
           
-            $buyer_detail_edit = Db::name('user_detail')->where(['id'=>$userid])->setDec('balance',$order_info['price']*$buy_num);
-            if ($edit_order_status && $edit_stock_status && $insert_consumer && $seller_detail_edit && $buyer_detail_edit) {
+            $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>$userid])->setDec('balance',$order_info['price']*$buy_num);
+            $admin_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
+            if ($edit_order_status && $edit_stock_status && $insert_consumer && $seller_detail_edit && $buyer_detail_edit && $admin_detail_edit) {
                 // 提交事务
                 Db::commit();
                return msg(1, '', '交易成功');
@@ -373,4 +375,5 @@ class Buysell extends Base
         }
 
     }
+    
 }

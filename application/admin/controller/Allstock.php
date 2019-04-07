@@ -35,9 +35,9 @@ class Allstock extends Base
         $product_model = new ProductModel();
         $param = input('');
         $input_time_start = isset($param['input_time_start'])?strtotime($param['input_time_start']):'';
-        $input_time_end = isset($param['input_time_end'])?strtotime($param['input_time_end'].' 23:59:59'):'';
+        $input_time_end = isset($param['input_time_end'])?strtotime($param['input_time_end']):'';
         $out_time_start = isset($param['out_time_start'])?strtotime($param['out_time_start']):'';
-        $out_time_end = isset($param['out_time_end'])?strtotime($param['out_time_end'].' 23:59:59'):'';
+        $out_time_end = isset($param['out_time_end'])?strtotime($param['out_time_end']):'';
         $status = isset($param['status'])?(int)$param['status']:0;
         $sqlmap = [];
         //查询某个入库时间之后
@@ -68,7 +68,6 @@ class Allstock extends Base
         if(!empty($status)){
             $sqlmap['status'] = $status;
         }
-        
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         //整理返回数据
         foreach ($lists as $key => $value) {
