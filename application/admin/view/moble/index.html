@@ -6,6 +6,7 @@
     <title>14码列表</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__CSS__/bootstrapSwitch.css" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
     <link href="__CSS__/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="__CSS__/animate.min.css" rel="stylesheet">
@@ -34,6 +35,9 @@
                     <label>归属人：</label>
                     <select name="user_id" class="form-control" id="user_id">
                         <option value="">请选择！</option>
+                        {foreach $user as $v}
+                            <option value="{$v['id']}">{$v['real_name']}</option>
+                        {/foreach}
                     </select>
                     <div class="form-group">
                         <button class="btn btn-primary" type="button" style="margin-top:5px" id="search"><strong>搜 索</strong>
@@ -54,7 +58,7 @@
                         <th data-field="model_number">设备型号</th>
                         <th data-field="product_version">系统版本</th>
                         <th data-field="build_version">产品版本</th>
-                        <th data-field="status">设备状态</th>
+                        <th data-field="is_status">设备状态</th>
                         <th data-field="operate">操作</th>
                         </thead>
                     </table>
@@ -76,6 +80,7 @@
 <script src="__JS__/plugins/layer/laydate/laydate.js"></script>
 <script src="__JS__/plugins/sweetalert/sweetalert.min.js"></script>
 <script src="__JS__/plugins/layer/layer.min.js"></script>
+<script src="__JS__/bootstrapSwitch.js"></script>
 <script type="text/javascript">
     function initTable() {
         //先销毁表格
@@ -108,6 +113,7 @@
                     window.location.reload();
                 }
                 layer.msg("加载成功", {time : 1000});
+                get_swich();
             },
             onLoadError: function(){  //加载失败时执行
                 layer.msg("加载数据失败");
@@ -140,6 +146,25 @@
 
             layer.close(index);
         })
+
+    }
+
+    function get_swich(){
+
+        $("[name ='my_stock']").bootstrapSwitch({
+            onText : "启用",      // 设置ON文本  
+            offText : "禁用",    // 设置OFF文本  
+            onColor : "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
+            offColor : "danger",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
+            size : "mini",    // 设置控件大小,从小到大  (mini/small/normal/large)  
+            handleWidth:"35",//设置控件宽度
+            // state:false,
+            // 当开关状态改变时触发  
+            onSwitchChange : function(event, state) {
+                $.post('{:url("get_check")}',{id:$(this).val()});
+            }
+        });
+        $("[name ='my_stock']:checked").bootstrapSwitch('state',true);
 
     }
 </script>

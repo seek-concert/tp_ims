@@ -19,6 +19,8 @@ class Moble extends Base
      */
     public function index()
     {
+        $user = new UserModel();
+        $id = session('id');
         if (request()->isAjax()) {
             $param = input('param.');
             $limit = $param['pageSize'];
@@ -28,21 +30,53 @@ class Moble extends Base
                 $where['user_id'] = ['eq', $param['user_id']];
             }
             $moble = new MobleModel();
-            $user = new UserModel();
+            if($id != 1){
+                $where['user_id'] = ['eq',$id];
+            }
             $selectResult = $moble->getMobleByWhere($where, $offset, $limit);
             // 拼装参数
             foreach ($selectResult as $key => $vo) {
                 $selectResult[$key]['user_id'] = $user->getOneRealName($vo['user_id']);
                 $selectResult[$key]['input_time'] = date('Y-m-d H:i:s',$vo['input_time']);
                 $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id']));
+                $selectResult[$key]['is_status'] = '<input name="my_stock" value="'.$vo['id'].'" type="checkbox"';
+                if($vo['status'] == 1){
+                    $selectResult[$key]['is_status'] .= 'checked';
+                }
+                $selectResult[$key]['is_status'] .=' /> </div>';
             }
             $return['total'] = $moble->getAllMoble($where);  //总数据
             $return['rows'] = $selectResult;
             return json($return);
         }
-        $id = session('id');
-        $this->assign('id', $id);
+        $user_id = $user->field('id,real_name')->select();
+        $this->assign([
+            'id' => $id,
+            'user' => $user_id
+        ]);
         return $this->fetch();
+    }
+
+    /**
+     *  function 是否开启检测
+     *
+     *
+     */
+    public function get_check(){
+        $moble_model = new MobleModel();
+        $param = input('');
+        $id = isset($param['id'])?$param['id']:0;
+        if($id == 0){
+            $this->error('请勿非法访问');
+        }
+        $info = $moble_model->where(['id'=>$id])->find();
+        if(!empty($info['status']) && $info['status'] == 1){
+            $status = -1;
+        }else{
+            $status = 1;
+        }
+
+        $moble_model->where(['id'=>$id])->setField('status',$status);
     }
 
     /*
