@@ -51,7 +51,7 @@ class PrepaidLogModel extends Model
      * 根据搜索条件获取所有的数量
      * @param $where
      */
-    public function getAllPrepaidLog($where)
+    public function getAllPrepaidLog($where=[])
     {
         return $this->where($where)->count();
     }
@@ -60,7 +60,7 @@ class PrepaidLogModel extends Model
      * 统计充值
      * @param array $where
      */
-    public function getPrepaidLogMoney($where)
+    public function getPrepaidLogMoney($where=[])
     {
         return $this->where($where)->sum('money');
     }
@@ -69,7 +69,7 @@ class PrepaidLogModel extends Model
      * 根据id获取信息
      * @param $id
      */
-    public function getOnePrepaidLog($id)
+    public function getOnePrepaidLog($id = 0)
     {
         return $this->where('id', $id)->find();
     }

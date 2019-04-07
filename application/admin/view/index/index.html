@@ -88,23 +88,23 @@
                 <tbody>
                     <tr>
                         <td>库存总量</td>
-                        <td>Bangalore</td>
+                        <td>{$all_stock}</td>
                     </tr>
                     <tr>
                         <td>未使用</td>
-                        <td>Mumbai</td>
+                        <td>{$not_use_stock}</td>
                     </tr>
                     <tr>
                         <td>发布中</td>
-                        <td>Mumbai</td>
+                        <td>{$in_out_stock}</td>
                     </tr>
                     <tr>
                         <td>已出库</td>
-                        <td>Mumbai</td>
+                        <td>{$out_stock}</td>
                     </tr>
                     <tr>
                         <td>使用中</td>
-                        <td>Mumbai</td>
+                        <td>{$in_use_stock}</td>
                     </tr>
                 </tbody>
             </table>
@@ -120,19 +120,19 @@
                 <tbody>
                     <tr>
                         <td>累计充值</td>
-                        <td>Bangalore</td>
+                        <td>{$all_prepaid}</td>
                     </tr>
                     <tr>
                         <td>累计消费</td>
-                        <td>Mumbai</td>
+                        <td>{$consumer_count}</td>
                     </tr>
                     <tr>
                         <td>用户余额</td>
-                        <td>Mumbai</td>
+                        <td>{$money}</td>
                     </tr>
                     <tr>
                         <td>冻结资金</td>
-                        <td>Mumbai</td>
+                        <td>{$lock_money}</td>
                     </tr>
                 </tbody>
             </table>
@@ -148,15 +148,15 @@
                 <tbody>
                     <tr>
                         <td>订单总数</td>
-                        <td>Bangalore</td>
+                        <td>{$all_order}</td>
                     </tr>
                     <tr>
                         <td>购买次数</td>
-                        <td>Mumbai</td>
+                        <td>{$buy_count}</td>
                     </tr>
                     <tr>
                         <td>完成订单</td>
-                        <td>Mumbai</td>
+                        <td>{$succ_order}</td>
                     </tr>
                 </tbody>
             </table>
@@ -176,20 +176,20 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>充值单数</td>
-                            <td>Bangalore</td>
+                            <td>充值金额</td>
+                            <td>￥{$admin_all_prepaid}</td>
                         </tr>
                         <tr>
-                            <td>等待审核</td>
-                            <td>Mumbai</td>
+                            <td>审核金额</td>
+                            <td>￥{$admin_wait_prepaid}</td>
                         </tr>
                         <tr>
-                            <td>审核完成</td>
-                            <td>Mumbai</td>
+                            <td>审核完成金额</td>
+                            <td>￥{$admin_succ_prepaid}</td>
                         </tr>
                         <tr>
-                            <td>累计消费</td>
-                            <td>Mumbai</td>
+                            <td>累计消费金额</td>
+                            <td>￥{$admin_pay_prepaid}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -205,20 +205,17 @@
                     <tbody>
                         <tr>
                             <td>总充值</td>
-                            <td>Bangalore</td>
+                            <td>{$admin_pay_count}单</td>
                         </tr>
                         <tr>
                             <td>等待验证</td>
-                            <td>Mumbai</td>
+                            <td>{$admin_wite_count}单</td>
                         </tr>
                         <tr>
                             <td>充值成功</td>
-                            <td>Mumbai</td>
+                            <td>{$admin_succ_count}单</td>
                         </tr>
-                        <tr>
-                            <td>总金额</td>
-                            <td>Mumbai</td>
-                        </tr>
+                        
 
                     </tbody>
                 </table>
@@ -234,19 +231,19 @@
                     <tbody>
                         <tr>
                             <td>出库手续费</td>
-                            <td>Bangalore</td>
+                            <td>{$admin_out_service}</td>
                         </tr>
                         <tr>
                             <td>交易市场手续费</td>
-                            <td>Mumbai</td>
+                            <td>{$admin_buy_service}</td>
                         </tr>
                         <tr>
                             <td>用户余额</td>
-                            <td>Mumbai</td>
+                            <td>{$admin_all_money}</td>
                         </tr>
                         <tr>
                             <td>冻结资金</td>
-                            <td>Mumbai</td>
+                            <td>{$admin_lock_money}</td>
                         </tr>
 
                     </tbody>
