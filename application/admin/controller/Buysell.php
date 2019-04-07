@@ -85,7 +85,6 @@ class Buysell extends Base
         //查找相关库存--应用名称
         $where['input_user'] = ['in',$uid];
         $where['status'] = ['eq',1];
-        $where['user'] = ['eq',0];
         $stocks = $this->stock_model ->where($where) ->field('bunled_id') ->group('bunled_id') ->select();
         $bunled = new BunledModel();
         foreach ($stocks as $k=>$v){
