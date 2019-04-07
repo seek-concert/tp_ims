@@ -59,7 +59,7 @@ class Login extends Controller
         $roleModel = new RoleModel();
         $info = $roleModel->getRoleInfo($hasUser['role_id']);
 
-        session('username', $userName);
+        session('username', $hasUser['real_name']);
         session('id', $hasUser['id']);
         session('role', $info['role_name']);  // 角色名
         session('rule', $info['rule']);  // 角色节点
