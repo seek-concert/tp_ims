@@ -110,7 +110,7 @@ class RoleModel extends Model
     // 获取所有的角色信息
     public function getRole()
     {
-        return $this->select();
+        return $this->where('id','>',1)->select();
     }
 
     // 获取角色的权限节点
