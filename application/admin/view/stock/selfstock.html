@@ -29,7 +29,36 @@
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
                     <div class="form-group">
-                        <label>应用名称：</label>
+                
+                        <select name="out_user" id="out_user" class="form-control" id="">
+                            <option value="">出库人</option>
+                            {foreach $child_lists as $k => $v}
+                                <option value="{$k}">{$v}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                
+                        <select name="input_user" id="input_user" class="form-control" id="">
+                            <option value="">入库人</option>
+                            {foreach $child_lists as $k => $v}
+                                <option value="{$k}">{$v}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                
+                        <select name="status" id="status" class="form-control" id="">
+                            <option value="">选择库存状态</option>
+                            <option value="1">未使用</option>
+                            <option value="3">发布中</option>
+                            <option value="2">使用中</option>
+                            <option value="4">已出库</option>
+                            <option value="-1">出库失败</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        
                         <input type="text" class="form-control" id="pname" name="pname">
                     </div>
                     <div class="form-group">
@@ -45,34 +74,29 @@
                     <table id="cusTable">
                         <thead>
                         <th data-field="id">ID</th>
-                        <th data-field="bname">应用名称</th>
-                        <th data-field="pname">档位</th>
-                        <th data-field="status">状态</th>
-                        <th data-field="count">剩余数量</th>
+                        <th data-field="bname">库存名称</th>
+                        <th data-field="input_time">入库时间</th>
+                        <th data-field="out_time">出库时间</th>
+                        <th data-field="input_user">入库人</th>
+                        <th data-field="out_user">出库人</th>
+                        <th data-field="price">面值</th>
+                        <th data-field="buy_price">购买价格</th>
+                        <th data-field="tprice">入库价格</th>
+                        <th data-field="status">库存状态</th>
+                        <th data-field="pay_status">充值状态</th>
                         </thead>
                     </table>
                 </div>
             </div>
+            入库总价格<font color="red">￥{$all_price}</font>
             <!-- End Example Pagination -->
         </div>
     </div>
 </div>
+
 <!-- End Panel Other -->
 </div>
-<!-- 角色分配 -->
-<div class="zTreeDemoBackground left" style="display: none" id="role">
-    <input type="hidden" id="nodeid">
-    <div class="form-group">
-        <div class="col-sm-5 col-sm-offset-2">
-            <ul id="treeType" class="ztree"></ul>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-4 col-sm-offset-4" style="margin-bottom: 15px">
-            <input type="button" value="确认分配" class="btn btn-primary" id="postform"/>
-        </div>
-    </div>
-</div>
+
 <script type="text/javascript">
     zNodes = '';
 </script>
@@ -97,7 +121,7 @@
         //初始化表格,动态从服务器加载数据
         $("#cusTable").bootstrapTable({
             method: "get",  //使用get请求到服务器获取数据
-            url: "{:url('get_stock')}", //获取数据的地址
+            url: "{:url('get_self_stock')}", //获取数据的地址
             striped: true,  //表格显示条纹
             pagination: true, //启动分页
             pageSize: 10,  //每页显示的记录数
@@ -113,7 +137,10 @@
                 var param = {
                     pageNumber: params.pageNumber,
                     pageSize: params.pageSize,
-                    pname:$('#pname').val()
+                    keywords:$('#pname').val(),
+                    out_user:$('#out_user').val(),
+                    input_user:$('#input_user').val(),
+                    status:$('#status').val(),
                 };
                 return param;
             },

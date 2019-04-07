@@ -8,16 +8,29 @@
 // +----------------------------------------------------------------------
 // | Author: NickBai <1902822973@qq.com>
 // +----------------------------------------------------------------------
-namespace app\admin\validate;
+namespace app\admin\model;
 
-use think\Validate;
+use think\Model;
 
-class AdminValidate extends Validate
+class OrderModel extends Model
 {
-    protected $rule = [
-        ['userName', 'require', '用户名不能为空'],
-        ['password', 'require', '密码不能为空'],
-        ['code', 'require', '验证码不能为空']
-    ];
+    // 确定链接表名
+    protected $table = 'snake_order';
+
+    /**
+     * 获取订单列表
+     */
+    public function getAllLists($page,$limit,$where){
+        $lists = $this->where($where)->page($page,$limit)->select();
+        return objToArray($lists);
+    }
+
+
+    /**
+     * 获取订单总数
+     */
+    public function getAllCount($where){
+        return $this->where($where)->count();
+    }
 
 }

@@ -19,33 +19,33 @@ class StockModel extends Model
     protected $table = 'snake_stock';
 
 
-
-
     // 获取所有的库存信息
     public function getStock()
     {
         return $this->select();
     }
 
-        /**
+    /**
      * 根据搜索条件获取库存列表(总览)信息
      * @param $page  当前页码
      * @param $limit 每页个数
      * @param $where  查询条件
      */
-    public function getAllStock($page,$limit,$where){
-        $obj_lists  = $this->where($where)->page($page,$limit)->select();    
+    public function getAllStock($page, $limit, $where)
+    {
+        $obj_lists = $this->where($where)->page($page, $limit)->select();
         return objToArray($obj_lists);
     }
 
     /**
      * 根据搜索条件获取所有的库存数量
-     * @param $where 
+     * @param $where
      */
-     public function getAllStockCount($where=[]){
-        $obj_lists  = $this->where($where)->count();
+    public function getAllStockCount($where = [])
+    {
+        $obj_lists = $this->where($where)->count();
         return $obj_lists;
-     }
+    }
 
     /**
      * 撤销分配
@@ -53,22 +53,55 @@ class StockModel extends Model
      */
     public function returnGive($id)
     {
-        try{
-
-            $this->where('id', $id)->setField('user',0);
-            return msg(1, '', '撤销分配成功');
-
-        }catch(\Exception $e){
+        try {
+            $sotcks = $this->where('id', $id)->find();
+            $stock_id = $this
+                ->where([
+                    'user' => $sotcks['user'],
+                    'bunled_id' => $sotcks['bunled_id'],
+                    'product_id' => $sotcks['product_id'],
+                    'status' => 1
+                ])
+                ->column('id');
+            $stock_id = implode(',', $stock_id);
+            $stocks = $this
+                ->where('id','in',$stock_id)
+                ->setField('user',0);
+            if($stocks){
+                return msg(1, '', '撤销分配成功');
+            }else{
+                return msg(1, '', '撤销分配失败');
+            }
+        } catch (\Exception $e) {
             return msg(-1, '', $e->getMessage());
         }
     }
 
-/**
+    /**
      * 获取某一条库存数据信息
-     * @param $where 
+     * @param $where
      */
-    public function getOneStock($where = []){
+    public function getOneStock($where = [])
+    {
         $obj_info = $this->where($where)->find();
         return objToArray($obj_info);
     }
+
+     /**
+     * 获取按档位分组的库存
+     * @param $where 
+     */
+    public function getStockGroup($page=1,$limit=10,$where = [],$group=''){
+        $obj_info = $this->group($group)->where($where)->page($page,$limit)->column('id,bunled_id,product_id,status,count(*) as count');
+        return objToArray($obj_info);
+    }
+
+    /**
+     * 获取按档位分组的库存所有
+     * @param $where 
+     */
+    public function getStockGroupCount($where=[],$group=''){
+        return $this->group($group)->where($where)->count();
+    }
+
 }

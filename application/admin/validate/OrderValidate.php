@@ -12,16 +12,14 @@ namespace app\admin\validate;
 
 use think\Validate;
 
-class GoodsValidate extends Validate
+class OrderValidate extends Validate
 {
     protected $rule = [
-        ['name', 'require', '商品名称不能为空'],
-        ['img', 'require', '商品封面图不能空'],
-        ['imgs', 'require', '商品轮播图不能空'],
-        ['price', 'require', '商品价格不能空'],
-        ['stock', 'require', '商品库存不能空'],
-        ['content', 'require', '商品介绍内容不能空'],
-        ['category_id', 'require', '商品分类不能空']
+        ['bunled_id', 'require|integer', '请选择产品|请选择产品'],
+        ['product_id', 'require|integer', '请选择档位|请选择档位'],
+        ['num', 'require|integer', '请输入数量|请输入整数'],
+        ['price', 'require', '请输入价格'],
+        ['password', 'require', '请输入二级密码'],
     ];
 
 }

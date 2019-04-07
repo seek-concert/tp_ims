@@ -11,6 +11,7 @@
 namespace app\admin\controller;
 
 use think\Controller;
+use app\admin\model\UserModel;
 
 class Base extends Controller
 {
@@ -44,4 +45,29 @@ class Base extends Controller
         ]);
 
     }
+
+    /*
+     * 查询相关用户id
+     */
+    public function get_user($id)
+    {
+        $user = new UserModel();
+        //根据当前用户id查找有无上级
+        $pid = $user->where(['id'=>$id])->value('pid');
+        //$pid等于0时表示无上级id 查询所有下级 pid = $id
+        if($pid == 0){
+            $uid = $user->where(['pid'=>$id,'power'=>1])->column('id');
+            //最后加上自身id
+            $uid['id'] = $id;
+        }else{
+            //$pid不等于0时表示有上级id 查询到所有同级 pid = $pid
+            $uid = $user->where(['pid'=>$pid,'power'=>1])->column('id');
+            //最后加上上级id
+            $uid['id'] = $pid;
+        }
+        //分割成字符串
+        $uid = implode(',', $uid);
+        return $uid;
+    }
+
 }

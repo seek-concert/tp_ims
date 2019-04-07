@@ -27,7 +27,6 @@
                 <thead>
                     <tr>
                         <th>个人信息</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +52,7 @@
                     </tr>
                     <tr>
                         <td>账户余额</td>
-                        <td>{$admin_info['balance']}</td>
+                        <td>{$admin_info['balance']}<a href="javascript:extract({$admin_info['id']})">提现</a></td>
                     </tr>
                     <tr>
                         <td>冻结资金</td>
@@ -61,7 +60,7 @@
                     </tr>
                     <tr>
                         <td>会员到期时间</td>
-                        <td>{$admin_info['duetime']|date="Y-m-d H:i:s",###}</td>
+                        <td>{$admin_info['duetime']|date="Y-m-d H:i:s",###}<a href="javascript:recharge({$admin_info['id']})">续费</a></td>
                     </tr>
                     <tr>
                         <td>创建时间</td>
@@ -75,101 +74,93 @@
                         <td>累计登录次数</td>
                         <td>{$admin_info['login_times']}</td>
                     </tr>
-                   
                 </tbody>
             </table>
         </div>
         <div class="kucun">
-                <table class="table">
-                        <thead>
-                            <tr>
-                                <th>库存管理</th>
-        
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>库存总量</td>
-                                <td>Bangalore</td>
-                            </tr>
-                            <tr>
-                                <td>未使用</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            <tr>
-                                <td>发布中</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            <tr>
-                                <td>已出库</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            <tr>
-                                <td>使用中</td>
-                                <td>Mumbai</td>
-                            </tr>
-                           
-                           
-                        </tbody>
-                    </table>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>库存管理</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>库存总量</td>
+                        <td>Bangalore</td>
+                    </tr>
+                    <tr>
+                        <td>未使用</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>发布中</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>已出库</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>使用中</td>
+                        <td>Mumbai</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="user_money">
-                <table class="table">
-                        <thead>
-                            <tr>
-                                <th>用户余额</th>
-        
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>累计充值</td>
-                                <td>Bangalore</td>
-                            </tr>
-                            <tr>
-                                <td>累计消费</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            <tr>
-                                <td>用户余额</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            <tr>
-                                    <td>冻结资金</td>
-                                    <td>Mumbai</td>
-                                </tr>
-                           
-                        </tbody>
-                    </table>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>用户余额</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>累计充值</td>
+                        <td>Bangalore</td>
+                    </tr>
+                    <tr>
+                        <td>累计消费</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>用户余额</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>冻结资金</td>
+                        <td>Mumbai</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="order_manage">
-                <table class="table">
-                        <thead>
-                            <tr>
-                                <th>订单管理</th>
-        
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>订单总数</td>
-                                <td>Bangalore</td>
-                            </tr>
-                            <tr>
-                                <td>购买次数</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            <tr>
-                                <td>完成订单</td>
-                                <td>Mumbai</td>
-                            </tr>
-                            
-                           
-                        </tbody>
-                    </table>
-        </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>订单管理</th>
 
-      
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>订单总数</td>
+                        <td>Bangalore</td>
+                    </tr>
+                    <tr>
+                        <td>购买次数</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>完成订单</td>
+                        <td>Mumbai</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <span style="    float: left;height: auto;border: 0.5px solid #dadada;width: 100%;"></span>
 
@@ -200,73 +191,202 @@
                             <td>累计消费</td>
                             <td>Mumbai</td>
                         </tr>
-                       
                     </tbody>
                 </table>
             </div>
             <div class="kucun">
-                    <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>充值单数</th>
-            
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>总充值</td>
-                                    <td>Bangalore</td>
-                                </tr>
-                                <tr>
-                                    <td>等待验证</td>
-                                    <td>Mumbai</td>
-                                </tr>
-                                <tr>
-                                    <td>充值成功</td>
-                                    <td>Mumbai</td>
-                                </tr>
-                                <tr>
-                                    <td>总金额</td>
-                                    <td>Mumbai</td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>充值单数</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>总充值</td>
+                            <td>Bangalore</td>
+                        </tr>
+                        <tr>
+                            <td>等待验证</td>
+                            <td>Mumbai</td>
+                        </tr>
+                        <tr>
+                            <td>充值成功</td>
+                            <td>Mumbai</td>
+                        </tr>
+                        <tr>
+                            <td>总金额</td>
+                            <td>Mumbai</td>
+                        </tr>
+
+                    </tbody>
+                </table>
             </div>
             <div class="user_money">
-                    <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>手续费</th>
-            
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>出库手续费</td>
-                                    <td>Bangalore</td>
-                                </tr>
-                                <tr>
-                                    <td>交易市场手续费</td>
-                                    <td>Mumbai</td>
-                                </tr>
-                                <tr>
-                                    <td>用户余额</td>
-                                    <td>Mumbai</td>
-                                </tr>
-                                <tr>
-                                        <td>冻结资金</td>
-                                        <td>Mumbai</td>
-                                    </tr>
-                               
-                            </tbody>
-                        </table>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>手续费</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>出库手续费</td>
+                            <td>Bangalore</td>
+                        </tr>
+                        <tr>
+                            <td>交易市场手续费</td>
+                            <td>Mumbai</td>
+                        </tr>
+                        <tr>
+                            <td>用户余额</td>
+                            <td>Mumbai</td>
+                        </tr>
+                        <tr>
+                            <td>冻结资金</td>
+                            <td>Mumbai</td>
+                        </tr>
+
+                    </tbody>
+                </table>
             </div>
            
         </div>
     {/if}
+    <!-- 提现 -->
+    <div class="modal fade" id="extract" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title-kallocation">申请提现</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal m-t" id="extractForm" method="post" action="">
+                        <input type="hidden" name="user_id" id="uid">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">提现金额：</label>
+                            <div class="input-group col-sm-4">
+                                <input id="money" type="text" class="form-control" name="money" required="" aria-required="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">BTC地址：</label>
+                            <div class="input-group col-sm-4">
+                                <input id="btc" type="text" class="form-control" name="btc" required="" aria-required="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">二级密码：</label>
+                            <div class="input-group col-sm-4">
+                                <input id="password" type="text" class="form-control" name="password" required="" aria-required="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-6">
+                                <button class="btn btn-primary" type="button" onclick="submit_extract()">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 会员续费 -->
+    <div class="modal fade" id="recharge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title-kallocation">会员续费</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal m-t" id="rechargeForm" method="post" action="">
+                        <input type="hidden" name="uid" id="uuid">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">时间：</label>
+                            <div class="input-group col-sm-4">
+                                <select class="form-control" id="time" name="time">
+                                    <option value="">选择时间！</option>
+                                    <option value="1">一个月（3000）</option>
+                                    <option value="2">六个月（16000）</option>
+                                    <option value="3">一年（30000）</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-6">
+                                <button class="btn btn-primary" type="button" onclick="submit_recharge()">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="__JS__/jquery.min.js?v=2.1.4"></script>
     <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
+    <script src="__JS__/plugins/layer/layer.min.js"></script>
+    <script type="text/javascript">
+        //提现--模态框
+        function extract(id){
+            //显示模态框
+            $('#extract').modal('show');
+            //赋值id
+            $('#uid').val(id);
+        }
+        //提现--提交
+        function submit_extract() {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "{:url('index/extract')}",
+                data: $('#extractForm').serialize(),// 你的formid
+                async: false,
+                success: function(data) {
+                    if(data.code == 1){
+                        layer.alert(data.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                            //关闭模态框
+                            $('#extract').modal('hide');
+                            window.location.reload();
+                        });
+                    }else{
+                        layer.alert(data.msg, {title: '友情提示', icon: 2});
+                    }
+                }
+            });
+        }
+        //会员续费--模态框
+        function recharge(id){
+            //显示模态框
+            $('#recharge').modal('show');
+            //赋值id
+            $('#uuid').val(id);
+        }
+        //会员续费--提交
+        function submit_recharge() {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "{:url('index/recharge')}",
+                data: $('#rechargeForm').serialize(),// 你的formid
+                async: false,
+                success: function(data) {
+                    if(data.code == 1){
+                        layer.alert(data.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                            //关闭模态框
+                            $('#recharge').modal('hide');
+                            window.location.reload();
+                        });
+                    }else{
+                        layer.alert(data.msg, {title: '友情提示', icon: 2});
+                    }
+                }
+            });
+        }
+    </script>
 </body>
-
 </html>

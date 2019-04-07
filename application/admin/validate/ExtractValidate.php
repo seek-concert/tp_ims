@@ -8,19 +8,16 @@
 // +----------------------------------------------------------------------
 // | Author: NickBai <1902822973@qq.com>
 // +----------------------------------------------------------------------
-namespace app\admin\model;
+namespace app\admin\validate;
 
-use think\Model;
+use think\Validate;
 
-class UserDetailModel extends Model
+class ExtractValidate extends Validate
 {
+    protected $rule = [
+        ['money', 'require', '提现金额不能为空'],
+        ['btc', 'require', 'BTC地址不能为空'],
+        ['password', 'require', '二级密码不能为空']
+    ];
 
-     // 确定链接表名
-     protected $table = 'snake_user_detail';
-
-
-     //获取用户某一个值
-     public function get_user_one($id,$value){
-          return $this->where(['uid'=>$id])->value($value);
-     }
 }

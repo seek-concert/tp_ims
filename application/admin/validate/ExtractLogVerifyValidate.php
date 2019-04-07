@@ -12,11 +12,11 @@ namespace app\admin\validate;
 
 use think\Validate;
 
-class BannerValidate extends Validate
+class ExtractLogVerifyValidate extends Validate
 {
     protected $rule = [
-//        ['url', 'require', '轮播图链接不能为空'],
-        ['img', 'require', '轮播图不能空']
+        ['remark', 'require', '备注不能为空'],
+        ['status', 'require', '状态不能为空']
     ];
 
 }

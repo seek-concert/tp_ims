@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二级密码</title>
+    <title>充值验证</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
@@ -17,35 +17,38 @@
         <div class="col-sm-8">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>二级密码</h5>
+                    <h5>充值验证</h5>
                 </div>
                 <div class="ibox-content">
-                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('account/cipher')}">
-                        <input type="hidden" name="uid" value="{$id}">
+                    <form class="form-horizontal m-t" id="commentForm" method="post" action="{:url('personal/prepaidlog_verify')}">
+                        <input type="hidden" value="{$id}" name="id">
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">原支付密码：</label>
+                            <label class="col-sm-3 control-label">实际到账：</label>
                             <div class="input-group col-sm-4">
-                                <input id="used" type="text" class="form-control" name="used" required="" aria-required="true">
+                                <input id="actual_moeny" type="text" class="form-control" name="actual_moeny" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">新支付密码：</label>
+                            <label class="col-sm-3 control-label">备注：</label>
                             <div class="input-group col-sm-4">
-                                <input id="password" type="text" class="form-control" name="password" required="" aria-required="true">
+                                <input id="remark" type="text" class="form-control" name="remark" required="" aria-required="true">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">确认密码：</label>
+                            <label class="col-sm-3 control-label">状态：</label>
                             <div class="input-group col-sm-4">
-                                <input id="password_confirm" type="text" class="form-control" name="password_confirm" required="" aria-required="true">
-
+                                <select class="form-control" id="status" name="status">
+                                    <option value="">请选择！</option>
+                                    <option value="2">充值成功</option>
+                                    <option value="3">订单过期</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-6">
                                 <!--<input type="button" value="提交" class="btn btn-primary" id="postform"/>-->
                                 <button class="btn btn-primary" type="submit">提交</button>
-                                <!--<a href="{:url('index')}"><button class="btn btn-success" type="button">返回</button></a>-->
+                                <a href="{:url('prepaidlog_management')}"><button class="btn btn-success" type="button">返回</button></a>
                             </div>
                         </div>
                     </form>

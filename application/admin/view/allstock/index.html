@@ -59,13 +59,13 @@
                             </span>
                         </div>
                         <label>状态：</label>
-                        <select name="status" class="form-control" id="">
-                            <option>所有</option>
-                            <option>未使用</option>
-                            <option>使用中</option>
-                            <option>发布中</option>
-                            <option>交易失败</option>
-                            <option>已出库</option>
+                        <select name="status" class="form-control" id="status">
+                            <option >所有</option>
+                            <option value="1">未使用</option>
+                            <option value="2">使用中</option>
+                            <option value="3">发布中</option>
+                            <option value="-1">交易失败</option>
+                            <option value="4">已出库</option>
                         </select>
                     </div>
                   
@@ -81,7 +81,7 @@
                     <table id="cusTable">
                         <thead>
                         <th data-field="id">id</th>
-                        <th data-field="bname">库存名</th>
+                        <th data-field="bunled_name">库存名</th>
                         <th data-field="pid">修改pid</th>
                         <th data-field="uid">修改uid</th>
                         <th data-field="user">归属人</th>
@@ -102,6 +102,73 @@
     </div>
 </div>
 <!-- End Panel Other -->
+</div>
+<div class="modal fade" id="edit_pid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title-kallocation">修改PID名称</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal m-t" id="kallocationForm" method="post" action="">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">PID：</label>
+                            <div class="input-group col-sm-4">
+                                <input type="hidden" name="product_id" id="product_id">
+                                <input type="text" name="pid" id="pid" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">PNAME：</label>
+                            <div class="input-group col-sm-4">
+                                <input type="text" name="pname" id="pname">
+                            </div>
+                        </div>
+                       
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-6">
+                                <button class="btn btn-primary" type="button" onclick="get_edit_pid()">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="modal fade" id="edit_bid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title-kallocation">修改UID名称</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal m-t" id="kallocationForm" method="post" action="">
+                    <input type="hidden" id="uid" name="uid">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">UID：</label>
+                        <div class="input-group col-sm-4">
+                            <input type="hidden" name="bunled_id" id="bunled_id">
+                            <input type="text" name="bid" id="bid" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">UNAME：</label>
+                        <div class="input-group col-sm-4">
+                            <input type="text" name="bname" id="bname">
+                        </div>
+                    </div>
+                   
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-6">
+                            <button class="btn btn-primary" type="button" onclick="get_edit_uid()">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 <script src="__JS__/jquery.min.js?v=2.1.4"></script>
 <script src="__JS__/bootstrap.min.js?v=3.3.6"></script>
@@ -143,6 +210,7 @@
                     input_time_end:$('#input_time_end').val(),
                     out_time_start:$('#out_time_start').val(),
                     out_time_end:$('#out_time_end').val(),
+                    status:$('#status').val(),
                 };
                 return param;
             },
@@ -235,9 +303,13 @@ function get_succ(id){
   
     $.post("{:url('admin/allstock/get_succ')}",{id:id},function(ret){
         if(ret.code == 1){
-            layer.alert(ret.msg, {title: '提示', icon: 1});
+            layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
+                        initTable();
+                    });
         }else{
-            layer.alert(ret.msg, {title: '提示', icon: 2});
+            layer.alert(ret.msg, {title: '提示', icon: 2}), function(){
+                        initTable();
+                    };
         }
         
       
@@ -247,25 +319,62 @@ function get_return(id){
     $.post("{:url('admin/allstock/get_return')}",{id:id},function(ret){
 
         if(ret.code == 1){
-            layer.alert(ret.msg, {title: '提示', icon: 1});
+            layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
+                        initTable();
+                    });
         }else{
-            layer.alert(ret.msg, {title: '提示', icon: 2});
+            layer.alert(ret.msg, {title: '提示', icon: 2}, function(){
+                        initTable();
+                    });
         }
     })
 }
 
-    function get_stock(){
-        console.log(1);
+    function edit_pid(id,pid,pname){
+        $('#product_id').val(id);
+        $('#pid').val(pid);
+        $('#pname').val(pname);
+        $('#edit_pid').modal('show');
+    }
+    function edit_uid(id,bid,bname){
+        $('#bunled_id').val(id);
+        $('#bid').val(bid);
+        $('#bname').val(bname);
+        $('#edit_bid').modal('show');
     }
 
-    $('.switch input').on('change',function(){
-        console.log(this)
-    })
-
-    // function get_check(id){
-    //     console.log(this);
-    //     console.log(id)
-    // }
+    function get_edit_pid(){
+        var id = $('#product_id').val();
+        var pname = $('#pname').val();
+        $.post("{:url('get_edit_pid')}",{id:id,pname:pname},function(ret){
+            if(ret.code == 1){
+                layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
+                    $('#edit_pid').modal('hide');
+                        initTable();
+                    });
+            }else{
+                layer.alert(ret.msg, {title: '提示', icon: 2}, function(){
+                        initTable();
+                    });
+            }
+        })
+    }
+    function get_edit_uid(){
+        var id = $('#bunled_id').val();
+        var bname = $('#bname').val();
+        $.post('{:url("get_edit_uid")}',{id:id,bname:bname},function(ret){
+            if(ret.code == 1){
+                layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
+                    $('#edit_bid').modal('hide');
+                        initTable();
+                    });
+            }else{
+                layer.alert(ret.msg, {title: '提示', icon: 2}, function(){
+                        initTable();
+                    });
+            }
+        })
+    }
 
 </script>
 </body>

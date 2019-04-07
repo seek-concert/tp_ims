@@ -9,7 +9,9 @@
 namespace app\admin\controller;
 
 
+use app\admin\model\BunledModel;
 use app\admin\model\LoginLogModel;
+use app\admin\model\ProductModel;
 use app\admin\model\StockModel;
 use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
@@ -321,19 +323,22 @@ class Account extends Base
         if (request()->isAjax()) {
             $param = input('param.');
             $limit = $param['pageSize'];
+            $page = $param['pageNumber'];
 
-            $where = [];
-            $where['user'] = ['=', $param['id']];
+            $where = ['user'=>$param['id'],'status'=>1];
             $stock = new StockModel();
-            $selectResult = $stock->getAllStock($param['pageNumber'], $limit, $where);
-
+            $selectResult = $stock->getStockGroup($page,$limit,$where,'product_id ');
+            $bunled = new BunledModel();
+            $product = new ProductModel();
             // 拼装参数
             foreach ($selectResult as $key => $vo) {
                 $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id'],3));
+                $selectResult[$key]['bname'] = $bunled->where(['id'=>$vo['bunled_id']])->value('bname');
+                $selectResult[$key]['pname'] = $product->where(['id'=>$vo['product_id']])->value('pname');
             }
-
-            $return['total'] = $stock->getAllStockCount($where);  //总数据
-            $return['rows'] = $selectResult;
+            $total = $stock->getStockGroupCount($where,'product_id');
+            $return['total'] = $total;  //总数据
+            $return['rows'] = array_values($selectResult);
 
             return json($return);
         }
@@ -355,7 +360,182 @@ class Account extends Base
      */
     public function stockallocation()
     {
+        $param = input('post.');
+        //验证数据
+        $result = $this->validate($param,'StockAllocationValidate');
+        if (true !== $result) {
+            // 验证失败 输出错误信息
+            return msg(-1, '', $result);
+        }
+        $stock = new StockModel();
+        //查询要分配的库存
+        $stock_id = $stock
+            ->where([
+                'bunled_id' => $param['bid'],
+                'product_id' => $param['pid']
+            ])
+            ->limit($param['num'])
+            ->column('id');
+        $stock_id = implode(',', $stock_id);
+        $stocks = $stock
+            ->where('id','in',$stock_id)
+            ->setField('user',$param['uid']);
+        if($stocks){
+            return msg(1, '', '分配成功');
+        }else{
+            return msg(-1, '', '分配失败');
+        }
+    }
 
+    /*
+     * 查询应用名称
+     */
+    public function query_bname()
+    {
+        $id = input('param.id');
+        //相关用户id
+        $uid = $this->get_user($id);
+        $stock = new StockModel();
+        //查找相关库存--应用名称
+        $where['input_user'] = ['in',$uid];
+        $where['status'] = ['eq',1];
+        $where['user'] = ['eq',0];
+        $stocks = $stock
+            ->where($where)
+            ->field('bunled_id')
+            ->group('bunled_id')
+            ->select();
+        $bunled = new BunledModel();
+        foreach ($stocks as $k=>$v){
+            $bunleds = $bunled
+                ->where(['id'=>$v['bunled_id']])
+                ->find();
+            $stocks[$k]['bname'] = $bunleds['bname'];
+        }
+        return $stocks;
+    }
+
+    /*
+    * 查询档位名称与对应数量
+    */
+    public function query_pname()
+    {
+        $id = input('param.id');
+        $bid = input('param.bid');
+        //相关用户id
+        $uid = $this->get_user($id);
+        $stock = new StockModel();
+        //查找相关库存--档位名称与对应数量
+        $where['input_user'] = ['in',$uid];
+        $where['bunled_id'] = ['eq',$bid];
+        $where['status'] = ['eq',1];
+        $where['user'] = ['eq',0];
+        $stocks = $stock
+            ->where($where)
+            ->field('product_id,count(*) as num')
+            ->group('product_id')
+            ->select();
+        $product = new ProductModel();
+        foreach ($stocks as $k=>$v){
+            $products = $product
+                ->where(['id'=>$v['product_id']])
+                ->find();
+            $stocks[$k]['pname'] = $products['pname'];
+        }
+        return $stocks;
+    }
+
+    /*
+     * 查询档位对应数量
+     */
+    public function query_num()
+    {
+        $id = input('param.id');
+        $bid = input('param.bid');
+        $pid = input('param.pid');
+        //相关用户id
+        $uid = $this->get_user($id);
+        $stock = new StockModel();
+        //查找相关库存--档位名称与对应数量
+        $where['input_user'] = ['in',$uid];
+        $where['bunled_id'] = ['eq',$bid];
+        $where['product_id'] = ['eq',$pid];
+        $where['status'] = ['eq',1];
+        $where['user'] = ['eq',0];
+        $stocks = $stock
+            ->where($where)
+            ->count();
+        return $stocks;
+    }
+
+    /*
+     * 会员充值
+     */
+    public function vip_recharge()
+    {
+        if(request()->isPost()){
+            $param = input('param.');
+            //验证数据
+            $result = $this->validate($param, 'VipRechargeValidate');
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                return msg(-1, '', $result);
+            }
+            if($param['num'] <= 0){
+                return msg(-1, '', '请输入正整数');
+            }
+            $user_detail = new UserDetailModel();
+            $duetime = $user_detail->where(['uid'=>$param['user_id']])->value('duetime');
+            if(empty($duetime)){
+                $time = strtotime(date('Y-m-d'));
+                $times = $time+($param['num'] * 86400);
+            }else{
+                $times = $duetime+($param['num'] * 86400);
+            }
+            $flag = $user_detail->where(['uid'=>$param['user_id']])->setField('duetime',$times);
+            if($flag){
+                return msg(1, url('account/vip_recharge'), '充值成功');
+            }else{
+                return msg(-2, '', '充值失败');
+            }
+        }
+        $user = new UserModel();
+        $user_detail = new UserDetailModel();
+        $time = strtotime(date('Y-m-d'));
+        $row = $user->field('id,real_name')->select();
+        foreach ($row as $k=>$v){
+            $duetime = $user_detail->where('uid',$v['id'])->value('duetime');
+            if(empty($duetime)){
+                $times = 0;
+            }else{
+                $times = intval(($duetime-$time)/86400);
+            }
+            $row[$k]['duetime'] = $times;
+        }
+        $this->assign([
+            'row' => $row
+        ]);
+        return $this->fetch();
+    }
+
+    /*
+     * btc地址修改
+     */
+    public function btc()
+    {
+        $user_detail = new UserDetailModel();
+        if(request()->isPost()){
+            $param = input('param.');
+            $flag = $user_detail->where(['uid'=>1])->setField('btc',$param['btc']);
+            if($flag){
+                return msg(1,'','修改成功');
+            }else{
+                return msg(-1,'','修改失败');
+            }
+        }
+        $btc = $user_detail->where(['uid'=>1])->value('btc');
+        $this->assign('btc',$btc);
+        return $this->fetch();
     }
 
     /**

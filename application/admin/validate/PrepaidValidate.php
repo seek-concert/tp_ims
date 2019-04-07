@@ -8,19 +8,15 @@
 // +----------------------------------------------------------------------
 // | Author: NickBai <1902822973@qq.com>
 // +----------------------------------------------------------------------
-namespace app\admin\model;
+namespace app\admin\validate;
 
-use think\Model;
+use think\Validate;
 
-class UserDetailModel extends Model
+class PrepaidValidate extends Validate
 {
+    protected $rule = [
+        ['money', 'require|confirm', '充值金额不能为空|充值金额与确认金额不一致'],
+        ['btc', 'require', '付款地址不能为空']
+    ];
 
-     // 确定链接表名
-     protected $table = 'snake_user_detail';
-
-
-     //获取用户某一个值
-     public function get_user_one($id,$value){
-          return $this->where(['uid'=>$id])->value($value);
-     }
 }
