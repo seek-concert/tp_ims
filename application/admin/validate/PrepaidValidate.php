@@ -15,7 +15,7 @@ use think\Validate;
 class PrepaidValidate extends Validate
 {
     protected $rule = [
-        ['money', 'require|confirm', '充值金额不能为空|充值金额与确认金额不一致'],
+        ['money', 'require|integer|confirm', '充值金额不能为空|请输入整数|充值金额与确认金额不一致'],
         ['btc', 'require', '付款地址不能为空']
     ];
 
