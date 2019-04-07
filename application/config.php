@@ -21,6 +21,8 @@ return [
     'log' => [
         'type' => 'test',
     ],
+    // 默认模块名
+    'default_module'         => 'admin',
 
     'app_debug' => true,
 
