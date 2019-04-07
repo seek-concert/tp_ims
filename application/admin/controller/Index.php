@@ -19,7 +19,6 @@ use app\admin\model\ConsumerLogModel;
 use app\admin\model\OrderModel;
 use app\admin\model\ServiceMoneyModel;
 use think\Db;
-use think\Session;
 class Index extends Base
 {
 
@@ -155,7 +154,7 @@ class Index extends Base
         }
         //用户余额是否足够
         $balance = $user_details['balance'] - $param['money'];
-        $funds = $user_details['funds'] + $param['money']+;
+        $funds = $user_details['funds'] + $param['money'];
         if($balance < 0){
             return msg(-1, '', '余额不足');
         }
