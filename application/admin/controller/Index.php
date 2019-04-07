@@ -148,13 +148,14 @@ class Index extends Base
         }
         //查询用户的二级密码
         $user_detail = new UserDetailModel();
-        $user_details = $user_detail->where(['uid'=>$param['user_id']])->field('password,balance')->find();
+        $user_details = $user_detail->where(['uid'=>$param['user_id']])->field('password,balance,funds')->find();
         //匹配密码是否一致
         if($user_details['password'] != md5($param['password'])){
             return msg(-1, '', '二级密码错误');
         }
         //用户余额是否足够
         $balance = $user_details['balance'] - $param['money'];
+        $funds = $user_details['funds'] + $param['money']+;
         if($balance < 0){
             return msg(-1, '', '余额不足');
         }
@@ -164,7 +165,7 @@ class Index extends Base
         Db::startTrans();
         try{
             $extract_insert = Db::name('extract_log')->insert($param);
-            $user_detail_update = Db::name('user_detail')->where(['uid'=>$param['user_id']])->setField(['funds'=>$param['money'],'balance'=>$balance]);
+            $user_detail_update = Db::name('user_detail')->where(['uid'=>$param['user_id']])->setField(['funds'=>$funds,'balance'=>$balance]);
             if($extract_insert && $user_detail_update){
                 // 提交事务
                 Db::commit();
