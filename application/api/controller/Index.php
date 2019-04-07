@@ -36,13 +36,13 @@ class Index extends Controller
             ['username', 'require', '请填写账号!'],
             ['password', 'require', '请填写密码!']
         ];
-        $result = $this->validate(input('post.'), $rule);
+        $result = $this->validate(input(''), $rule);
         if (true !== $result) {
             return msg(1, $result);
         }
         //账号密码过滤
-        $user = stripTags(input('post.username/s'));
-        $pwd = stripTags(input('post.password/s'));
+        $user = stripTags(input('username/s'));
+        $pwd = stripTags(input('password/s'));
         //数据检测
         $user_info = UserModel::field(['id','user_name','password','status','token'])->where(['user_name'=>$user])->find();
         if(!$user_info){
@@ -86,12 +86,12 @@ class Index extends Controller
             ['tdate', 'require', '请填写date!'],
             ['receipt', 'require', '请填写交易收据!']
         ];
-        $result = $this->validate(input('post.'), $rule);
+        $result = $this->validate(input(''), $rule);
         if (true !== $result) {
             return msg(1, $result);
         }
         //token检测
-        $token = stripTags(input('post.token/s'));
+        $token = stripTags(input('token/s'));
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
             return msg(1,'token令牌不存在');
@@ -115,18 +115,18 @@ class Index extends Controller
         //数据过滤
         $data = [];
         //应用
-        $bid = stripTags(input('post.bid/s'));
-        $bname = input('post.bname')?stripTags(input('post.bname/s')):'';
+        $bid = stripTags(input('bid/s'));
+        $bname = input('bname')?stripTags(input('bname/s')):'';
         //产品档位
-        $pname = stripTags(input('post.pname/s'));
-        $pid = stripTags(input('post.pid/s'));
+        $pname = stripTags(input('pname/s'));
+        $pid = stripTags(input('pid/s'));
 
-        $data['account'] = input('post.account')?stripTags(input('post.account/s')):'';
-        $data['tid'] = stripTags(input('post.tid/s'));
-        $data['tprice'] = stripTags(input('post.tprice/s'));
-        $data['tcurrency'] = stripTags(input('post.tcurrency/s'));
-        $data['tdate'] = stripTags(input('post.tdate/s'));
-        $data['receipt'] = stripTags(input('post.receipt/s'));
+        $data['account'] = input('account')?stripTags(input('account/s')):'';
+        $data['tid'] = stripTags(input('tid/s'));
+        $data['tprice'] = stripTags(input('tprice/s'));
+        $data['tcurrency'] = stripTags(input('tcurrency/s'));
+        $data['tdate'] = stripTags(input('tdate/s'));
+        $data['receipt'] = stripTags(input('receipt/s'));
         $data['input_user'] = $token['id'];
         $data['input_time'] = time();
         $data['status'] = 1;
@@ -183,12 +183,12 @@ class Index extends Controller
             ['bid', 'require', '请填写应用ID!'],
             ['pid', 'require', '请填写产品ID!']
         ];
-        $result = $this->validate(input('post.'), $rule);
+        $result = $this->validate(input(''), $rule);
         if (true !== $result) {
             return msg(1, $result);
         }
         //token检测
-        $token = stripTags(input('post.token/s'));
+        $token = stripTags(input('token/s'));
         //$token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C6F';
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
 
@@ -215,8 +215,8 @@ class Index extends Controller
         }
         //数据过滤
         $where = [];
-        $where['bid'] = stripTags(input('post.bid/s'));
-        $where['pid'] = stripTags(input('post.pid/s'));
+        $where['bid'] = stripTags(input('bid/s'));
+        $where['pid'] = stripTags(input('pid/s'));
         // $where['bid'] = 1;
         // $where['pid'] = 'com.test.diamond101';
         //出库
@@ -281,12 +281,12 @@ class Index extends Controller
             ['tid', 'require', '请填写交易ID!'],
             ['status', 'require', '请填写状态!']
         ];
-        $result = $this->validate(input('post.'), $rule);
+        $result = $this->validate(input(''), $rule);
         if (true !== $result) {
             return msg(1, $result);
         }
         //token检测
-        $token = stripTags(input('post.token/s'));
+        $token = stripTags(input('token/s'));
         //$token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C6F';
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
         if(!$token){
@@ -310,11 +310,11 @@ class Index extends Controller
         }
         //数据过滤
         $where = [];
-        $where['tid'] = stripTags(input('post.bid/s'));
+        $where['tid'] = stripTags(input('bid/s'));
 
         //$where['tid'] = 13;
         $data = [];
-        $status = stripTags(input('post.pid/s'));
+        $status = stripTags(input('pid/s'));
         //$status = 2;
         switch ($status){
             case 2:
