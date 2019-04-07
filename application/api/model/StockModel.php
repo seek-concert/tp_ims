@@ -14,6 +14,7 @@ class StockModel extends Model
 
     ];
 
+    //关联档位
     public function ProductModel(){
         return $this->hasOne('ProductModel','id','product_id');
     }
