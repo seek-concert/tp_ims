@@ -17,10 +17,10 @@ class Index extends Controller
     public function __construct()
     {
         parent::__construct();
-//        $is_https = is_https();
-//        if(false===$is_https){
-//            $this->is_https=false;
-//        }
+        $is_https = is_https();
+        if(false===$is_https){
+            $this->is_https=false;
+        }
     }
 
     //登陆
