@@ -43,42 +43,23 @@ class Stock extends Base
         if (!empty($pname)) {
             $searchsql['bname'] = ['like', '%' . $pname . '%'];
             $bunled_ids = $bunled_model->get_like_name($searchsql);
-           $sqlamp['bunled_id'] = ['in',$bunled_ids];
+            $sqlamp['bunled_id'] = ['in',$bunled_ids];
         }
 
         
         $id = session('id');
-        $child_id = $user_model->getAdminDetail($id)['child_id'];//获取子类id
-        $child_id = $child_id.','.$id;
-        $sqlamp['id'] = ['in',$child_id];
+        $uid = $this->get_user($id);
+        $sqlamp['input_user'] = ['in',$uid];
         
-        $selectResult = $stock_model->getStockGroup($page, $limit, $sqlamp,'product_id,status');
+        $selectResult = $stock_model->getStockGroup($page, $limit, $sqlamp,'product_id,status,bunled_id');
         //组装数据
         foreach ($selectResult as $key => $value) {
             $selectResult[$key]['bname'] = $bunled_model->get_bunled_name($value['bunled_id']);
             $selectResult[$key]['pname'] = $product_model->get_product_name($value['product_id']);
-            $selectResult[$key]['count'] = '【'.$selectResult[$key]['count'].'】条库存';
-            switch ($selectResult[$key]['status']) {
-                case '-1':
-                    $selectResult[$key]['status'] ='交易失败';
-                    break;
-                
-                case '1':
-                    $selectResult[$key]['status'] ='未使用';
-                    break;
-                case '2':
-                    $selectResult[$key]['status'] ='使用中';
-                    break;
-                case '3':
-                    $selectResult[$key]['status'] ='发布中';
-                    break;
-                case '4':
-                    $selectResult[$key]['status'] ='已出库';
-                    break;
-                case '5':
-                    $selectResult[$key]['status'] ='出库失败';
-                    break;
-            }
+            $selectResult[$key]['all_count'] = $selectResult[$key]['count'];
+            $selectResult[$key]['out_count'] = $stock_model->where($sqlamp)->where(['product_id'=>$value['product_id'],'bunled_id'=>$value['bunled_id'],'status'=>4])->count();
+            $selectResult[$key]['not_use_count'] = $stock_model->where($sqlamp)->where(['product_id'=>$value['product_id'],'bunled_id'=>$value['bunled_id'],'status'=>1])->count();;
+      
         }
         $return['total'] = $stock_model->getStockGroupCount($sqlamp,'product_id,status');  // 总数据
         $return['rows'] = array_values($selectResult);
@@ -120,6 +101,8 @@ class Stock extends Base
         $out_user = isset($param['out_user'])?(int)$param['out_user']:0;
         $input_user = isset($param['input_user'])?(int)$param['input_user']:0;
         $status = isset($param['status'])?(int)$param['status']:0;
+        $id = session('id');
+        $uid = $this->get_user($id);
         //组装查询条件
         $sqlamp = [];
         if(!empty($out_user)){
@@ -127,6 +110,8 @@ class Stock extends Base
         }
         if(!empty($input_user)){
             $sqlamp['input_user'] = $input_user;
+        }else{
+            $sqlamp['input_user'] = ['in',$uid];
         }
         if(!empty($status)){
             $sqlamp['status'] = $status;
@@ -139,6 +124,7 @@ class Stock extends Base
         }
        
         $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp);
+      
         //组装列表数据
         foreach ($selectResult as $key => $value) {
             $selectResult[$key]['bname'] = $bunled_model->get_bunled_name($value['bunled_id']);
