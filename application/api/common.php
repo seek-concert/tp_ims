@@ -77,6 +77,32 @@ function is_https() {
     }
     return false;
 }
-
+/** 是否拥有访问权限
+ * @return bool
+ */
+function check_node($token = '',$contrl_name = '',$action_name=''){
+    if(!$token||!$contrl_name||!$action_name){
+        return false;
+    }
+    $user_info = \app\api\model\UserModel::field(['id','token','role_id'])
+                ->with(['RoleModel'])
+                ->where(['token'=>$token])
+                ->find();
+    $rule = objToArray($user_info)['role_model']['rule'];
+    if($rule=="*"){
+        return true;
+    }
+    if(!$rule){
+        return false;
+    }
+    $node_info = \think\Db::name('node')->field(['id','control_name','action_name'])
+        ->where(['control_name'=>$contrl_name,'action_name'=>$action_name])->find();
+    $node_id = objToArray($node_info)['id'];
+    $rule_arr = explode(',',$rule);
+    if(!in_array($node_id,$rule_arr)){
+        return false;
+    }
+    return true;
+}
 
 

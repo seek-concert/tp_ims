@@ -10,3 +10,20 @@
 // +----------------------------------------------------------------------
 //引入Route
 use think\Route;
+
+Route::rule('/stock/login','api/index/login');
+
+Route::rule('/inbound','api/index/inbound');
+
+Route::rule('/outbound','api/index/outbound');
+
+Route::rule('/report','api/index/report');
+
+
+Route::rule('/user/signin','api/files/signin');
+
+Route::rule('/product/query','api/files/product_query');
+
+Route::rule('/product/modify','api/files/product_modify');
+
+Route::rule('/product/delete','api/files/product_delete');
