@@ -134,7 +134,7 @@ class Buysell extends Base
         $sql_password = $this->user_detail_model->get_user_one($id,'password');
        
 
-        $stock_count = $this->stock_model->where(['product_id'=>$param['product_id'],'status'=>1,'input_user'=>['in',$uid]])->count();
+        $stock_count = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>['in',$uid]])->count();
 
         if($stock_count < $param['num']){
             $this->error('发布数量不得大于持有数量');
@@ -155,7 +155,7 @@ class Buysell extends Base
         $sqlmap['product_name'] = $this->product_model->get_product_name($sqlmap['product_id']);
         $sqlmap['bunled_name'] = $this->bunled_model->get_bunled_name($sqlmap['bunled_id']);
         $sqlmap['user_id'] = $id;
-        $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'status'=>1,'input_user'=>['in',$uid]])->order('id asc')->limit($param['num'])->column('id');
+        $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>['in',$uid]])->order('id asc')->limit($param['num'])->column('id');
         
          //开启事务
          Db::startTrans();
@@ -200,7 +200,8 @@ class Buysell extends Base
         $user_id = session('id');
         $uid = $this->get_user($user_id);
         $product_id = $order_info['product_id'];
-        $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'status'=>3,'input_user'=>['in',$uid]])->order('id desc')->limit($num)->column('id');
+        $bunled_id = $order_info['bunled_id'];
+        $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'input_user'=>['in',$uid]])->order('id desc')->limit($num)->column('id');
        
          //开启事务
          Db::startTrans();
@@ -210,7 +211,6 @@ class Buysell extends Base
              if ($edit_order_status && $edit_stock_status) {
                  // 提交事务
                  Db::commit();
-                 echo 'aa';
                 return msg(1, '', '撤回成功');
              } else {
                  // 回滚事务
@@ -325,7 +325,8 @@ class Buysell extends Base
         }
       
         $uid = $this->get_user($order_info['user_id']);
-        $stock_ids = $this->stock_model->where(['product_id'=>$order_info['product_id'],'status'=>3,'input_user'=>['in',$uid]])->order('id asc')->limit($buy_num)->column('id');
+        $stock_ids = $this->stock_model->where(['product_id'=>$order_info['product_id'],'bunled_id'=>$order_info['bunled_id'],'status'=>3,'input_user'=>['in',$uid]])->order('id asc')->limit($buy_num)->column('id');
+      
         $sqlmap = [];
         $stocksql = [];
         if($can_buy_num == $buy_num){
@@ -351,7 +352,7 @@ class Buysell extends Base
         Db::startTrans();
         try {
             $edit_order_status = Db::name('order')->where(['id'=>$order_id])->update($sqlmap);
-            $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid,'tprice'=>$order_info['price']]);
+            $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid]);
             
             $insert_consumer = Db::name('consumer_log')->insert($consumer_sql);
            

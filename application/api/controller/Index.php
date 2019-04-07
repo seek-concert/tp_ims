@@ -300,7 +300,7 @@ class Index extends Controller
                 $data['status'] = 4;
                 break;
             case 3:
-                $data['status'] = 1;
+                $data['status'] = 5;
                 break;
                 default;
         }
