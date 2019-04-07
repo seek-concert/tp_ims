@@ -60,19 +60,23 @@ class Stock extends Base
             $selectResult[$key]['count'] = '【'.$selectResult[$key]['count'].'】条库存';
             switch ($selectResult[$key]['status']) {
                 case '-1':
-                    $selectResult[$key]['status'] = '交易失败';
+                    $selectResult[$key]['status'] ='交易失败';
                     break;
-                 case '1':
-                    $selectResult[$key]['status'] = '未使用';
+                
+                case '1':
+                    $selectResult[$key]['status'] ='未使用';
                     break;
                 case '2':
-                    $selectResult[$key]['status'] = '使用中';
+                    $selectResult[$key]['status'] ='使用中';
                     break;
                 case '3':
-                    $selectResult[$key]['status'] = '发布中';
+                    $selectResult[$key]['status'] ='发布中';
                     break;
                 case '4':
-                    $selectResult[$key]['status'] = '已出库';
+                    $selectResult[$key]['status'] ='已出库';
+                    break;
+                case '5':
+                    $selectResult[$key]['status'] ='出库失败';
                     break;
             }
         }
@@ -144,19 +148,23 @@ class Stock extends Base
             $selectResult[$key]['out_user'] = $user_model->get_user_one_data($selectResult[$key]['out_user'],'user_name');
             switch ($selectResult[$key]['status']) {
                 case '-1':
-                    $selectResult[$key]['status'] = '交易失败';
+                    $selectResult[$key]['status'] ='交易失败';
                     break;
-                 case '1':
-                    $selectResult[$key]['status'] = '未使用';
+                
+                case '1':
+                    $selectResult[$key]['status'] ='未使用';
                     break;
                 case '2':
-                    $selectResult[$key]['status'] = '使用中';
+                    $selectResult[$key]['status'] ='使用中';
                     break;
                 case '3':
-                    $selectResult[$key]['status'] = '发布中';
+                    $selectResult[$key]['status'] ='发布中';
                     break;
                 case '4':
-                    $selectResult[$key]['status'] = '已出库';
+                    $selectResult[$key]['status'] ='已出库';
+                    break;
+                case '5':
+                    $selectResult[$key]['status'] ='出库失败';
                     break;
             }
         }

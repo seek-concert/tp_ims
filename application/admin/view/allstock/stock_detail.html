@@ -47,7 +47,7 @@
                             </tr>
                             <tr>
                                 <td>交易id</td>
-                                <td>{$info['pid']}</td>
+                                <td>{$info['tid']}</td>
                             </tr>
                             <tr>
                                 <td>归属人</td>
@@ -63,15 +63,15 @@
                             </tr>
                             <tr>
                                 <td>入库时间</td>
-                                <td>{$info['id']}</td>
+                                <td>{$info['input_time']}</td>
                             </tr>
                             <tr>
                                 <td>出库时间</td>
-                                <td>{$info['id']}</td>
+                                <td>{$info['out_time']}</td>
                             </tr>
                             <tr>
                                 <td>入库价格</td>
-                                <td>{$info['id']}</td>
+                                <td>{$info['tprice']}</td>
                             </tr>
                             <tr>
                                 <td>面值</td>
@@ -79,7 +79,7 @@
                             </tr>
                             <tr>
                                 <td>状态</td>
-                                <td>{if $info['status']== -1}交易失败 {elseif $info['status'] == 1}未使用{elseif $info['status']==2}使用中{elseif $info['status']==3}发布中{elseif $info['status']==4}{/if}</td>
+                                <td>{if $info['status']== -1}交易失败 {elseif $info['status'] == 1}未使用{elseif $info['status']==2}使用中{elseif $info['status']==3}发布中{elseif $info['status']==4}已出库{else}出库失败{/if}</td>
                             </tr>
                             <tr>
                                 <td>备注</td>
@@ -94,7 +94,7 @@
 
                     </table>
                    
-                        <a href="/admin/role/index.html"><button class="btn btn-success" type="button">返回</button></a>
+                        <a href="{:url('admin/allstock/index')}"><button class="btn btn-success" type="button">返回</button></a>
                    
                 </div>
 
