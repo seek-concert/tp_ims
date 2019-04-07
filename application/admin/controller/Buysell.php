@@ -40,7 +40,7 @@ class Buysell extends Base
             $sqlmap['status'] = $status;
         }
         if(!empty($keywords)){
-            $sqlmap['product_name|bunled_name'] =$keywords;
+            $sqlmap['product_name|bunled_name'] = ['like','%'.$keywords.'%'];
         }
         $lists = $this->order_model->getAllLists($page,$limit,$sqlmap);
         foreach ($lists as $key => $value) {
@@ -243,12 +243,18 @@ class Buysell extends Base
         $page = isset($param['pageNumber'])?(int)$param['pageNumber']:1;
         $limit = isset($param['pageSize'])?(int)$param['pageSize']:10;
         $keywords = isset($param['keywords'])?$param['keywords']:'';
+        $status = isset($param['status'])?(int)$param['status']:0;
         $sqlmap = [];
        
         if(!empty($keywords)){
-            $sqlmap['product_name|bunled_name'] =$keywords;
+            $sqlmap['product_name|bunled_name'] = ['like','%'.$keywords.'%'];
         }
-        $sqlmap['status'] = 1;
+        if(!empty($status)){
+            $sqlmap['status'] = $status;
+        }else{
+            $sqlmap['status'] = 1;
+        }
+
         $lists = $this->order_model->getAllLists($page,$limit,$sqlmap);
         foreach ($lists as $key => $value) {
             if($value['status'] == 1){
@@ -262,8 +268,16 @@ class Buysell extends Base
             if($lists[$key]['sell_num'] >0 && $lists[$key]['sell_num']<$lists[$key]['num']){
                 $lists[$key]['status'] = '已部分完成';
             }else{
-                $lists[$key]['status'] = '订单发布中';
+                if($value['status'] == 2){
+                    $lists[$key]['status'] = '已完成';
+                }elseif($value['status'] == 3){
+                     $lists[$key]['status'] = '已撤回';
+                }else{
+                    $lists[$key]['status'] = '订单发布中';
+                }
+                
             }
+
         }
         $count = $this->order_model->getAllCount($sqlmap);
         $return['total'] = $count;  //总数据
