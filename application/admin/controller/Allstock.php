@@ -47,11 +47,11 @@ class Allstock extends Base
         }
         //查询某个入库时间之前
         if($input_time_start == ''&& $input_time_end != ''){
-            $sqlmap['input_time'] = ['lt',$input_time_end];
+            $sqlmap['input_time'] = ['lt',$input_time_end+86399];
         }
         //查询某个入库时间段
         if($input_time_start != ''&& $input_time_end != ''){
-            $sqlmap['input_time'] = ['between',[$input_time_start,$input_time_end]];
+            $sqlmap['input_time'] = ['between',[$input_time_start,$input_time_end+86399]];
         }
         //查询某个出库时间之后
         if($out_time_start != ''&& $out_time_end == ''){
@@ -59,11 +59,11 @@ class Allstock extends Base
         }
         //查询某个出库时间之前
         if($out_time_start == ''&& $out_time_end != ''){
-            $sqlmap['out_time'] = ['lt',$out_time_end];
+            $sqlmap['out_time'] = ['lt',$out_time_end+86399];
         }
         //查询某个出库时间段
         if($out_time_start != ''&& $out_time_end != ''){
-            $sqlmap['out_time'] = ['between',[$out_time_start,$out_time_end]];
+            $sqlmap['out_time'] = ['between',[$out_time_start,$out_time_end+86399]];
         }
 
         if(!empty($status)){
