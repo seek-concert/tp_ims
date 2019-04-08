@@ -12,6 +12,7 @@ use app\admin\model\BunledModel;
 use app\admin\model\ProductModel;
 use app\admin\model\OrderModel;
 use app\admin\model\UserDetailModel;
+use app\admin\model\UserModel;
 use think\Db;
 class Buysell extends Base
 {
@@ -24,6 +25,7 @@ class Buysell extends Base
         $this->stock_model = new StockModel();
         $this->product_model = new ProductModel();
         $this->user_detail_model = new UserDetailModel();
+        $this->user_model = new UserModel();
     }
     public function index(){
         return view();
@@ -43,7 +45,7 @@ class Buysell extends Base
             $sqlmap['product_name|bunled_name'] = ['like','%'.$keywords.'%'];
         }
         $lists = $this->order_model->getAllLists($page,$limit,$sqlmap);
-        foreach ($lists as $key => $value) {
+        foreach ($lists as $key => $value){
             if($value['status'] == 1){
                 $lists[$key]['operate'] = "<a href='javascript:;' onclick='return_order(".$value['id'].")'>撤销订单</a>";
             }elseif($value['status'] == 2){
@@ -256,6 +258,9 @@ class Buysell extends Base
 
         $lists = $this->order_model->getAllLists($page,$limit,$sqlmap);
         foreach ($lists as $key => $value) {
+            if(session('id') == 1){
+                $lists[$key]['user_id'] = $this->user_model->getOneRealName($value['user_id']);
+            }
             if($value['status'] == 1){
                 $lists[$key]['operate'] = "<a href='javascript:;' onclick='buy_this(".$value['id'].")'>选择要购买的数量</a>";
             }
