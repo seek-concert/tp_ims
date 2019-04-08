@@ -12,6 +12,7 @@ namespace app\admin\controller;
 
 use app\admin\model\LoginLogModel;
 use app\admin\model\RoleModel;
+use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
 use app\admin\model\UserType;
 use think\Controller;
@@ -58,7 +59,13 @@ class Login extends Controller
         // 获取该管理员的角色信息
         $roleModel = new RoleModel();
         $info = $roleModel->getRoleInfo($hasUser['role_id']);
-
+        if($info['rule'] != '*'){
+            $user_detail_model = new UserDetailModel();
+            $user_detail = $user_detail_model->get_user_one($info['id'],'duetime');
+            if($user_detail <= time()){
+                return json(msg(-8, '', '会员已到期'));
+            }
+        }
         session('username', $hasUser['real_name']);
         session('id', $hasUser['id']);
         session('role', $info['role_name']);  // 角色名
