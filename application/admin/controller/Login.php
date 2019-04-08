@@ -81,6 +81,7 @@ class Login extends Controller
         $log = $login_log->insertLoginLog([
             'real_name' => $hasUser['real_name'],
             'last_login_time' => time(),
+            'last_login_ip' => request()->ip(),
             'operate' => '登陆系统',
         ]);
         if(1 != $log['code']){
