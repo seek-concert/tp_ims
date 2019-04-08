@@ -364,7 +364,7 @@ class Buysell extends Base
         $consumer_sql['service_price'] = $service_price;
         $consumer_sql['remark'] = $note;
         $consumer_sql['input_time'] = time();
-        $consumer_sql['status'] = 1;
+        $consumer_sql['status'] = 3;
 
         //开启事务
         Db::startTrans();
@@ -374,7 +374,7 @@ class Buysell extends Base
             
             $insert_consumer = Db::name('consumer_log')->insert($consumer_sql);
            
-            $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->setInc('balance',$real_price);
+            $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->setInc('funds',$real_price);
           
             $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>$userid])->setDec('balance',$order_info['price']*$buy_num);
             $admin_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
