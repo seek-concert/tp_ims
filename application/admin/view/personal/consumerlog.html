@@ -53,6 +53,7 @@
                         <th data-field="input_time">购买时间</th>
                         <th data-field="status">订单状态</th>
                         <th data-field="remark">备注</th>
+                        <th data-field="operate">操作</th>
                         </thead>
                     </table>
                 </div>
@@ -125,7 +126,7 @@
     });
 
 
-$(function () {
+    $(function () {
     $('#datetimepicker1').datetimepicker({
         format: 'YYYY-MM-DD',
         locale: moment.locale('zh-cn')
@@ -142,9 +143,27 @@ $(function () {
         format: 'YYYY-MM-DD',
         locale: moment.locale('zh-cn')
     });
+    });
 
-     
-});
+    function consumerlog_confirm(id){
+        layer.confirm('确认收货?', {icon: 3, title:'提示'}, function(index){
+            //do something
+            $.getJSON("{:url('personal/consumerlog_confirm')}", {'id' : id}, function(res){
+                if(1 == res.code){
+                    layer.alert(res.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                        initTable();
+                    });
+                }else if(111 == res.code){
+                    window.location.reload();
+                }else{
+                    layer.alert(res.msg, {title: '友情提示', icon: 2});
+                }
+            });
+
+            layer.close(index);
+        })
+
+    }
 </script>
 </body>
 </html>

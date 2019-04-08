@@ -281,6 +281,9 @@ class Personal extends Base
                 if(!empty($vo['input_time'])){
                     $selectResult[$key]['input_time'] = date('Y-m-d H:i:s', $vo['input_time']);
                 }
+                if($vo['status'] == 3){
+                    $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id'],6));
+                }
                 $selectResult[$key]['bname'] = $bunled->where(['id'=>$vo['bunled_id']])->value('bname');
                 $selectResult[$key]['pname'] = $product->where(['id'=>$vo['product_id']])->value('pname');
                 $selectResult[$key]['status'] = $status[$vo['status']];
@@ -293,6 +296,49 @@ class Personal extends Base
             return json($return);
         }
         return $this->fetch();
+    }
+
+    /*
+     * 消费记录--确认收货
+     */
+    public function consumerlog_confirm()
+    {
+        $id = input('param.id');
+        //开启事务
+        Db::startTrans();
+        try {
+            //根据id获取信息
+            $consumerlog = DB::name('consumer_log')
+                ->where(['id'=>$id])
+                ->find();
+            //更改记录状态为成功
+            $consumerlog_update = Db::name('consumer_log')
+                ->where(['id'=>$id])
+                ->setField('status',1);
+            //获取对应卖家信息
+            $user_detail = DB::name('user_detail')
+                ->where(['uid'=>$consumerlog['seller_id']])
+                ->find();
+            $balance = $user_detail['balance'] + $consumerlog['real_price'];
+            $funds = $user_detail['funds'] - $consumerlog['real_price'];
+            //更改用户余额和冻结金额
+            $user_detail_update = Db::name('user_detail')
+                ->where(['uid'=>$consumerlog['seller_id']])
+                ->setField(['balance'=>$balance,'funds'=>$funds]);
+            if ($consumerlog_update && $user_detail_update) {
+                // 提交事务
+                Db::commit();
+                return msg(1, '', '确认成功');
+            } else {
+                // 回滚事务
+                Db::rollback();
+                return msg(-1, '', '确认失败');
+            }
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            return msg(-2, '', '确认失败');
+        }
     }
 
     /*
@@ -550,6 +596,15 @@ class Personal extends Base
                     'href' => "javascript:extractlog_del(" .$id .")",
                     'btnStyle' => 'danger',
                     'icon' => 'fa fa-trash-o'
+                ]
+            ];
+        }else if($status == 6){
+            return [
+                '确认收货' => [
+                    'auth' => 'personal/consumerlog_confirm',
+                    'href' => "javascript:consumerlog_confirm(" .$id .")",
+                    'btnStyle' => 'primary',
+                    'icon' => 'fa fa-paste'
                 ]
             ];
         }
