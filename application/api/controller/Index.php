@@ -73,7 +73,7 @@ class Index extends Controller
     //入库
     public function inbound(){
         if(false==$this->is_https){
-            return msg(-1,'当前接口暂不支持此协议');
+            //return msg(-1,'当前接口暂不支持此协议');
         }
         //数据检测
         $rule = [
@@ -124,7 +124,7 @@ class Index extends Controller
 
         $data['account'] = input('account')?stripTags(input('account/s')):'';
         $data['tid'] = stripTags(input('tid/s'));
-        $data['tprice'] = stripTags(input('tprice/s'));
+        $data['price'] = stripTags(input('tprice/s'));
         $data['tcurrency'] = stripTags(input('tcurrency/s'));
         $data['tdate'] = strtotime(stripTags(input('tdate/s')));
         $data['receipt'] = stripTags(input('receipt/s'));
@@ -155,7 +155,7 @@ class Index extends Controller
             }
             $data['product_id'] = isset($product_info['id'])?$product_info['id']:Db::name('product')->getLastInsID();
             //取得面值与入库价格
-            $data['price'] = bcmul($data['tprice'],6.7,2);
+            $data['tprice'] = bcmul($data['price'],6.7,2);
             //入库
             $rs = model('StockModel')->save($data);
             if(!$rs){
@@ -176,7 +176,7 @@ class Index extends Controller
     //出库
     public function outbound(){
         if(false==$this->is_https){
-            return msg(-1,'当前接口暂不支持此协议');
+            //return msg(-1,'当前接口暂不支持此协议');
         }
         // //数据检测
         $rule = [
@@ -247,14 +247,14 @@ class Index extends Controller
         Db::startTrans();
         try {
             $out_insert = Db::name('out_stock')->insertGetId($out_sql);
-            $edit_stock_status = Db::name('stock')->where(['id'=>$stock_info['id']])->update(['tid'=>$out_insert,'status'=>2]);
+            $edit_stock_status = Db::name('stock')->where(['id'=>$stock_info['id']])->update(['status'=>2]);
             if ($out_insert && $edit_stock_status) {
                 // 提交事务
                 Db::commit();
                 $errno = 0;
                 $txt = '出库成功' ;
-                $tid = $out_insert;
-                $receipt = $out_sql['receipt'];
+                $tid = $stock_info['tid'];
+                $receipt = $stock_info['receipt'];
                 return json(compact('errno', 'txt','tid','receipt'));
             } else {
                 // 回滚事务
@@ -274,7 +274,7 @@ class Index extends Controller
     //报告出库结果
     public function report(){
         if(false==$this->is_https){
-            return msg(-1,'当前接口暂不支持此协议');
+           // return msg(-1,'当前接口暂不支持此协议');
         }
         //数据检测
         $rule = [
@@ -341,32 +341,37 @@ class Index extends Controller
         $service_sql['type'] = 2;
         $service_sql['product_id'] = $out_info['product_id'];
         $service_sql['user_id'] = $token['id'];
+        if($status == 2){
+            //开启事务
+            Db::startTrans();
+            try {
 
-             //开启事务
-             Db::startTrans();
-             try {
-     
                 $service_insert = Db::name('service_money')->insert($service_sql);
-                 $out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
-          
-                 $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
+                $out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
+        
+                $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
 
-                 $edit_stock_status = Db::name('stock')->where(['id'=>$out_info['id']])->update(['out_user'=>$token['id'],'out_time'=>time(),'status'=>$data['status']]);
+                $edit_stock_status = Db::name('stock')->where(['id'=>$out_info['id']])->update(['out_user'=>$token['id'],'out_time'=>time(),'status'=>$data['status']]);
 
-                 if ($service_insert && $out_detail_edit && $buyer_detail_edit && $edit_stock_status) {
-                     // 提交事务
-                     Db::commit();
-                     return msg(0, '', '成功');
-                 } else {
-                     // 回滚事务
-                     Db::rollback();
-                     return msg(10003, '', '出错');
-                 }
-             } catch (\Exception $e) {
-                 // 回滚事务
-                 Db::rollback();
-                 return msg(10004, '', '出错');
-             }
+                if ($service_insert && $out_detail_edit && $buyer_detail_edit && $edit_stock_status) {
+                    // 提交事务
+                    Db::commit();
+                    return msg(0, '', '成功');
+                } else {
+                    // 回滚事务
+                    Db::rollback();
+                    return msg(10003, '', '出错');
+                }
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollback();
+                return msg(10004, '', '出错');
+            }
+        }else{
+            Db::name('stock')->where(['id'=>$out_info['id']])->update(['status'=>$data['status']]);
+            return msg(0, '', '成功');
+        }
+     
     }
 
 

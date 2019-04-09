@@ -1,48 +1,5 @@
 [
     {
-        "name": "topthink/think-installer",
-        "version": "v1.0.12",
-        "version_normalized": "1.0.12.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/top-think/think-installer.git",
-            "reference": "1be326e68f63de4e95977ed50f46ae75f017556d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://files.phpcomposer.com/files/top-think/think-installer/1be326e68f63de4e95977ed50f46ae75f017556d.zip",
-            "reference": "1be326e68f63de4e95977ed50f46ae75f017556d",
-            "shasum": ""
-        },
-        "require": {
-            "composer-plugin-api": "^1.0"
-        },
-        "require-dev": {
-            "composer/composer": "1.0.*@dev"
-        },
-        "time": "2017-05-27T06:58:09+00:00",
-        "type": "composer-plugin",
-        "extra": {
-            "class": "think\\composer\\Plugin"
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "think\\composer\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "yunwuxin",
-                "email": "448901948@qq.com"
-            }
-        ]
-    },
-    {
         "name": "topthink/framework",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -53,7 +10,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/top-think/framework/8a52dd232fcac998d393d05b1246e0f54bdc9dcb.zip",
+            "url": "https://api.github.com/repos/top-think/framework/zipball/8a52dd232fcac998d393d05b1246e0f54bdc9dcb",
             "reference": "8a52dd232fcac998d393d05b1246e0f54bdc9dcb",
             "shasum": ""
         },
@@ -94,5 +51,136 @@
             "orm",
             "thinkphp"
         ]
+    },
+    {
+        "name": "topthink/think-helper",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/top-think/think-helper.git",
+            "reference": "5f92178606c8ce131d36b37a57c58eb71e55f019"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/top-think/think-helper/zipball/5f92178606c8ce131d36b37a57c58eb71e55f019",
+            "reference": "5f92178606c8ce131d36b37a57c58eb71e55f019",
+            "shasum": ""
+        },
+        "time": "2018-10-05T00:43:21+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "think\\helper\\": "src"
+            },
+            "files": [
+                "src/helper.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "yunwuxin",
+                "email": "448901948@qq.com"
+            }
+        ],
+        "description": "The ThinkPHP5 Helper Package"
+    },
+    {
+        "name": "topthink/think-installer",
+        "version": "v1.0.12",
+        "version_normalized": "1.0.12.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/top-think/think-installer.git",
+            "reference": "1be326e68f63de4e95977ed50f46ae75f017556d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/top-think/think-installer/zipball/1be326e68f63de4e95977ed50f46ae75f017556d",
+            "reference": "1be326e68f63de4e95977ed50f46ae75f017556d",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.0"
+        },
+        "require-dev": {
+            "composer/composer": "1.0.*@dev"
+        },
+        "time": "2017-05-27T06:58:09+00:00",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "think\\composer\\Plugin"
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "think\\composer\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "yunwuxin",
+                "email": "448901948@qq.com"
+            }
+        ]
+    },
+    {
+        "name": "topthink/think-queue",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/top-think/think-queue.git",
+            "reference": "250650eb0e8ea5af4cfdc7ae46f3f4e0a24ac245"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/top-think/think-queue/zipball/250650eb0e8ea5af4cfdc7ae46f3f4e0a24ac245",
+            "reference": "250650eb0e8ea5af4cfdc7ae46f3f4e0a24ac245",
+            "shasum": ""
+        },
+        "require": {
+            "topthink/think-helper": ">=1.0.4",
+            "topthink/think-installer": ">=1.0.10"
+        },
+        "require-dev": {
+            "topthink/framework": "~5.0.0"
+        },
+        "time": "2018-10-15T10:16:55+00:00",
+        "type": "think-extend",
+        "extra": {
+            "think-config": {
+                "queue": "src/config.php"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "think\\": "src"
+            },
+            "files": [
+                "src/common.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "yunwuxin",
+                "email": "448901948@qq.com"
+            }
+        ],
+        "description": "The ThinkPHP5 Queue Package"
     }
 ]

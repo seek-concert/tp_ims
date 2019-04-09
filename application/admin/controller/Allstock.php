@@ -117,6 +117,11 @@ class Allstock extends Base
             }else{
                 $lists[$key]['user'] = '';
             }
+            if($value['input_time']){
+                $lists[$key]['input_time'] =  date('Y-m-d H:i:s',$value['input_time']);
+            }else{
+                $lists[$key]['input_time'] = '';
+            }
             $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid(\''.$value['id'].'\',\''.$product_id.'\',\''.$product_name.'\')">修改PID</a> ';
             $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid(\''.$value['id'].'\',\''.$bunled_id.'\',\''.$bunled_name.'\')">修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
