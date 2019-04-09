@@ -67,7 +67,7 @@ class Stock extends Base
     }
 
     // 我的库存
-    public function selfStock()
+    public function selfstock()
     {
         //实例化模型
         $stock_model = new StockModel();
@@ -162,7 +162,7 @@ class Stock extends Base
 
   
     // Pid改名
-    public function pidRename()
+    public function pidrename()
     {
         return view();
     }

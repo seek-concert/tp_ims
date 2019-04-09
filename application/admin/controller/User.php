@@ -58,7 +58,7 @@ class User extends Base
     }
 
     // 添加用户
-    public function userAdd()
+    public function useradd()
     {
         if(request()->isPost()){
 
@@ -108,7 +108,7 @@ class User extends Base
     }
 
     // 编辑用户
-    public function userEdit()
+    public function useredit()
     {
         $user = new UserModel();
 

@@ -55,6 +55,10 @@
                         <td>{$admin_info['balance']}<a href="javascript:extract({$admin_info['id']})">提现</a></td>
                     </tr>
                     <tr>
+                        <td>原账户余额</td>
+                        <td>{$admin_info['money']}</td>
+                    </tr>
+                    <tr>
                         <td>冻结资金</td>
                         <td>{$admin_info['funds']}</td>
                     </tr>
@@ -171,7 +175,6 @@
                     <thead>
                         <tr>
                             <th>总充值</th>
-    
                         </tr>
                     </thead>
                     <tbody>
@@ -190,6 +193,10 @@
                         <tr>
                             <td>累计消费金额</td>
                             <td>￥{$admin_pay_prepaid}</td>
+                        </tr>
+                        <tr>
+                            <td>总原账户余额</td>
+                            <td>￥{$admin_all_money}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -239,7 +246,7 @@
                         </tr>
                         <tr>
                             <td>用户余额</td>
-                            <td>{$admin_all_money}</td>
+                            <td>{$admin_all_balance}</td>
                         </tr>
                         <tr>
                             <td>冻结资金</td>
