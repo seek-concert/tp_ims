@@ -8,6 +8,7 @@ use app\admin\model\UserDetailModel;
 use app\admin\model\BunledModel;
 use think\Controller;
 use think\Db;
+use think\Request;
 
 class Index extends Controller
 {
@@ -108,7 +109,7 @@ class Index extends Controller
         //检测权限
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
-        $result = check_node($token,$contrl_name,$action_name);
+        $result = check_node($token['token'],$contrl_name,$action_name);
         if(false==$result){
             return msg(-1,'暂无权限');
         }
@@ -125,7 +126,7 @@ class Index extends Controller
         $data['tid'] = stripTags(input('tid/s'));
         $data['tprice'] = stripTags(input('tprice/s'));
         $data['tcurrency'] = stripTags(input('tcurrency/s'));
-        $data['tdate'] = stripTags(input('tdate/s'));
+        $data['tdate'] = strtotime(stripTags(input('tdate/s')));
         $data['receipt'] = stripTags(input('receipt/s'));
         $data['input_user'] = $token['id'];
         $data['input_time'] = time();
@@ -209,7 +210,7 @@ class Index extends Controller
         //检测权限
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
-        $result = check_node($token,$contrl_name,$action_name);
+        $result = check_node($token['token'],$contrl_name,$action_name);
         if(false==$result){
             return msg(-1,'暂无权限');
         }
@@ -304,26 +305,31 @@ class Index extends Controller
         //检测权限
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
-        $result = check_node($token,$contrl_name,$action_name);
+        $result = check_node($token['token'],$contrl_name,$action_name);
         if(false==$result){
             return msg(-1,'暂无权限');
         }
         //数据过滤
         $where = [];
-        $where['tid'] = stripTags(input('bid/s'));
-
+        $where['tid'] = stripTags(input('tid/s'));
+        $status = stripTags(input('status/s'));
         //$where['tid'] = 13;
-        $data = [];
-        $status = stripTags(input('pid/s'));
         //$status = 2;
+        $data = [];
         switch ($status){
+            case 1:
+                $data['status'] = 2;
+            break;
             case 2:
                 $data['status'] = 4;
                 break;
             case 3:
                 $data['status'] = 5;
                 break;
-                default;
+
+                default:
+                    $data['status'] = 6;
+                ;
         }
 
         //检测状态
@@ -342,9 +348,11 @@ class Index extends Controller
      
                 $service_insert = Db::name('service_money')->insert($service_sql);
                  $out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
+          
                  $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
-     
+
                  $edit_stock_status = Db::name('stock')->where(['id'=>$out_info['id']])->update(['out_user'=>$token['id'],'out_time'=>time(),'status'=>$data['status']]);
+
                  if ($service_insert && $out_detail_edit && $buyer_detail_edit && $edit_stock_status) {
                      // 提交事务
                      Db::commit();

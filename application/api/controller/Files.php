@@ -87,7 +87,7 @@ class Files extends Controller
         //检测权限
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
-        $result = check_node($token,$contrl_name,$action_name);
+        $result = check_node($token['token'],$contrl_name,$action_name);
         if(false==$result){
             return msg(-1,'暂无权限');
         }
@@ -147,7 +147,7 @@ class Files extends Controller
         //检测权限
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
-        $result = check_node($token,$contrl_name,$action_name);
+        $result = check_node($token['token'],$contrl_name,$action_name);
         if(false==$result){
             return msg(-1,'暂无权限');
         }
@@ -188,7 +188,7 @@ class Files extends Controller
         //检测权限
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
-        $result = check_node($token,$contrl_name,$action_name);
+        $result = check_node($token['token'],$contrl_name,$action_name);
         if(false==$result){
             return msg(-1,'暂无权限');
         }
