@@ -220,5 +220,13 @@ function create_guid(){
     return $guid;
 }
 
+/**
+ * 16进制转换为10进制整数
+ */
+function hexToDecimal($hexadecimal=''){
+    $hexadecimal = hexdec($hexadecimal);
+    $decimal =number_format($hexadecimal, 0, '', '');
+    return base_convert($decimal, 10, 16);
+}
 
 
