@@ -14,6 +14,7 @@ use app\admin\model\OrderModel;
 use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
 use think\Db;
+use think\Queue;
 class Buysell extends Base
 {
 
@@ -304,6 +305,7 @@ class Buysell extends Base
     }
     
     public function get_buy(){
+       die();
         $param = input('post.');
         $order_id = isset($param['order_id'])?(int)$param['order_id']:0;
         $buy_num = isset($param['buy_num'])?(int)$param['buy_num']:0;
@@ -395,5 +397,7 @@ class Buysell extends Base
         }
 
     }
+
+    
     
 }

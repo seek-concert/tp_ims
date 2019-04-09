@@ -13,11 +13,11 @@ use think\Route;
 
 Route::rule('/stock/login','api/index/login');
 
-Route::rule('/inbound','api/index/inbound');
+Route::rule('/stock/inbound','api/index/inbound');
 
-Route::rule('/outbound','api/index/outbound');
+Route::rule('/stock/outbound','api/index/outbound');
 
-Route::rule('/report','api/index/report');
+Route::rule('/stock/report','api/index/report');
 
 
 Route::rule('/user/signin','api/files/signin');
