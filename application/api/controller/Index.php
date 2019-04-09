@@ -9,6 +9,7 @@ use app\admin\model\BunledModel;
 use think\Controller;
 use think\Db;
 use think\Request;
+use think\Queue;
 
 class Index extends Controller
 {
@@ -230,7 +231,7 @@ class Index extends Controller
             return msg(10001,'暂无库存可出库');
         }
         $stock_info = objToArray($stock_info);
-        $user_money = UserDetailModel::where(['uid'=>$token['id']])->value('balance');
+        $user_money = UserDetailModel::where(['uid'=>$token['pid']])->value('balance');
         if($stock_info['price'] >$user_money){
             return msg(10002,'余额不足');
         }
@@ -254,8 +255,9 @@ class Index extends Controller
                 $errno = 0;
                 $txt = '出库成功' ;
                 $tid = $stock_info['tid'];
+                $id = $out_insert;
                 $receipt = $stock_info['receipt'];
-                return json(compact('errno', 'txt','tid','receipt'));
+                return json(compact('errno', 'txt','tid','id','receipt'));
             } else {
                 // 回滚事务
                 Db::rollback();
