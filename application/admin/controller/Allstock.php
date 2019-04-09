@@ -79,7 +79,7 @@ class Allstock extends Base
         foreach ($lists as $key => $value) {
             $bunled_name = $lists[$key]['bunled_name'] = $bunled_model->get_bunled_name($value['bunled_id']);
             $bunled_id = $bunled_model->get_bunled_id($value['bunled_id']);
-            $product_name = $product_model->get_product_name($value['product_id']);
+            $product_name = $lists[$key]['product_name'] =$product_model->get_product_name($value['product_id']);
             $product_id = $product_model->get_product_id($value['product_id']);
             $lists[$key]['is_check'] = '<input name ="my_stock" value="'.$value['id'].'"  type="checkbox"';
             if($value['is_check'] == 1){
