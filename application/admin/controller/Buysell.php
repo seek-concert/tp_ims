@@ -20,6 +20,7 @@ class Buysell extends Base
 
     public function __construct()
     {
+        parent::__construct();
         $this->order_model = new OrderModel();
         $this->bunled_model = new BunledModel();
         $this->stock_model = new StockModel();

@@ -48,6 +48,9 @@
                         <th data-field="bname">产品</th>
                         <th data-field="pname">规格</th>
                         <th data-field="seller_id">卖家</th>
+                        {if condition="session('id') eq 1"}
+                        <th data-field="user_id">买家</th>
+                        {/if}
                         <th data-field="num">购买数量</th>
                         <th data-field="price">总价格</th>
                         <th data-field="input_time">购买时间</th>

@@ -270,7 +270,9 @@ class Personal extends Base
                 $bid = $bunled->where(['bname'=>$bname])->value('id');
                 $sqlmap['bunled_id'] = ['eq', $bid];
             }
-            $sqlmap['user_id'] = ['eq',$uid];
+            if($uid != 1){
+                $sqlmap['user_id'] = ['eq',$uid];
+            }
             $consumerlog = new ConsumerLogModel();
             $user = new UserModel();
             $product = new ProductModel();
@@ -288,6 +290,9 @@ class Personal extends Base
                 $selectResult[$key]['pname'] = $product->where(['id'=>$vo['product_id']])->value('pname');
                 $selectResult[$key]['status'] = $status[$vo['status']];
                 $selectResult[$key]['seller_id'] = $user->getOneRealName($vo['seller_id']);
+                if($uid == 1){
+                    $selectResult[$key]['user_id'] = $user->getOneRealName($vo['user_id']);
+                }
             }
             $return['total'] = $consumerlog->getAllConsumerLog($sqlmap);  //总数据
             $return['counts'] = $consumerlog->getConsumerLogMoney(['user_id'=>$uid,'status'=>1]);  //统计消费

@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
+use app\admin\model\UserDetailModel;
 use think\Controller;
 use app\admin\model\UserModel;
 
@@ -25,6 +26,15 @@ class Base extends Controller
             }
 
             $this->redirect($loginUrl);
+        }
+        $info = session('');
+
+        if($info['rule'] != '*'){
+            $user_detail_model = new UserDetailModel();
+            $user_detail = $user_detail_model->get_user_one($info['id'],'duetime');
+            if($user_detail <= time()){
+                $this->error('会员已到期');
+            }
         }
 
         // 检测权限
