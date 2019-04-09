@@ -105,4 +105,13 @@ function check_node($token = '',$contrl_name = '',$action_name=''){
     return true;
 }
 
+/**
+ * 16进制转换为10进制整数
+ */
+function hexToDecimal($hexadecimal=''){
+    $hexadecimal = hexdec($hexadecimal);
+    $decimal =number_format($hexadecimal, 0, '', '');
+    return base_convert($decimal, 10, 16);
+}
+
 
