@@ -6,12 +6,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/framework.git",
-            "reference": "8a52dd232fcac998d393d05b1246e0f54bdc9dcb"
+            "reference": "338f7ad636ea0d658969004c1521b6a764e52754"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/framework/zipball/8a52dd232fcac998d393d05b1246e0f54bdc9dcb",
-            "reference": "8a52dd232fcac998d393d05b1246e0f54bdc9dcb",
+            "url": "https://api.github.com/repos/top-think/framework/zipball/338f7ad636ea0d658969004c1521b6a764e52754",
+            "reference": "338f7ad636ea0d658969004c1521b6a764e52754",
             "shasum": ""
         },
         "require": {
@@ -26,7 +26,7 @@
             "phpunit/phpunit": "4.8.*",
             "sebastian/phpcpd": "2.*"
         },
-        "time": "2017-07-18T08:19:42+00:00",
+        "time": "2019-01-11T09:55:32+00:00",
         "type": "think-framework",
         "installation-source": "source",
         "autoload": {
