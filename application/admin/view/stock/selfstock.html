@@ -11,6 +11,7 @@
     <link href="__CSS__/animate.min.css" rel="stylesheet">
     <link href="__CSS__/style.min.css?v=4.1.0" rel="stylesheet">
     <link href="__CSS__/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
 </head>
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -148,6 +149,7 @@
                 if(111 == res.code){
                     window.location.reload();
                 }
+              
                 layer.msg("加载成功", {time : 1000});
             },
             onLoadError: function(){  //加载失败时执行
@@ -163,8 +165,10 @@
         //当点击查询按钮的时候执行
         $("#search").bind("click", initTable);
 
+       
     });
 
+    
 </script>
 </body>
 </html>

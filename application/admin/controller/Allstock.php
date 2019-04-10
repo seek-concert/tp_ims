@@ -122,6 +122,7 @@ class Allstock extends Base
             }else{
                 $lists[$key]['input_time'] = '';
             }
+            $lists[$key]['tprice'] = '<span class="show_value">'.$value['tprice'].'</span><span class="edit_value"><input type="text" value="'.$value['tprice'].'" id="save_tprice"><button class="btn btn-primary" onclick="save_tprice('.$value['id'].',this)">保存</button></span>';
             $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid(\''.$value['id'].'\',\''.$product_id.'\',\''.$product_name.'\')">修改PID</a> ';
             $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid(\''.$value['id'].'\',\''.$bunled_id.'\',\''.$bunled_name.'\')">修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
@@ -300,6 +301,19 @@ class Allstock extends Base
         }else{
             $this->error('修改出错');
         }
+    }
+
+    /**
+     *  function 修改入库价格 
+     *  
+     * 
+     */
+    public function edit_tprice(){
+        $param = input('post.');
+        $id = $param['id'];
+        $value = $param['save_tprice'];
+        $stock_model = new StockModel();
+        $stock_model->where(['id'=>$id])->update(['tprice'=>$value]);
     }
 
 

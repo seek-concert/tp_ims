@@ -14,7 +14,23 @@
     <link href="__CSS__/style.min.css?v=4.1.0" rel="stylesheet">
     <link href="__CSS__/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="__CSS__/plugins/datapicker/datepicker3.css" rel="stylesheet"> 
-
+    <style>
+        .edit_value{
+            display:none;
+        }
+        .show_value{
+            width:100%;
+        }
+        .edit_value button{
+            margin-left: 11px;
+        }
+        .edit_value input{
+            width: 60px;
+            height: 32px;
+            border: 1px solid #e5e6e7;
+            border-color: #e5e6e7;
+        }
+        </style>
 </head>
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -226,6 +242,7 @@
                 }
                 layer.msg("加载成功", {time : 1000});
                 get_swich();
+                edit_all_tprice();
             },
             onLoadError: function(){  //加载失败时执行
                 layer.msg("加载数据失败");
@@ -382,6 +399,22 @@ function get_return(id){
         })
     }
 
+    function edit_all_tprice(){
+        $('.show_value').parent('td').click(function(){
+            $(this).find('.show_value').hide();
+            $(this).find('.edit_value').show();
+        })
+       
+    }
+
+    function save_tprice(id,obj){
+        console.log(obj);
+        var edit_val = $(obj).siblings('input').val();
+        $.post('{:url("edit_tprice")}',{id:id,save_tprice:edit_val},function(){
+            $(obj).parent('span').siblings('.show_value').show().html(edit_val);
+            $(obj).parent('span').hide();
+        })
+    }
 </script>
 </body>
 </html>

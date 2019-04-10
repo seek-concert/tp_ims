@@ -101,6 +101,8 @@ class Stock extends Base
         $input_user = isset($param['input_user'])?(int)$param['input_user']:0;
         $status = isset($param['status'])?(int)$param['status']:0;
         $id = session('id');
+        $pid = $user_model->get_user_one_data($id,'pid');
+        $power = $user_model->get_user_one_data($id,'power');
         $uid = $this->get_user($id);
         //组装查询条件
         $sqlamp = [];
@@ -110,7 +112,20 @@ class Stock extends Base
         if(!empty($input_user)){
             $sqlamp['input_user'] = $input_user;
         }else{
-            $sqlamp['input_user'] = ['in',$uid];
+            if(!$pid){
+                $sqlamp['input_user|out_user'] = ['in',$uid];
+            }else{
+               
+                if($power == 1){
+                  
+                    $sqlamp['input_user'] = $id;
+                }else{
+                  
+                    $sqlamp['out_user'] = $id;
+                }
+            }
+            
+
         }
         if(!empty($status)){
             $sqlamp['status'] = $status;
@@ -131,6 +146,7 @@ class Stock extends Base
             $selectResult[$key]['out_time'] = !empty($selectResult[$key]['out_time'])?date('Y-m-d H:i:s'):'';
             $selectResult[$key]['input_user'] = $user_model->get_user_one_data($selectResult[$key]['input_user'],'user_name');
             $selectResult[$key]['out_user'] = $user_model->get_user_one_data($selectResult[$key]['out_user'],'user_name');
+            
             switch ($selectResult[$key]['status']) {
                 case '-1':
                     $selectResult[$key]['status'] ='交易失败';
