@@ -132,6 +132,12 @@ class Index extends Controller
         $data['input_user'] = $token['id'];
         $data['input_time'] = time();
         $data['status'] = 1;
+        if($token['pid']){
+            $data['pristine_user'] = $token['pid'];
+        }else{
+            $data['pristine_user'] = $token['id'];
+        }
+        
         Db::startTrans();
         try{
             //获取应用ID
@@ -155,8 +161,7 @@ class Index extends Controller
                 }
             }
             $data['product_id'] = isset($product_info['id'])?$product_info['id']:Db::name('product')->getLastInsID();
-            //取得面值与入库价格
-            $data['tprice'] = bcmul($data['price'],6.7,2);
+            
             //入库
             $rs = model('StockModel')->save($data);
             if(!$rs){

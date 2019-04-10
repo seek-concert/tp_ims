@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,7 +11,6 @@
 
 namespace think;
 
-use BadMethodCallException;
 use InvalidArgumentException;
 use think\db\Query;
 use think\exception\ValidateException;
@@ -57,10 +56,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     protected $pk;
     // 数据表字段信息 留空则自动获取
     protected $field = [];
-    // 数据排除字段
-    protected $except = [];
-    // 数据废弃字段
-    protected $disuse = [];
     // 只读字段
     protected $readonly = [];
     // 显示属性
@@ -94,10 +89,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     protected $type = [];
     // 是否为更新数据
     protected $isUpdate = false;
-    // 是否使用Replace
-    protected $replace = false;
-    // 是否强制更新所有数据
-    protected $force = false;
     // 更新条件
     protected $updateWhere;
     // 验证失败是否抛出异常
@@ -119,12 +110,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     protected static $initialized = [];
 
     /**
-     * 是否从主库读取（主从分布式有效）
-     * @var array
-     */
-    protected static $readMaster;
-
-    /**
      * 构造方法
      * @access public
      * @param array|object $data 数据
@@ -136,16 +121,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         } else {
             $this->data = $data;
         }
-
-        if ($this->disuse) {
-            // 废弃字段
-            foreach ((array) $this->disuse as $key) {
-                if (array_key_exists($key, $this->data)) {
-                    unset($this->data[$key]);
-                }
-            }
-        }
-
         // 记录原始数据
         $this->origin = $this->data;
 
@@ -180,20 +155,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     }
 
     /**
-     * 是否从主库读取数据（主从分布有效）
-     * @access public
-     * @param  bool     $all 是否所有模型生效
-     * @return $this
-     */
-    public function readMaster($all = false)
-    {
-        $model = $all ? '*' : $this->class;
-
-        static::$readMaster[$model] = true;
-        return $this;
-    }
-
-    /**
      * 创建模型的查询对象
      * @access protected
      * @return Query
@@ -214,11 +175,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         $con = Db::connect($connection);
         // 设置当前模型 确保查询返回模型对象
         $queryClass = $this->query ?: $con->getConfig('query');
-        $query      = new $queryClass($con, $this);
-
-        if (isset(static::$readMaster['*']) || isset(static::$readMaster[$this->class])) {
-            $query->master(true);
-        }
+        $query      = new $queryClass($con, $this->class);
 
         // 设置当前数据表和模型名
         if (!empty($this->table)) {
@@ -232,19 +189,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         }
 
         return $query;
-    }
-
-    /**
-     * 创建新的模型实例
-     * @access public
-     * @param  array|object $data 数据
-     * @param  bool         $isUpdate 是否为更新
-     * @param  mixed        $where 更新条件
-     * @return Model
-     */
-    public function newInstance($data = [], $isUpdate = false, $where = null)
-    {
-        return (new static($data))->isUpdate($isUpdate, $where);
     }
 
     /**
@@ -317,6 +261,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     public function setParent($model)
     {
         $this->parent = $model;
+
         return $this;
     }
 
@@ -388,18 +333,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     public function isAutoWriteTimestamp($auto)
     {
         $this->autoWriteTimestamp = $auto;
-        return $this;
-    }
-
-    /**
-     * 更新是否强制写入数据 而不做比较
-     * @access public
-     * @param bool $force
-     * @return $this
-     */
-    public function force($force = true)
-    {
-        $this->force = $force;
         return $this;
     }
 
@@ -634,19 +567,14 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * @access public
      * @param Relation        $modelRelation 模型关联对象
      * @return mixed
-     * @throws BadMethodCallException
      */
     protected function getRelationData(Relation $modelRelation)
     {
-        if ($this->parent && !$modelRelation->isSelfRelation() && get_class($modelRelation->getModel()) == get_class($this->parent)) {
+        if ($this->parent && get_class($this->parent) == $modelRelation->getModel()) {
             $value = $this->parent;
         } else {
             // 首先获取关联数据
-            if (method_exists($modelRelation, 'getRelation')) {
-                $value = $modelRelation->getRelation();
-            } else {
-                throw new BadMethodCallException('method not exists:' . get_class($modelRelation) . '-> getRelation');
-            }
+            $value = $modelRelation->getRelation();
         }
         return $value;
     }
@@ -705,11 +633,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                 $value = empty($value) ? new \stdClass() : json_decode($value);
                 break;
             case 'serialize':
-                try {
-                    $value = unserialize($value);
-                } catch (\Exception $e) {
-                    $value = null;
-                }
+                $value = unserialize($value);
                 break;
             default:
                 if (false !== strpos($type, '\\')) {
@@ -762,7 +686,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                 if (isset($this->data[$key])) {
                     throw new Exception('bind attr has exists:' . $key);
                 } else {
-                    $this->data[$key] = $model->getAttr($attr);
+                    $this->data[$key] = $model->$attr;
                 }
             }
         }
@@ -896,29 +820,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                     $relation   = $this->getAttr($key);
                     $item[$key] = $relation->append([$attr])->toArray();
                 } else {
-                    $relation = Loader::parseName($name, 1, false);
-                    if (method_exists($this, $relation)) {
-                        $modelRelation = $this->$relation();
-                        $value         = $this->getRelationData($modelRelation);
-
-                        if (method_exists($modelRelation, 'getBindAttr')) {
-                            $bindAttr = $modelRelation->getBindAttr();
-                            if ($bindAttr) {
-                                foreach ($bindAttr as $key => $attr) {
-                                    $key = is_numeric($key) ? $attr : $key;
-                                    if (isset($this->data[$key])) {
-                                        throw new Exception('bind attr has exists:' . $key);
-                                    } else {
-                                        $item[$key] = $value ? $value->getAttr($attr) : null;
-                                    }
-                                }
-                                continue;
-                            }
-                        }
-                        $item[$name] = $value;
-                    } else {
-                        $item[$name] = $this->getAttr($name);
-                    }
+                    $item[$name] = $this->getAttr($name);
                 }
             }
         }
@@ -1016,18 +918,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     }
 
     /**
-     * 新增数据是否使用Replace
-     * @access public
-     * @param  bool $replace
-     * @return $this
-     */
-    public function replace($replace = true)
-    {
-        $this->replace = $replace;
-        return $this;
-    }
-
-    /**
      * 保存当前数据对象
      * @access public
      * @param array  $data     数据
@@ -1037,26 +927,18 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      */
     public function save($data = [], $where = [], $sequence = null)
     {
-        if (is_string($data)) {
-            $sequence = $data;
-            $data     = [];
-        }
-
-        // 数据自动验证
         if (!empty($data)) {
+            // 数据自动验证
             if (!$this->validateData($data)) {
                 return false;
             }
-
             // 数据对象赋值
             foreach ($data as $key => $value) {
                 $this->setAttr($key, $value, $data);
             }
-        }
-
-        if (!empty($where)) {
-            $this->isUpdate    = true;
-            $this->updateWhere = $where;
+            if (!empty($where)) {
+                $this->isUpdate = true;
+            }
         }
 
         // 自动关联写入
@@ -1127,17 +1009,12 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                 }
             }
 
-            $array = [];
-
-            foreach ((array) $pk as $key) {
-                if (isset($data[$key])) {
-                    $array[$key] = $data[$key];
-                    unset($data[$key]);
+            if (is_string($pk) && isset($data[$pk])) {
+                if (!isset($where[$pk])) {
+                    unset($where);
+                    $where[$pk] = $data[$pk];
                 }
-            }
-
-            if (!empty($array)) {
-                $where = $array;
+                unset($data[$pk]);
             }
 
             // 检测字段
@@ -1179,17 +1056,16 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             // 检测字段
             $allowFields = $this->checkAllowField(array_merge($this->auto, $this->insert));
             if (!empty($allowFields)) {
-                $result = $this->getQuery()->strict(false)->field($allowFields)->insert($this->data, $this->replace, false, $sequence);
+                $result = $this->getQuery()->strict(false)->field($allowFields)->insert($this->data);
             } else {
-                $result = $this->getQuery()->insert($this->data, $this->replace, false, $sequence);
+                $result = $this->getQuery()->insert($this->data);
             }
 
             // 获取自动增长主键
-            if ($result && $insertId = $this->getQuery()->getLastInsID($sequence)) {
-                foreach ((array) $pk as $key) {
-                    if (!isset($this->data[$key]) || '' == $this->data[$key]) {
-                        $this->data[$key] = $insertId;
-                    }
+            if ($result && is_string($pk) && (!isset($this->data[$pk]) || '' == $this->data[$pk])) {
+                $insertId = $this->getQuery()->getLastInsID($sequence);
+                if ($insertId) {
+                    $this->data[$pk] = $insertId;
                 }
             }
 
@@ -1226,18 +1102,10 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             if ($this->autoWriteTimestamp) {
                 array_push($field, $this->createTime, $this->updateTime);
             }
-        } elseif (!empty($this->except)) {
-            $fields      = $this->getQuery()->getTableInfo('', 'fields');
-            $field       = array_diff($fields, (array) $this->except);
-            $this->field = $field;
         } else {
             $field = [];
         }
 
-        if ($this->disuse) {
-            // 废弃字段
-            $field = array_diff($field, (array) $this->disuse);
-        }
         return $field;
     }
 
@@ -1263,16 +1131,12 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      */
     public function getChangedData()
     {
-        if ($this->force) {
-            $data = $this->data;
-        } else {
-            $data = array_udiff_assoc($this->data, $this->origin, function ($a, $b) {
-                if ((empty($a) || empty($b)) && $a !== $b) {
-                    return 1;
-                }
-                return is_object($a) || $a != $b ? 1 : 0;
-            });
-        }
+        $data = array_udiff_assoc($this->data, $this->origin, function ($a, $b) {
+            if ((empty($a) || empty($b)) && $a !== $b) {
+                return 1;
+            }
+            return is_object($a) || $a != $b ? 1 : 0;
+        });
 
         if (!empty($this->readonly)) {
             // 只读字段不允许更新
@@ -1378,14 +1242,14 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                 $auto = true;
             }
             foreach ($dataSet as $key => $data) {
-                if ($this->isUpdate || (!empty($auto) && isset($data[$pk]))) {
+                if (!empty($auto) && isset($data[$pk])) {
                     $result[$key] = self::update($data, [], $this->field);
                 } else {
                     $result[$key] = self::create($data, $this->field);
                 }
             }
             $db->commit();
-            return $this->toCollection($result);
+            return $result;
         } catch (\Exception $e) {
             $db->rollback();
             throw $e;
@@ -1395,7 +1259,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     /**
      * 设置允许写入的字段
      * @access public
-     * @param string|array $field 允许写入的字段 如果为true只允许写入数据表字段
+     * @param mixed $field 允许写入的字段 如果为true只允许写入数据表字段
      * @return $this
      */
     public function allowField($field)
@@ -1404,21 +1268,6 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             $field = explode(',', $field);
         }
         $this->field = $field;
-        return $this;
-    }
-
-    /**
-     * 设置排除写入的字段
-     * @access public
-     * @param string|array $field 排除允许写入的字段
-     * @return $this
-     */
-    public function except($field)
-    {
-        if (is_string($field)) {
-            $field = explode(',', $field);
-        }
-        $this->except = $field;
         return $this;
     }
 
@@ -1760,14 +1609,14 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     {
         $model = new static();
         $query = $model->db();
-        if (empty($data) && 0 !== $data) {
-            return 0;
-        } elseif (is_array($data) && key($data) !== 0) {
+        if (is_array($data) && key($data) !== 0) {
             $query->where($data);
             $data = null;
         } elseif ($data instanceof \Closure) {
             call_user_func_array($data, [ & $query]);
             $data = null;
+        } elseif (empty($data) && 0 !== $data) {
+            return 0;
         }
         $resultSet = $query->select($data);
         $count     = 0;
@@ -1814,7 +1663,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * 设置是否使用全局查询范围
      * @param bool $use 是否启用全局查询范围
      * @access public
-     * @return Query
+     * @return Model
      */
     public static function useGlobalScope($use)
     {
@@ -1843,14 +1692,13 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     /**
      * 根据关联条件查询当前模型
      * @access public
-     * @param  string $relation 关联方法名
-     * @param  mixed  $where    查询条件（数组或者闭包）
-     * @param  mixed  $fields   字段
+     * @param string $relation 关联方法名
+     * @param mixed  $where    查询条件（数组或者闭包）
      * @return Relation|Query
      */
-    public static function hasWhere($relation, $where = [], $fields = null)
+    public static function hasWhere($relation, $where = [])
     {
-        return (new static())->$relation()->hasWhere($where, $fields);
+        return (new static())->$relation()->hasWhere($where);
     }
 
     /**
@@ -2007,7 +1855,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * @access public
      * @param string $model      模型名
      * @param string $foreignKey 关联外键
-     * @param string $localKey   当前模型主键
+     * @param string $localKey   关联主键
      * @param array  $alias      别名定义（已经废弃）
      * @param string $joinType   JOIN类型
      * @return HasOne
@@ -2047,7 +1895,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * @access public
      * @param string $model      模型名
      * @param string $foreignKey 关联外键
-     * @param string $localKey   当前模型主键
+     * @param string $localKey   关联主键
      * @return HasMany
      */
     public function hasMany($model, $foreignKey = '', $localKey = '')
@@ -2066,7 +1914,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * @param string $through    中间模型名
      * @param string $foreignKey 关联外键
      * @param string $throughKey 关联外键
-     * @param string $localKey   当前模型主键
+     * @param string $localKey   关联主键
      * @return HasManyThrough
      */
     public function hasManyThrough($model, $through, $foreignKey = '', $throughKey = '', $localKey = '')
@@ -2116,7 +1964,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             $trace = debug_backtrace(false, 2);
             $morph = Loader::parseName($trace[1]['function']);
         }
-        $type = $type ?: get_class($this);
+        $type = $type ?: Loader::parseName($this->name);
         if (is_array($morph)) {
             list($morphType, $foreignKey) = $morph;
         } else {
@@ -2142,7 +1990,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             $trace = debug_backtrace(false, 2);
             $morph = Loader::parseName($trace[1]['function']);
         }
-        $type = $type ?: get_class($this);
+        $type = $type ?: Loader::parseName($this->name);
         if (is_array($morph)) {
             list($morphType, $foreignKey) = $morph;
         } else {
@@ -2180,6 +2028,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     public function __call($method, $args)
     {
         $query = $this->db(true, false);
+
         if (method_exists($this, 'scope' . $method)) {
             // 动态调用命名范围
             $method = 'scope' . $method;
@@ -2195,6 +2044,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     {
         $model = new static();
         $query = $model->db();
+
         if (method_exists($model, 'scope' . $method)) {
             // 动态调用命名范围
             $method = 'scope' . $method;

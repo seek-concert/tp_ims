@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,7 +12,6 @@
 namespace think\model\relation;
 
 use think\Collection;
-use think\Db;
 use think\db\Query;
 use think\Exception;
 use think\Loader;
@@ -29,8 +28,6 @@ class BelongsToMany extends Relation
     protected $pivotName;
     // 中间表模型对象
     protected $pivot;
-    // 中间表数据名称
-    protected $pivotDataName = 'pivot';
 
     /**
      * 构造函数
@@ -55,10 +52,6 @@ class BelongsToMany extends Relation
         }
         $this->query = (new $model)->db();
         $this->pivot = $this->newPivot();
-
-        if ('think\model\Pivot' == get_class($this->pivot)) {
-            $this->pivot->name($this->middle);
-        }
     }
 
     /**
@@ -73,46 +66,14 @@ class BelongsToMany extends Relation
     }
 
     /**
-     * 设置中间表数据名称
-     * @access public
-     * @param  string $name
-     * @return $this
-     */
-    public function pivotDataName($name)
-    {
-        $this->pivotDataName = $name;
-        return $this;
-    }
-
-    /**
-     * 获取中间表更新条件
-     * @param $data
-     * @return array
-     */
-    protected function getUpdateWhere($data)
-    {
-        return [
-            $this->localKey   => $data[$this->localKey],
-            $this->foreignKey => $data[$this->foreignKey],
-        ];
-    }
-
-    /**
      * 实例化中间表模型
-     * @param  array    $data
-     * @param  bool     $isUpdate
-     * @return Pivot
-     * @throws Exception
+     * @param $data
+     * @return mixed
      */
-    protected function newPivot($data = [], $isUpdate = false)
+    protected function newPivot($data = [])
     {
-        $class = $this->pivotName ?: '\\think\\model\\Pivot';
-        $pivot = new $class($data, $this->parent, $this->middle);
-        if ($pivot instanceof Pivot) {
-            return $isUpdate ? $pivot->isUpdate(true, $this->getUpdateWhere($data)) : $pivot;
-        } else {
-            throw new Exception('pivot model must extends: \think\model\Pivot');
-        }
+        $pivot = $this->pivotName ?: '\\think\\model\\Pivot';
+        return new $pivot($this->parent, $data, $this->middle);
     }
 
     /**
@@ -132,7 +93,7 @@ class BelongsToMany extends Relation
                     }
                 }
             }
-            $model->setRelation($this->pivotDataName, $this->newPivot($pivot, true));
+            $model->setRelation('pivot', $this->newPivot($pivot));
         }
     }
 
@@ -245,12 +206,11 @@ class BelongsToMany extends Relation
     /**
      * 根据关联条件查询当前模型
      * @access public
-     * @param  mixed  $where 查询条件（数组或者闭包）
-     * @param  mixed  $fields   字段
+     * @param mixed $where 查询条件（数组或者闭包）
      * @return Query
      * @throws Exception
      */
-    public function hasWhere($where = [], $fields = null)
+    public function hasWhere($where = [])
     {
         throw new Exception('relation not support: hasWhere');
     }
@@ -360,22 +320,14 @@ class BelongsToMany extends Relation
      * 获取关联统计子查询
      * @access public
      * @param \Closure $closure 闭包
-     * @param string   $name    统计数据别名
      * @return string
      */
-    public function getRelationCountQuery($closure, &$name = null)
+    public function getRelationCountQuery($closure)
     {
-        if ($closure) {
-            $return = call_user_func_array($closure, [ & $this->query]);
-            if ($return && is_string($return)) {
-                $name = $return;
-            }
-        }
-
         return $this->belongsToManyQuery($this->foreignKey, $this->localKey, [
             'pivot.' . $this->localKey => [
                 'exp',
-                Db::raw('=' . $this->parent->getTable() . '.' . $this->parent->getPk()),
+                '=' . $this->parent->getTable() . '.' . $this->parent->getPk(),
             ],
         ])->fetchSql()->count();
     }
@@ -406,7 +358,7 @@ class BelongsToMany extends Relation
                     }
                 }
             }
-            $set->setRelation($this->pivotDataName, $this->newPivot($pivot, true));
+            $set->setRelation('pivot', $this->newPivot($pivot));
             $data[$pivot[$this->localKey]][] = $set;
         }
         return $data;
@@ -432,7 +384,7 @@ class BelongsToMany extends Relation
 
         if (empty($this->baseQuery)) {
             $relationFk = $this->query->getPk();
-            $query->join([$table => 'pivot'], 'pivot.' . $foreignKey . '=' . $tableName . '.' . $relationFk)
+            $query->join($table . ' pivot', 'pivot.' . $foreignKey . '=' . $tableName . '.' . $relationFk)
                 ->where($condition);
         }
         return $query;
@@ -509,7 +461,7 @@ class BelongsToMany extends Relation
             foreach ($ids as $id) {
                 $pivot[$this->foreignKey] = $id;
                 $this->pivot->insert($pivot, true);
-                $result[] = $this->newPivot($pivot, true);
+                $result[] = $this->newPivot($pivot);
             }
             if (count($result) == 1) {
                 // 返回中间表模型对象
@@ -519,29 +471,6 @@ class BelongsToMany extends Relation
         } else {
             throw new Exception('miss relation data');
         }
-    }
-
-    /**
-     * 判断是否存在关联数据
-     * @access public
-     * @param  mixed $data  数据 可以使用关联模型对象 或者 关联对象的主键
-     * @return Pivot
-     * @throws Exception
-     */
-    public function attached($data)
-    {
-        if ($data instanceof Model) {
-            $relationFk = $data->getPk();
-            $id         = $data->$relationFk;
-        } else {
-            $id = $data;
-        }
-
-        $pk = $this->parent->getPk();
-
-        $pivot = $this->pivot->where($this->localKey, $this->parent->$pk)->where($this->foreignKey, $id)->find();
-
-        return $pivot ?: false;
     }
 
     /**
@@ -636,7 +565,7 @@ class BelongsToMany extends Relation
         if (empty($this->baseQuery) && $this->parent->getData()) {
             $pk    = $this->parent->getPk();
             $table = $this->pivot->getTable();
-            $this->query->join([$table => 'pivot'], 'pivot.' . $this->foreignKey . '=' . $this->query->getTable() . '.' . $this->query->getPk())->where('pivot.' . $this->localKey, $this->parent->$pk);
+            $this->query->join($table . ' pivot', 'pivot.' . $this->foreignKey . '=' . $this->query->getTable() . '.' . $this->query->getPk())->where('pivot.' . $this->localKey, $this->parent->$pk);
             $this->baseQuery = true;
         }
     }
