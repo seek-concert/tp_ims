@@ -132,7 +132,12 @@ class Index extends Controller
         $data['input_user'] = $token['id'];
         $data['input_time'] = time();
         $data['status'] = 1;
-        $data['user'] = $token['pid'];
+        if($token['pid']){
+            $data['user'] = $token['pid'];
+        }else{
+            $data['user'] = $token['id'];
+        }
+        
         Db::startTrans();
         try{
             //获取应用ID
