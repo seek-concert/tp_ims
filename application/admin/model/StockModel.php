@@ -33,7 +33,7 @@ class StockModel extends Model
      */
     public function getAllStock($page, $limit, $where)
     {
-        $obj_lists = $this->where($where)->page($page, $limit)->select();
+        $obj_lists = $this->where($where)->page($page, $limit)->order('id desc')->select();
         return objToArray($obj_lists);
     }
 

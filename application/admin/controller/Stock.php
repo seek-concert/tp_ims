@@ -67,7 +67,7 @@ class Stock extends Base
     }
 
     // 我的库存
-    public function selfStock()
+    public function selfstock()
     {
         //实例化模型
         $stock_model = new StockModel();
@@ -91,6 +91,7 @@ class Stock extends Base
     public function get_self_stock(){
         $stock_model = new StockModel();
         $bunled_model = new BunledModel();
+        $product_model = new ProductModel();
         $user_model = new UserModel();
         $param = input('param.');
         //传递数据
@@ -142,6 +143,7 @@ class Stock extends Base
         //组装列表数据
         foreach ($selectResult as $key => $value) {
             $selectResult[$key]['bname'] = $bunled_model->get_bunled_name($value['bunled_id']);
+            $selectResult[$key]['pname'] =$product_model->get_product_name($value['product_id']);
             $selectResult[$key]['input_time'] = !empty($selectResult[$key]['input_time'])?date('Y-m-d H:i:s'):'';
             $selectResult[$key]['out_time'] = !empty($selectResult[$key]['out_time'])?date('Y-m-d H:i:s'):'';
             $selectResult[$key]['input_user'] = $user_model->get_user_one_data($selectResult[$key]['input_user'],'user_name');
@@ -176,7 +178,7 @@ class Stock extends Base
 
   
     // Pid改名
-    public function pidRename()
+    public function pidrename()
     {
         return view();
     }

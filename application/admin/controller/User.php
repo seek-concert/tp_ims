@@ -37,8 +37,11 @@ class User extends Base
             $status = config('user_status');
             // 拼装参数
             foreach($selectResult as $key=>$vo){
-
-                $selectResult[$key]['last_login_time'] = date('Y-m-d H:i:s', $vo['last_login_time']);
+                if(!empty($vo['last_login_time'])){
+                    $selectResult[$key]['last_login_time'] = date('Y-m-d H:i:s', $vo['last_login_time']);
+                }else{
+                    $selectResult[$key]['last_login_time'] = '-';
+                }
                 $selectResult[$key]['status'] = $status[$vo['status']];
 
                 if( 1 == $vo['role_id'] ){
@@ -58,7 +61,7 @@ class User extends Base
     }
 
     // 添加用户
-    public function userAdd()
+    public function useradd()
     {
         if(request()->isPost()){
 
@@ -108,7 +111,7 @@ class User extends Base
     }
 
     // 编辑用户
-    public function userEdit()
+    public function useredit()
     {
         $user = new UserModel();
 
