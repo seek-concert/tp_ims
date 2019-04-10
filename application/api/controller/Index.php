@@ -133,9 +133,9 @@ class Index extends Controller
         $data['input_time'] = time();
         $data['status'] = 1;
         if($token['pid']){
-            $data['user'] = $token['pid'];
+            $data['pristine_user'] = $token['pid'];
         }else{
-            $data['user'] = $token['id'];
+            $data['pristine_user'] = $token['id'];
         }
         
         Db::startTrans();
