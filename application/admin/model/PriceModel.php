@@ -85,4 +85,12 @@ class PriceModel extends Model
     {
         return $this->where('id', $id)->find();
     }
+
+    /**
+     * 根据条件获取某个单条信息
+     * @param $id
+     */
+    public function get_one_data($where=[],$value=''){
+        return $this->where($where)->value($value);
+    }
 }

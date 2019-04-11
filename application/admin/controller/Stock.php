@@ -14,6 +14,7 @@ use app\admin\model\StockModel;
 use app\admin\model\ProductModel;
 use app\admin\model\BunledModel;
 use app\admin\model\UserModel;
+use app\admin\model\PriceModel;
 class Stock extends Base
 {
     // 库存列表(总览)
@@ -92,7 +93,9 @@ class Stock extends Base
         $stock_model = new StockModel();
         $bunled_model = new BunledModel();
         $product_model = new ProductModel();
+        $product_model = new ProductModel();
         $user_model = new UserModel();
+        $price_model = new PriceModel();
         $param = input('param.');
         //传递数据
         $limit = isset($param['pageSize'])?(int)$param['pageSize']:0;
@@ -148,7 +151,9 @@ class Stock extends Base
             $selectResult[$key]['out_time'] = !empty($selectResult[$key]['out_time'])?date('Y-m-d H:i:s'):'';
             $selectResult[$key]['input_user'] = $user_model->get_user_one_data($selectResult[$key]['input_user'],'user_name');
             $selectResult[$key]['out_user'] = $user_model->get_user_one_data($selectResult[$key]['out_user'],'user_name');
-            
+            $pid = $product_model->get_product_id($value['product_id']);
+            $bid = $bunled_model->get_bunled_id($value['bunled_id']);
+            $selectResult[$key]['excel_price'] = $price_model->get_one_data(['pid'=>$pid,'bid'=>$bid],'price');
             switch ($selectResult[$key]['status']) {
                 case '-1':
                     $selectResult[$key]['status'] ='交易失败';
