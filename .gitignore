@@ -4,3 +4,5 @@ runtime
 *.log
 *.sql
 /application/database.php
+thinkphp
+vendor

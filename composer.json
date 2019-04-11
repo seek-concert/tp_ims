@@ -18,7 +18,8 @@
     "require": {
         "php": ">=5.4.0",
         "topthink/framework": "*",
-        "topthink/think-queue": "dev-master"
+        "topthink/think-queue": "dev-master",
+        "phpoffice/phpspreadsheet": "dev-master"
     },
     "extra": {
         "think-path": "thinkphp"
