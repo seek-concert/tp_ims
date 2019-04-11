@@ -109,19 +109,25 @@
                         <th data-field="id">id</th>
                         <th data-field="bunled_name">库存名</th>
                         <th data-field="product_name">档位名</th>
+                        {if condition="session('id') eq 1"}
                         <th data-field="pid">修改pid</th>
                         <th data-field="uid">修改uid</th>
+                        {/if}
                         <th data-field="user">归属人</th>
                         <th data-field="pristine_user">原归属人</th>
                         <th data-field="input_time">入库时间</th>
                         <th data-field="out_user">出库人</th>
+                        {if condition="session('id') eq 1"}
                         <th data-field="tcurrency">币种</th>
                         <th data-field="tprice">入库价格</th>
                         <th data-field="price">传入价格</th>
+                        {/if}
                         <th data-field="excel_price">面值</th>
                         <th data-field="note">备注</th>
                         <th data-field="status">库存状态</th>
+                        {if condition="session('id') eq 1"}
                         <th data-field="is_check">库存审核</th>
+                        {/if}
                         <th data-field="operate">操作</th>
                         </thead>
                     </table>
