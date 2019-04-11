@@ -161,7 +161,8 @@ class Index extends Controller
                 }
             }
             $data['product_id'] = isset($product_info['id'])?$product_info['id']:Db::name('product')->getLastInsID();
-            
+             //取得面值与入库价格
+             $data['tprice'] = bcmul($data['price'],6.7,2);
             //入库
             $rs = model('StockModel')->save($data);
             if(!$rs){
@@ -340,8 +341,8 @@ class Index extends Controller
         }
 
         //检测状态
-        $out_info =  StockModel::field(['id','tid','price','product_id','receipt','status'])->where($where)->find();
-        $service_price = $out_info['price']/100;
+        $out_info =  StockModel::field(['id','tid','tprice','price','product_id','receipt','status'])->where($where)->find();
+        $service_price = $out_info['tprice']/100;
         $service_sql = [];
         $service_sql['price'] = $service_price;
         $service_sql['input_time'] = time();

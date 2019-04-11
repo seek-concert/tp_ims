@@ -51,7 +51,14 @@
                             </tr>
                             <tr>
                                 <td>归属人</td>
-                                <td>{$info['user']}</td>
+                                <td>
+                                    <select name="user" id="user">
+                                        <option value="" {if $info['user'] == ''}selected{/if}></option>
+                                        {foreach $user_lists as $k => $v}
+                                        <option {if $info['user'] == $k}selected{/if} value="{$k}">{$v}</option>
+                                        {/foreach}
+                                    </select>
+                                </td>
                             </tr>
                             <tr>
                                 <td>入库人</td>
@@ -93,7 +100,7 @@
                         </tbody>
 
                     </table>
-                   
+                        <button class="btn btn-success" onclick="edit_user()">确定</button>
                         <a href="{:url('admin/allstock/index')}"><button class="btn btn-success" type="button">返回</button></a>
                    
                 </div>
@@ -116,7 +123,20 @@
     <script src="__JS__/plugins/layer/layer.min.js"></script>
     <script src="__JS__/moment-with-locales.min.js"></script>
     <script src="__JS__/plugins/datapicker/bootstrap-datetimepicker.min.js"></script>
-
+    <script>
+        var id = "{$info['id']}";
+        function edit_user(){
+            $.post("{:url('edit_stock_user')}",{id:id,user:$('#user').val()},function(ret){
+                if(ret.code){
+                    layer.alert(ret.msg, {title: '友情提示', icon: 1, closeBtn: 0}, function(){
+                        window.location.reload()
+                    });
+                }else{
+                    layer.alert(ret.msg, {title: '友情提示', icon: 2, closeBtn: 0});
+                }
+            })
+        }
+    </script>
 </body>
 
 </html>

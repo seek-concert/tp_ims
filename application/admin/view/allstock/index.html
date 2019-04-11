@@ -76,7 +76,12 @@
                         </div>
 
                         <label>管理员id：</label>
-                        <input type="text" name="userid" class="form-control" id="userid">
+                        <select name="userid" id="userid" class="form-control" id="">
+                            <option value="">请选择</option>
+                            {foreach $user_lists as $k =>$v}
+                            <option class="form-control" value="{$k}">{$v}</option>
+                            {/foreach}
+                        </select>
 
                         <label>状态：</label>
                         <select name="status" class="form-control" id="status">
@@ -110,6 +115,7 @@
                         <th data-field="pristine_user">原归属人</th>
                         <th data-field="input_time">入库时间</th>
                         <th data-field="out_user">出库人</th>
+                        <th data-field="tcurrency">币种</th>
                         <th data-field="tprice">入库价格</th>
                         <th data-field="price">面值</th>
                         <th data-field="note">备注</th>

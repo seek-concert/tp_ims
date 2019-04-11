@@ -51,7 +51,7 @@ class Stock extends Base
         $uid = $this->get_user($id);
         $sqlamp['input_user'] = ['in',$uid];
         
-        $selectResult = $stock_model->getStockGroup($page, $limit, $sqlamp,'product_id,status,bunled_id');
+        $selectResult = $stock_model->getStockGroup($page, $limit, $sqlamp,'product_id,bunled_id');
         //组装数据
         foreach ($selectResult as $key => $value) {
             $selectResult[$key]['bname'] = $bunled_model->get_bunled_name($value['bunled_id']);
