@@ -46,10 +46,15 @@ class Buysell extends Base
         if(!empty($keywords)){
             $sqlmap['product_name|bunled_name'] = ['like','%'.$keywords.'%'];
         }
+        $id = session('id');
+        $uid = $this->get_user($id);
+        $sqlmap['user_id'] = ['in',$uid];
         $lists = $this->order_model->getAllLists($page,$limit,$sqlmap);
         foreach ($lists as $key => $value){
             if($value['status'] == 1){
+
                 $lists[$key]['operate'] = "<a href='javascript:;' onclick='return_order(".$value['id'].")'>撤销订单</a>";
+
             }elseif($value['status'] == 2){
                 $lists[$key]['operate'] = "<a href='javascript:;'>已经完成</a>";
             }else{
@@ -204,8 +209,7 @@ class Buysell extends Base
         $uid = $this->get_user($user_id);
         $product_id = $order_info['product_id'];
         $bunled_id = $order_info['bunled_id'];
-        $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'input_user'=>['in',$uid]])->order('id desc')->limit($num)->column('id');
-       
+        $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'input_user'=>$user_id])->order('id desc')->limit($num)->column('id');
          //开启事务
          Db::startTrans();
          try {

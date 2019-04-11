@@ -21,7 +21,11 @@ class Allstock extends Base
      * 
      */
     public function index(){
-        return view();
+        $user_model = new UserModel();
+        $user_lists = $user_model->where(['pid'=>0,'id'=>['neq',1]])->column('real_name','id');
+        $return_data = [];
+        $return_data['user_lists'] = $user_lists;
+        return view('',$return_data);
     }
 
     /**
@@ -72,7 +76,8 @@ class Allstock extends Base
             $sqlmap['status'] = $status;
         }
         if(!empty($userid)){
-            $sqlmap['user|input_user'] = $userid;
+            $uid = $this->get_user($userid);
+            $sqlmap['user|input_user'] = ['in',$uid];
         }
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         //整理返回数据
@@ -107,6 +112,7 @@ class Allstock extends Base
                     $lists[$key]['status'] ='出库失败';
                     break;
             }
+
             if(!empty($value['user'])){
                 $lists[$key]['user'] =  $user_model->getOneRealName($value['user']);
             }else{
@@ -147,6 +153,7 @@ class Allstock extends Base
         $product_model = new ProductModel();
         $bunled_model = new BunledModel();
         $user_model = new UserModel();
+      
         if($id == 0){
             $this->error('请勿非法访问');
         }
@@ -157,11 +164,7 @@ class Allstock extends Base
         $info['bid'] = $bunled_model->get_bunled_id($info['bunled_id']);
         $info['pname'] = $product_model->get_product_name($info['product_id']);
         $info['pid'] = $product_model->get_product_name($info['product_id']);
-        if($info['user']){
-            $info['user'] =  $user_model->getOneRealName($info['user']);
-        }else{
-            $info['user'] = '';
-        }
+        
         if($info['out_user']){
             $info['out_user'] =  $user_model->getOneRealName($info['out_user']);
         }else{
@@ -180,6 +183,8 @@ class Allstock extends Base
             $info['out_time'] = date('Y-m-d H:i:s',$info['out_time']);
         }
         $return_data = [];
+        $user_lists = $user_model->where(['pid'=>0,'id'=>['neq',1]])->column('real_name','id');
+        $return_data['user_lists'] = $user_lists;
         $return_data['info'] = $info;
         return view('',$return_data);
     }
@@ -319,7 +324,23 @@ class Allstock extends Base
         $stock_model->where(['id'=>$id])->update(['tprice'=>$value]);
     }
 
-
+    /**
+     *  function 修改库存所有人 
+     *  
+     * 
+     */
+    public function edit_stock_user(){
+        $stock_model = new StockModel();
+        $param = input('');
+        $id = $param['id'];
+        $userid = $param['user'];
+        $ret = $stock_model->where(['id'=>$id])->update(['user'=>$userid,'input_user'=>$userid]);
+        if(!$ret){
+            $this->error('修改出错,请重试');
+        }else{
+            $this->success('修改成功');
+        }
+    }
     /**
      * 拼装操作按钮
      * @param $id
