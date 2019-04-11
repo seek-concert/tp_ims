@@ -62,7 +62,7 @@ class Login extends Controller
         $info = $roleModel->getRoleInfo($hasUser['role_id']);
         if($info['rule'] != '*'){
             $user_detail_model = new UserDetailModel();
-            $user_detail = $user_detail_model->get_user_one($info['id'],'duetime');
+            $user_detail = $user_detail_model->get_user_one($hasUser['id'],'duetime');
             if($user_detail <= time()){
                 return json(msg(-8, '', '会员已到期'));
             }
