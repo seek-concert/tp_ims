@@ -92,7 +92,7 @@ class StockModel extends Model
      * @param $where 
      */
     public function getStockGroup($page=1,$limit=10,$where = [],$group=''){
-        $obj_info = $this->group($group)->where($where)->page($page,$limit)->column('id,bunled_id,product_id,status,count(*) as count');
+        $obj_info = $this->group($group)->where($where)->page($page,$limit)->order('bunled_id')->column('id,bunled_id,product_id,status,count(*) as count');
         return objToArray($obj_info);
     }
 

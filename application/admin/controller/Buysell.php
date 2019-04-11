@@ -309,7 +309,6 @@ class Buysell extends Base
     }
     
     public function get_buy(){
-       die();
         $param = input('post.');
         $order_id = isset($param['order_id'])?(int)$param['order_id']:0;
         $buy_num = isset($param['buy_num'])?(int)$param['buy_num']:0;
@@ -378,16 +377,18 @@ class Buysell extends Base
         try {
             $edit_order_status = Db::name('order')->where(['id'=>$order_id])->update($sqlmap);
             $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid]);
-            
-            $insert_consumer = Db::name('consumer_log')->insert($consumer_sql);
-           
+        
+            $insert_consumer = Db::name('consumer_log')->insertGetId($consumer_sql);
             $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->setInc('funds',$real_price);
-          
             $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>$userid])->setDec('balance',$order_info['price']*$buy_num);
             $admin_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
             if ($edit_order_status && $edit_stock_status && $insert_consumer && $seller_detail_edit && $buyer_detail_edit && $admin_detail_edit) {
                 // 提交事务
                 Db::commit();
+                $queue_data = [];
+                $queue_data['id'] = $insert_consumer;
+                //若6小时未进行通过操作由系统自动通过队列
+               $isPushed = Queue::later(6*3600, 'app\admin\job\Hello@fire' ,  $queue_data , 'helloJobQueue' );
                return msg(1, '', '交易成功');
             } else {
                 // 回滚事务
