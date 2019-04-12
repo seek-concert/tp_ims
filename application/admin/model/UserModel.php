@@ -160,7 +160,7 @@ class UserModel extends Model
      * @param array $param
      */
     public function get_child_lists($id){
-        $user_lists = $this->where(['pid'=>$id])->column('user_name','id');
+        $user_lists = $this->where(['pid'=>$id])->column('real_name','id');
         
         return objToArray($user_lists);
     }

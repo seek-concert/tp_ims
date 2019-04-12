@@ -104,6 +104,8 @@ class Stock extends Base
         $out_user = isset($param['out_user'])?(int)$param['out_user']:0;
         $input_user = isset($param['input_user'])?(int)$param['input_user']:0;
         $status = isset($param['status'])?(int)$param['status']:0;
+        $search_pid = isset($param['search_pid'])?$param['search_pid']:'';
+        $search_uid = isset($param['search_uid'])?$param['search_uid']:'';
         $id = session('id');
         $pid = $user_model->get_user_one_data($id,'pid');
         $power = $user_model->get_user_one_data($id,'power');
@@ -140,7 +142,16 @@ class Stock extends Base
           
            $sqlamp['bunled_id'] = ['in',$bunled_ids];
         }
-       
+        
+        if(!empty($search_pid)){
+            $product_id = $product_model->where(['pid'=>$search_pid])->value('id');
+            $sqlamp['product_id'] = $product_id;
+        }
+
+        if(!empty($search_uid)){
+            $bunled_id = $bunled_model->where(['bid'=>$search_uid])->value('id');
+            $sqlamp['bunled_id'] = $bunled_id;
+        }
         $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp);
       
         //组装列表数据
@@ -149,8 +160,8 @@ class Stock extends Base
             $selectResult[$key]['pname'] =$product_model->get_product_name($value['product_id']);
             $selectResult[$key]['input_time'] = !empty($selectResult[$key]['input_time'])?date('Y-m-d H:i:s'):'';
             $selectResult[$key]['out_time'] = !empty($selectResult[$key]['out_time'])?date('Y-m-d H:i:s'):'';
-            $selectResult[$key]['input_user'] = $user_model->get_user_one_data($selectResult[$key]['input_user'],'user_name');
-            $selectResult[$key]['out_user'] = $user_model->get_user_one_data($selectResult[$key]['out_user'],'user_name');
+            $selectResult[$key]['input_user'] = $user_model->get_user_one_data($selectResult[$key]['input_user'],'real_name');
+            $selectResult[$key]['out_user'] = $user_model->get_user_one_data($selectResult[$key]['out_user'],'real_name');
             $pid = $product_model->get_product_id($value['product_id']);
             $bid = $bunled_model->get_bunled_id($value['bunled_id']);
             $selectResult[$key]['excel_price'] = $price_model->get_one_data(['pid'=>$pid,'bid'=>$bid],'price');
