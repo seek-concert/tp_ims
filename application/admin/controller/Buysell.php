@@ -261,7 +261,7 @@ class Buysell extends Base
         }else{
             $sqlmap['status'] = 1;
         }
-
+        //获取所有订单信息
         $lists = $this->order_model->getAllLists($page,$limit,$sqlmap);
         foreach ($lists as $key => $value) {
             if(session('id') == 1){
@@ -295,6 +295,7 @@ class Buysell extends Base
         return json($return);
     }
 
+    
     public function get_order_info(){
         $param = input('post.');
         $id = isset($param['id'])?(int)$param['id']:0;
@@ -308,11 +309,16 @@ class Buysell extends Base
         return json($order_info);
     }
     
+    
     public function get_buy(){
         $param = input('post.');
+        //订单表id
         $order_id = isset($param['order_id'])?(int)$param['order_id']:0;
+        //购买数量
         $buy_num = isset($param['buy_num'])?(int)$param['buy_num']:0;
+        //二级密码
         $password = isset($param['password'])?$param['password']:'';
+        //其他
         $note = isset($param['note'])?$param['note']:0;
         if(empty($order_id)){
             $this->error('非法访问');
@@ -326,7 +332,7 @@ class Buysell extends Base
 
        
        $userid = session('id');
-
+        //订单详情
         $order_info = $this->order_model->where(['id'=>$order_id])->find();
         if(!$order_info){
             $this->error('请勿非法访问');
@@ -338,30 +344,33 @@ class Buysell extends Base
         if($can_buy_num < $buy_num){
             $this->error('购买数量不得大于可购数量');
         }
+        //查询买家余额是否充足
         $user_money = $this->user_detail_model->get_user_one($userid,'balance');
-//        if($user_money < $order_info['price']*$buy_num){
-//            $this->error('余额不够,请及时充值');
-//        }
-
+       if($user_money < $order_info['price']*$buy_num){
+           $this->error('余额不够,请及时充值');
+       }
+       //判断耳机密码
         $sql_password = $this->user_detail_model->get_user_one($userid,'password');
         if($sql_password != md5($param['password'])){
             $this->error('二级密码错误');
         }
-      
+        //获取商家下所有下级用户id
         $uid = $this->get_user($order_info['user_id']);
-        dump($order_info['product_id']);
-        dump($order_info['bunled_id']);
-        dump($uid);
+        //获取商家下包括所有下级用户符合交易的库存
         $stock_ids = $this->stock_model->where(['product_id'=>$order_info['product_id'],'bunled_id'=>$order_info['bunled_id'],'status'=>3,'input_user'=>['in',$uid]])->order('id asc')->limit($buy_num)->column('id');
-      
+        
+        //组装订单表修改的数据
         $sqlmap = [];
         $stocksql = [];
         if($can_buy_num == $buy_num){
             $sqlmap['status'] = 2;
         }
         $sqlmap['sell_num'] = $order_info['sell_num']+$buy_num;
+        //手续费
         $service_price = ($order_info['price']*$buy_num)/100;
+        //出去手续费后总
         $real_price = ($order_info['price']*$buy_num)-$service_price;
+        //写入消费记录数据
         $consumer_sql = [];
         $consumer_sql['bunled_id'] = $order_info['bunled_id'];
         $consumer_sql['product_id'] = $order_info['product_id'];
@@ -378,30 +387,31 @@ class Buysell extends Base
         //开启事务
         Db::startTrans();
         try {
+            //修改order表商品数据
             $edit_order_status = Db::name('order')->where(['id'=>$order_id])->update($sqlmap);
+            //修改该商品的状态值
             $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid]);
-        
+            //写入消费记录
             $insert_consumer = Db::name('consumer_log')->insertGetId($consumer_sql);
-            $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->setInc('funds',$real_price);
+
+            //获取商家已冻结金额
+            $seller_funds = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->value('funds');
+            //冻结用户金额 等待交易成功取消冻结
+            $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->update(['funds'=>$real_price+$seller_funds]);
+            //修改买家的账户余额
             $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>$userid])->setDec('balance',$order_info['price']*$buy_num);
+            //将手续费存入总管理余额
             $admin_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
             if ($edit_order_status && $edit_stock_status && $insert_consumer && $seller_detail_edit && $buyer_detail_edit && $admin_detail_edit) {
                 // 提交事务
-                Db::rollback();
-//                Db::commit();
-//                $queue_data = [];
-//                $queue_data['id'] = $insert_consumer;
-//                //若6小时未进行通过操作由系统自动通过队列
-//               $isPushed = Queue::later(6*3600, 'app\admin\job\Hello@fire' ,  $queue_data , 'helloJobQueue' );
+               Db::commit();
+               $queue_data = [];
+               $queue_data['id'] = $insert_consumer;
+               //若6小时未进行通过操作由系统自动通过队列
+              $isPushed = Queue::later(6*3600, 'app\admin\job\Hello@fire' ,  $queue_data , 'helloJobQueue' );
                return msg(1, '', '交易成功');
             } else {
-                dump($stock_ids);
-                dump($edit_order_status);
-                dump($edit_stock_status);
-                dump($insert_consumer);
-                dump($seller_detail_edit);
-                dump($buyer_detail_edit);
-                dump($admin_detail_edit);
+              
                 // 回滚事务
                 Db::rollback();
                 return msg(0, '', '交易失败1,请重试');
