@@ -39,6 +39,7 @@ class Stock extends Base
         $limit = isset($param['pageSize'])?(int)$param['pageSize']:0;
         $page = isset($param['pageNumber'])?(int)$param['pageNumber']:0;
         $pname = isset($param['pname'])?$param['pname']:'';
+      
         $sqlamp = [];
         //组装条件
         if (!empty($pname)) {
@@ -47,7 +48,7 @@ class Stock extends Base
             $sqlamp['bunled_id'] = ['in',$bunled_ids];
         }
 
-        
+      
         $id = session('id');
         $uid = $this->get_user($id);
         $sqlamp['input_user'] = ['in',$uid];
@@ -104,8 +105,7 @@ class Stock extends Base
         $out_user = isset($param['out_user'])?(int)$param['out_user']:0;
         $input_user = isset($param['input_user'])?(int)$param['input_user']:0;
         $status = isset($param['status'])?(int)$param['status']:0;
-        $search_pid = isset($param['search_pid'])?$param['search_pid']:'';
-        $search_uid = isset($param['search_uid'])?$param['search_uid']:'';
+      
         $id = session('id');
         $pid = $user_model->get_user_one_data($id,'pid');
         $power = $user_model->get_user_one_data($id,'power');
@@ -143,15 +143,7 @@ class Stock extends Base
            $sqlamp['bunled_id'] = ['in',$bunled_ids];
         }
         
-        if(!empty($search_pid)){
-            $product_id = $product_model->where(['pid'=>$search_pid])->value('id');
-            $sqlamp['product_id'] = $product_id;
-        }
-
-        if(!empty($search_uid)){
-            $bunled_id = $bunled_model->where(['bid'=>$search_uid])->value('id');
-            $sqlamp['bunled_id'] = $bunled_id;
-        }
+      
         $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp);
       
         //组装列表数据

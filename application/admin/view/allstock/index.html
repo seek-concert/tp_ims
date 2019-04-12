@@ -44,11 +44,11 @@
                 <div class="content clearfix m-b">
                     <div class="form-group">
                         <label>UID：</label>
-                        <input type="text" class="form-control" id="search_uid" name="search_uid" style="width: 150px;">
+                        <input type="text" class="form-control" id="search_uid" name="search_uid" style="width: 90px;">
                         <label>PID：</label>
-                        <input type="text" class="form-control" id="search_pid" name="search_pid" style="width: 150px;">
+                        <input type="text" class="form-control" id="search_pid" name="search_pid" style="width: 90px;">
                         <label>库存id：</label>
-                        <input type="text" class="form-control" id="stock_id" name="stock_id" style="width: 150px;">
+                        <input type="text" class="form-control" id="stock_id" name="stock_id" style="width: 50px;">
                         <label>入库时间查询：</label>
                         <div class='input-group date' id='datetimepicker1' style="width: 150px;">
                             <input type='text' class="form-control" id="input_time_start" name="input_time_start"/>
@@ -248,8 +248,8 @@
                     status:$('#status').val(),
                     userid:$('#userid').val(),
                     stock_id:$('#stock_id').val(),
-                    search_pid:$('search_pid').val(),
-                    search_uid:$('search_uid').val(),
+                    search_pid:$('#search_pid').val(),
+                    search_uid:$('#search_uid').val(),
                 };
                 return param;
             },
