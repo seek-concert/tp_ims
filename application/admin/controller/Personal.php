@@ -326,7 +326,7 @@ class Personal extends Base
                 ->find();
             $balance = $user_detail['balance'] + $consumerlog['real_price'];
             $funds = $user_detail['funds'] - $consumerlog['real_price'];
-            if($funds <= 0){
+            if($funds < 0){
                 return msg(0, '', '确认失败');
             }
             //更改用户余额和冻结金额
