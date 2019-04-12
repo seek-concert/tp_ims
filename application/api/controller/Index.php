@@ -238,11 +238,11 @@ class Index extends Controller
         }
         $stock_info = objToArray($stock_info);
         $user_money = UserDetailModel::where(['uid'=>$token['pid']])->value('balance');
-        if($stock_info['price'] >$user_money){
-            return msg(10002,'余额不足');
-        }
+//        if($stock_info['price'] >$user_money){
+//            return msg(10002,'余额不足');
+//        }
         $service_price = $stock_info['price']/100;
-       
+
         $out_sql = [];
         $out_sql['product_id'] = $product_id;
         $out_sql['bunled_id'] = $bunled_id;
@@ -355,13 +355,13 @@ class Index extends Controller
             try {
 
                 $service_insert = Db::name('service_money')->insert($service_sql);
-                $out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
-        
-                $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
+//                $out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
+//
+//                $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
 
                 $edit_stock_status = Db::name('stock')->where(['id'=>$out_info['id']])->update(['out_user'=>$token['id'],'out_time'=>time(),'status'=>$data['status']]);
 
-                if ($service_insert && $out_detail_edit && $buyer_detail_edit && $edit_stock_status) {
+                if ($service_insert  && $edit_stock_status) {
                     // 提交事务
                     Db::commit();
                     return msg(0, '', '成功');

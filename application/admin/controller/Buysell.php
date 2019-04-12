@@ -339,9 +339,9 @@ class Buysell extends Base
             $this->error('购买数量不得大于可购数量');
         }
         $user_money = $this->user_detail_model->get_user_one($userid,'balance');
-        if($user_money < $order_info['price']*$buy_num){
-            $this->error('余额不够,请及时充值');
-        }
+//        if($user_money < $order_info['price']*$buy_num){
+//            $this->error('余额不够,请及时充值');
+//        }
 
         $sql_password = $this->user_detail_model->get_user_one($userid,'password');
         if($sql_password != md5($param['password'])){
@@ -349,6 +349,9 @@ class Buysell extends Base
         }
       
         $uid = $this->get_user($order_info['user_id']);
+        dump($order_info['product_id']);
+        dump($order_info['bunled_id']);
+        dump($uid);
         $stock_ids = $this->stock_model->where(['product_id'=>$order_info['product_id'],'bunled_id'=>$order_info['bunled_id'],'status'=>3,'input_user'=>['in',$uid]])->order('id asc')->limit($buy_num)->column('id');
       
         $sqlmap = [];
@@ -384,13 +387,21 @@ class Buysell extends Base
             $admin_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
             if ($edit_order_status && $edit_stock_status && $insert_consumer && $seller_detail_edit && $buyer_detail_edit && $admin_detail_edit) {
                 // 提交事务
-                Db::commit();
-                $queue_data = [];
-                $queue_data['id'] = $insert_consumer;
-                //若6小时未进行通过操作由系统自动通过队列
-               $isPushed = Queue::later(6*3600, 'app\admin\job\Hello@fire' ,  $queue_data , 'helloJobQueue' );
+                Db::rollback();
+//                Db::commit();
+//                $queue_data = [];
+//                $queue_data['id'] = $insert_consumer;
+//                //若6小时未进行通过操作由系统自动通过队列
+//               $isPushed = Queue::later(6*3600, 'app\admin\job\Hello@fire' ,  $queue_data , 'helloJobQueue' );
                return msg(1, '', '交易成功');
             } else {
+                dump($stock_ids);
+                dump($edit_order_status);
+                dump($edit_stock_status);
+                dump($insert_consumer);
+                dump($seller_detail_edit);
+                dump($buyer_detail_edit);
+                dump($admin_detail_edit);
                 // 回滚事务
                 Db::rollback();
                 return msg(0, '', '交易失败1,请重试');
