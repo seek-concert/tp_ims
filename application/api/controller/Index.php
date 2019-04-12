@@ -198,8 +198,8 @@ class Index extends Controller
         //token检测
         $token = stripTags(input('token/s'));
         //$token = 'D32994C6-D4F0-8411-96DE-6D0BEC149C6F';
+        //获取用户信息
         $token = UserModel::field(['id','status','pid','token','power'])->where(['token'=>$token])->find();
-
         if(!$token){
             return msg(0,'token令牌不存在');
         }
@@ -208,7 +208,6 @@ class Index extends Controller
         if($token['status']==2){
             return msg(0, '该账号已停用');
         }
-
         if($token['pid']!=0){
             if($token['power']==1){
                 return msg(0,'暂无出库权限');
@@ -218,6 +217,7 @@ class Index extends Controller
         $contrl_name = strtolower(Request()->controller());
         $action_name = strtolower(Request()->action());
         $result = check_node($token['token'],$contrl_name,$action_name);
+
         if(false==$result){
             return msg(-1,'暂无权限');
         }
@@ -229,20 +229,27 @@ class Index extends Controller
         // $where['pid'] = 'com.test.diamond101';
         //出库
         $uid = $this->get_user($token['id']);
+        //通过pid获取priduct_id
         $product_id = ProductModel::where(['pid'=>$where['pid']])->value('id');
+        //通过bid获取bunled_id
         $bunled_id = BunledModel::where(['bid'=>$where['bid']])->value('id');
+        //stock详情
         $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'input_user'=>['in',$uid]])->find();
+
 
         if(!$stock_info){
             return msg(10001,'暂无库存可出库');
         }
+        //格式化stock详情
         $stock_info = objToArray($stock_info);
+        //获取用户余额
         $user_money = UserDetailModel::where(['uid'=>$token['pid']])->value('balance');
-//        if($stock_info['price'] >$user_money){
-//            return msg(10002,'余额不足');
-//        }
-        $service_price = $stock_info['price']/100;
-
+        // if($stock_info['price']/100 >$user_money){
+        //    return msg(10002,'余额不足');
+        // }
+        //手续费
+        //$service_price = $stock_info['price']/100;
+        //组装出库数据库数据    
         $out_sql = [];
         $out_sql['product_id'] = $product_id;
         $out_sql['bunled_id'] = $bunled_id;
@@ -253,7 +260,9 @@ class Index extends Controller
         //开启事务
         Db::startTrans();
         try {
+            //出库记录写入
             $out_insert = Db::name('out_stock')->insertGetId($out_sql);
+            //数据状态更改为使用中
             $edit_stock_status = Db::name('stock')->where(['id'=>$stock_info['id']])->update(['status'=>2]);
             if ($out_insert && $edit_stock_status) {
                 // 提交事务
@@ -353,15 +362,16 @@ class Index extends Controller
             //开启事务
             Db::startTrans();
             try {
-
-                $service_insert = Db::name('service_money')->insert($service_sql);
-//                $out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
-//
-//                $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
-
+                //写入服务费记录表
+                //$service_insert = Db::name('service_money')->insert($service_sql);
+                //扣除用户服务费
+                //$out_detail_edit = Db::name('user_detail')->where(['uid'=>$token['id']])->setDec('balance',$service_price);
+                //增加管理员收取的费用就是用户扣除的服务费
+                //$buyer_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
+                //根据回执数据更改数据状态
                 $edit_stock_status = Db::name('stock')->where(['id'=>$out_info['id']])->update(['out_user'=>$token['id'],'out_time'=>time(),'status'=>$data['status']]);
 
-                if ($service_insert  && $edit_stock_status) {
+                if ($edit_stock_status) {
                     // 提交事务
                     Db::commit();
                     return msg(0, '', '成功');
