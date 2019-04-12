@@ -47,7 +47,8 @@ class Allstock extends Base
         $out_time_end = isset($param['out_time_end'])?strtotime($param['out_time_end']):'';
         $status = isset($param['status'])?(int)$param['status']:0;
         $userid = isset($param['userid'])?(int)$param['userid']:0;
-        
+        $stock_id = isset($param['stock_id'])?(int)$param['stock_id']:0;
+
         $sqlmap = [];
         //查询某个入库时间之后
         if($input_time_start != ''&& $input_time_end == ''){
@@ -73,13 +74,18 @@ class Allstock extends Base
         if($out_time_start != ''&& $out_time_end != ''){
             $sqlmap['out_time'] = ['between',[$out_time_start,$out_time_end+86399]];
         }
-
+        //状态
         if(!empty($status)){
             $sqlmap['status'] = $status;
         }
+        //管理员
         if(!empty($userid)){
             $uid = $this->get_user($userid);
             $sqlmap['user|input_user'] = ['in',$uid];
+        }
+        //库存id
+        if(!empty($stock_id)){
+            $sqlmap['id'] = $stock_id;
         }
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         //整理返回数据

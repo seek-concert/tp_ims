@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理员列表</title>
     <link rel="shortcut icon" href="favicon.ico">
-
     <link href="__CSS__/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="__CSS__/bootstrapSwitch.css" rel="stylesheet">
     <link href="__CSS__/font-awesome.min.css?v=4.4.0" rel="stylesheet">
@@ -40,41 +39,40 @@
             <h5>全部库存</h5>
         </div>
         <div class="ibox-content">
-            
             <!--搜索框开始-->
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
                     <div class="form-group">
+                        <label>库存id：</label>
+                        <input type="text" class="form-control" id="stock_id" name="stock_id" style="width: 150px;">
                         <label>入库时间查询：</label>
-                        <div class='input-group date' id='datetimepicker1'>
+                        <div class='input-group date' id='datetimepicker1' style="width: 150px;">
                             <input type='text' class="form-control" id="input_time_start" name="input_time_start"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
                         ----
-                        <div class='input-group date' id='datetimepicker2'>
+                        <div class='input-group date' id='datetimepicker2' style="width: 150px;">
                             <input type='text' class="form-control" id="input_time_end" name="input_time_end"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
-
                         <label>出库时间查询：</label>
-                        <div class='input-group date' id='datetimepicker3'>
+                        <div class='input-group date' id='datetimepicker3' style="width: 150px;">
                             <input type='text' class="form-control" id="out_time_start" name="out_time_start"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
                         ----
-                        <div class='input-group date' id='datetimepicker4'>
+                        <div class='input-group date' id='datetimepicker4' style="width: 150px;">
                             <input type='text' class="form-control" id="out_time_end" name="out_time_end"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
-
                         <label>管理员id：</label>
                         <select name="userid" id="userid" class="form-control" id="">
                             <option value="">请选择</option>
@@ -82,7 +80,6 @@
                             <option class="form-control" value="{$k}">{$v}</option>
                             {/foreach}
                         </select>
-
                         <label>状态：</label>
                         <select name="status" class="form-control" id="status">
                             <option >所有</option>
@@ -92,9 +89,7 @@
                             <option value="-1">交易失败</option>
                             <option value="4">已出库</option>
                         </select>
-
                     </div>
-                  
                     <div class="form-group">
                         <button class="btn btn-primary" type="button" style="margin-top:5px" id="search"><strong>搜 索</strong>
                         </button>
@@ -248,6 +243,7 @@
                     out_time_end:$('#out_time_end').val(),
                     status:$('#status').val(),
                     userid:$('#userid').val(),
+                    stock_id:$('#stock_id').val()
                 };
                 return param;
             },
