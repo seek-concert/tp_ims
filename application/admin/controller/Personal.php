@@ -326,6 +326,9 @@ class Personal extends Base
                 ->find();
             $balance = $user_detail['balance'] + $consumerlog['real_price'];
             $funds = $user_detail['funds'] - $consumerlog['real_price'];
+            if($funds <= 0){
+                return msg(0, '', '确认失败');
+            }
             //更改用户余额和冻结金额
             $user_detail_update = Db::name('user_detail')
                 ->where(['uid'=>$consumerlog['seller_id']])
@@ -441,7 +444,7 @@ class Personal extends Base
             if (!empty($number)) {
                 $sqlmap['number'] = ['eq', $number];
             }
-            $sqlmap['user_id'] = ['eq',$uid];
+//            $sqlmap['user_id'] = ['eq',$uid];
             $extractlog = new ExtractLogModel();
             $user = new UserModel();
             $selectResult = $extractlog->getExtractLogByWhere($sqlmap, $offset, $limit);
