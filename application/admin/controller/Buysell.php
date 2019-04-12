@@ -295,7 +295,7 @@ class Buysell extends Base
         return json($return);
     }
 
-    
+
     public function get_order_info(){
         $param = input('post.');
         $id = isset($param['id'])?(int)$param['id']:0;
@@ -398,10 +398,13 @@ class Buysell extends Base
             $seller_funds = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->value('funds');
             //冻结用户金额 等待交易成功取消冻结
             $seller_detail_edit = Db::name('user_detail')->where(['uid'=>$order_info['user_id']])->update(['funds'=>$real_price+$seller_funds]);
+            
             //修改买家的账户余额
             $buyer_detail_edit = Db::name('user_detail')->where(['uid'=>$userid])->setDec('balance',$order_info['price']*$buy_num);
+
             //将手续费存入总管理余额
             $admin_detail_edit = Db::name('user_detail')->where(['uid'=>1])->setInc('balance',$service_price);
+
             if ($edit_order_status && $edit_stock_status && $insert_consumer && $seller_detail_edit && $buyer_detail_edit && $admin_detail_edit) {
                 // 提交事务
                Db::commit();

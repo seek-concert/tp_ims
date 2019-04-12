@@ -48,6 +48,8 @@ class Allstock extends Base
         $status = isset($param['status'])?(int)$param['status']:0;
         $userid = isset($param['userid'])?(int)$param['userid']:0;
         $stock_id = isset($param['stock_id'])?(int)$param['stock_id']:0;
+        $search_pid = isset($param['search_pid'])?$param['search_pid']:'';
+        $search_uid = isset($param['search_uid'])?$param['search_uid']:'';
 
         $sqlmap = [];
         //查询某个入库时间之后
@@ -86,6 +88,15 @@ class Allstock extends Base
         //库存id
         if(!empty($stock_id)){
             $sqlmap['id'] = $stock_id;
+        }
+        if(!empty($search_pid)){
+            $product_id = $product_model->where(['pid'=>$search_pid])->value('id');
+            $sqlmap['product_id'] = $product_id;
+        }
+
+        if(!empty($search_uid)){
+            $bunled_id = $bunled_model->where(['bid'=>$search_uid])->value('id');
+            $sqlmap['bunled_id'] = $bunled_id;
         }
         $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         //整理返回数据
