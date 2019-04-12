@@ -141,10 +141,16 @@ class Allstock extends Base
             }
             $pid = $product_model->get_product_id($value['product_id']);
             $bid = $bunled_model->get_bunled_id($value['bunled_id']);
+            $stock_product_id = $value['product_id'];
+            $stock_bunled_id = $value['bunled_id'];
+            $product_name = str_replace("'","\'",$product_name);
+            $bunled_name = str_replace("'","\'",$bunled_name);
             $lists[$key]['excel_price'] = $price_model->get_one_data(['pid'=>$pid,'bid'=>$bid],'price');
             $lists[$key]['tprice'] = '<span class="show_value">'.$value['tprice'].'</span><span class="edit_value"><input type="text" value="'.$value['tprice'].'" id="save_tprice"><button class="btn btn-primary" onclick="save_tprice('.$value['id'].',this)">保存</button></span>';
-            $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid(\''.$value['product_id'].'\',\''.$product_id.'\',\''.$product_name.'\')">修改PID</a> ';
-            $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid(\''.$value['bunled_id'].'\',\''.$bunled_id.'\',\''.$bunled_name.'\')">修改UID</a> ';
+            $lists[$key]['pid'] = " <a href=\"javascript:;\" onclick=\"edit_pid('$stock_product_id','$product_id','$product_name')\">修改PID</a> ";
+//            $lists[$key]['pid'] = ' <a href="javascript:;" onclick="edit_pid(\''.$value['product_id'].'\',\''.$product_id.'\',\''.$product_name.'\')">修改PID</a> ';
+            $lists[$key]['uid'] = " <a href=\"javascript:;\" onclick=\"edit_uid('$stock_bunled_id','$bunled_id','$bunled_name')\">修改UID</a> ";
+//            $lists[$key]['uid'] = ' <a href="javascript:;" onclick="edit_uid(\''.$value['bunled_id'].'\',\''.$bunled_id.'\',\''.$bunled_name.'\')">修改UID</a> ';
             $lists[$key]['operate'] = showOperate($this->makeButton($value['id']));
         }
 
