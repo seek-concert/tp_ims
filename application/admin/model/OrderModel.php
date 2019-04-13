@@ -21,7 +21,7 @@ class OrderModel extends Model
      * 获取订单列表
      */
     public function getAllLists($page,$limit,$where){
-        $lists = $this->where($where)->page($page,$limit)->select();
+        $lists = $this->where($where)->page($page,$limit)->order('id desc')->select();
         return objToArray($lists);
     }
 
