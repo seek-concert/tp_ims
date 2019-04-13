@@ -215,13 +215,19 @@ class Index extends Base
         $user_details = $user_detail->where(['uid' => $param['uid']])->field('balance,duetime')->find();
         switch ($param['time']) {
             case 1 :
-                $balance = (int)$user_details['balance'] - 3000;
+                $balance = (int)$user_details['balance'] - 9000;
                 break;
             case 2:
                 $balance = (int)$user_details['balance'] - 18000;
                 break;
             case 3:
-                $balance = (int)$user_details['balance'] - 30000;
+                $balance = (int)$user_details['balance'] - 27000;
+                break;
+            case 4:
+                $balance = (int)$user_details['balance'] - 3000;
+                break;
+            case 5:
+                $balance = (int)$user_details['balance'] - 36000;
                 break;
             default:
                 return msg(-1, '', '续费失败');
@@ -233,21 +239,35 @@ class Index extends Base
         switch ($param['time']) {
             case 1 :
                 if (empty($user_details['duetime'])) {
-                    $times = strtotime(date("Y-m-d H:i:s", strtotime("+1 month")));
+                    $times = strtotime(date("Y-m-d", strtotime("+4 month")));
                 } else {
                     $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +1 month')));
                 }
                 break;
             case 2:
                 if (empty($user_details['duetime'])) {
-                    $times = strtotime(date("Y-m-d H:i:s", strtotime("+6 month")));
+                    $times = strtotime(date("Y-m-d", strtotime("+8 month")));
                 } else {
                     $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +6 month')));
                 }
                 break;
             case 3:
                 if (empty($user_details['duetime'])) {
-                    $times = strtotime(date("Y-m-d H:i:s", strtotime("+1 year")));
+                    $times = strtotime(date("Y-m-d", strtotime("+1 year")));
+                } else {
+                    $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +1 year')));
+                }
+                break;
+            case 4:
+                if (empty($user_details['duetime'])) {
+                    $times = strtotime(date("Y-m-d", strtotime("+1 month")));
+                } else {
+                    $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +1 month')));
+                }
+                break;
+            case 5:
+                if (empty($user_details['duetime'])) {
+                    $times = strtotime(date("Y-m-d", strtotime("+1 year")));
                 } else {
                     $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +1 year')));
                 }
