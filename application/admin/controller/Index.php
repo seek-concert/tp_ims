@@ -49,6 +49,7 @@ class Index extends Base
         $prepaid_log = new PrepaidLogModel();
         $consumer_log = new ConsumerLogModel();
         $service_money = new ServiceMoneyModel();
+        $extract_model = new ExtractLogModel();
         $admin_id = session('id');
         $admin_info = model('admin/UserModel')->getAdminDetail($admin_id);
         $admin_info['role_name'] = $role_model->getOneRole($admin_info['role_id'])['role_name'];
@@ -110,6 +111,15 @@ class Index extends Base
             $admin_all_balance = $user_detail->sum('balance');
             //冻结资金
             $admin_lock_money = $user_detail->sum('funds');
+            //总提现金额
+            $admin_extract_moenys = $extract_model->sum('money');
+            //总审核提现金额
+            $admin_extract_check_moenys = $extract_model->where(['status'=>1])->sum('money');
+            //总成功提现金额
+            $admin_extract_success_moenys = $extract_model->where(['status'=>2])->sum('money');
+            //总失败提现金额
+            $admin_extract_error_moenys = $extract_model->where(['status'=>3])->sum('money');
+
             $return_data['admin_all_prepaid'] = $admin_all_prepaid;
             $return_data['admin_wait_prepaid'] = $admin_wait_prepaid;
             $return_data['admin_succ_prepaid'] = $admin_succ_prepaid;
@@ -122,6 +132,10 @@ class Index extends Base
             $return_data['admin_buy_service'] = $admin_buy_service;
             $return_data['admin_all_balance'] = $admin_all_balance;
             $return_data['admin_lock_money'] = $admin_lock_money;
+            $return_data['admin_extract_moenys'] = $admin_extract_moenys;
+            $return_data['admin_extract_check_moenys'] = $admin_extract_check_moenys;
+            $return_data['admin_extract_success_moenys'] = $admin_extract_success_moenys;
+            $return_data['admin_extract_error_moenys'] = $admin_extract_error_moenys;
         }
 
         $return_data['admin_info'] = $admin_info;
