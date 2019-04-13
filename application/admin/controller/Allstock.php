@@ -98,7 +98,7 @@ class Allstock extends Base
             $bunled_id = $bunled_model->where(['bname'=>['like','%'.$search_uid.'%']])->value('id');
             $sqlmap['bunled_id'] = $bunled_id;
         }
-        if($out_time_end != ''){
+        if($out_time_end != '' || $status == 4){
             $lists = $stock_model->getAllStockOutDesc($param['pageNumber'],$param['pageSize'],$sqlmap); 
         }else{
             $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
