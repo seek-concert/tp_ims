@@ -150,8 +150,8 @@ class Stock extends Base
         foreach ($selectResult as $key => $value) {
             $selectResult[$key]['bname'] = $bunled_model->get_bunled_name($value['bunled_id']);
             $selectResult[$key]['pname'] =$product_model->get_product_name($value['product_id']);
-            $selectResult[$key]['input_time'] = !empty($selectResult[$key]['input_time'])?date('Y-m-d H:i:s'):'';
-            $selectResult[$key]['out_time'] = !empty($selectResult[$key]['out_time'])?date('Y-m-d H:i:s'):'';
+            $selectResult[$key]['input_time'] = !empty($value['input_time'])?date('Y-m-d H:i:s',$value['out_time']):'';
+            $selectResult[$key]['out_time'] = !empty($value['out_time'])?date('Y-m-d H:i:s',$value['out_time']):'';
             $selectResult[$key]['input_user'] = $user_model->get_user_one_data($selectResult[$key]['input_user'],'real_name');
             $selectResult[$key]['out_user'] = $user_model->get_user_one_data($selectResult[$key]['out_user'],'real_name');
             $pid = $product_model->get_product_id($value['product_id']);

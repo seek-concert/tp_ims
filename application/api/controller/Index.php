@@ -125,6 +125,10 @@ class Index extends Controller
 
         $data['account'] = input('account')?stripTags(input('account/s')):'';
         $data['tid'] = stripTags(input('tid/s'));
+        $is_tid = StockModel::where(['tid'=>$data['tid']])->find();
+        if($is_tid){
+            return msg(1,'该库存已入库,请勿重复操作');
+        }
         $data['price'] = stripTags(input('tprice/s'));
         $data['tcurrency'] = stripTags(input('tcurrency/s'));
         $data['tdate'] = strtotime(stripTags(input('tdate/s')));
@@ -231,11 +235,18 @@ class Index extends Controller
         $uid = $this->get_user($token['id']);
         //通过pid获取priduct_id
         $product_id = ProductModel::where(['pid'=>$where['pid']])->value('id');
+       
         //通过bid获取bunled_id
         $bunled_id = BunledModel::where(['bid'=>$where['bid']])->value('id');
+        $uids = $this->get_user($token['id']);
         //stock详情
-        $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'user'=>$token['id']])->find();
-
+        if($token['pid']){
+            //如果是子账户出账 只能出他自己的 依靠分配后的user字段判断
+            $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'user'=>$token['id']])->find();
+        }else{
+            //如果是主账户 就只能出主账户的 依靠未分配的user字段以及入库人input_user字段判断
+            $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'input_user'=>$uids,'user'=>['eq',0]])->find();
+        }
 
         if(!$stock_info){
             return msg(10001,'暂无库存可出库');
