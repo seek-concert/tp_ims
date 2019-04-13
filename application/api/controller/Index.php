@@ -234,7 +234,7 @@ class Index extends Controller
         //通过bid获取bunled_id
         $bunled_id = BunledModel::where(['bid'=>$where['bid']])->value('id');
         //stock详情
-        $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'input_user'=>['in',$uid]])->find();
+        $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'user'=>$token['id']])->find();
 
 
         if(!$stock_info){

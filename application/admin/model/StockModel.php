@@ -38,6 +38,18 @@ class StockModel extends Model
     }
 
     /**
+     * 出库时间倒序查询
+     * @param $page  当前页码
+     * @param $limit 每页个数
+     * @param $where  查询条件
+     */
+    public function getAllStockOutDesc($page, $limit, $where)
+    {
+        $obj_lists = $this->where($where)->page($page, $limit)->order('out_time desc')->select();
+        return objToArray($obj_lists);
+    }
+
+    /**
      * 根据搜索条件获取所有的库存数量
      * @param $where
      */

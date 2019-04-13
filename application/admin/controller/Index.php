@@ -105,7 +105,7 @@ class Index extends Base
             //出库手续费
             $admin_out_service = $service_money->where(['type' => 2])->sum('price');
             //交易市场手续费
-            $admin_buy_service = $consumer_log->where(['status' => 1])->sum('service_price');
+            $admin_buy_service = $consumer_log->sum('service_price');
             //用户余额
             $admin_all_balance = $user_detail->sum('balance');
             //冻结资金

@@ -90,15 +90,20 @@ class Allstock extends Base
             $sqlmap['id'] = $stock_id;
         }
         if(!empty($search_pid)){
-            $product_id = $product_model->where(['pid'=>$search_pid])->value('id');
+            $product_id = $product_model->where(['pname'=> ['like','%'.$search_pid.'%']])->value('id');
             $sqlmap['product_id'] = $product_id;
         }
 
         if(!empty($search_uid)){
-            $bunled_id = $bunled_model->where(['bid'=>$search_uid])->value('id');
+            $bunled_id = $bunled_model->where(['bname'=>['like','%'.$search_uid.'%']])->value('id');
             $sqlmap['bunled_id'] = $bunled_id;
         }
-        $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
+        if($out_time_end != ''){
+            $lists = $stock_model->getAllStockOutDesc($param['pageNumber'],$param['pageSize'],$sqlmap); 
+        }else{
+            $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
+        }
+       
         //整理返回数据
         foreach ($lists as $key => $value) {
             $bunled_name = $lists[$key]['bunled_name'] = $bunled_model->get_bunled_name($value['bunled_id']);
@@ -149,6 +154,11 @@ class Allstock extends Base
                 $lists[$key]['input_time'] =  date('Y-m-d H:i:s',$value['input_time']);
             }else{
                 $lists[$key]['input_time'] = '';
+            }
+            if($value['out_time']){
+                $lists[$key]['out_time'] =  date('Y-m-d H:i:s',$value['out_time']);
+            }else{
+                $lists[$key]['out_time'] = '';
             }
             $pid = $product_model->get_product_id($value['product_id']);
             $bid = $bunled_model->get_bunled_id($value['bunled_id']);

@@ -390,7 +390,7 @@ class Buysell extends Base
             //修改order表商品数据
             $edit_order_status = Db::name('order')->where(['id'=>$order_id])->update($sqlmap);
             //修改该商品的状态值
-            $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'user'=>$userid,'input_user'=>$userid]);
+            $edit_stock_status = Db::name('stock')->where(['id'=>['in',$stock_ids]])->update(['status'=>1,'input_user'=>$userid]);
             //写入消费记录
             $insert_consumer = Db::name('consumer_log')->insertGetId($consumer_sql);
 

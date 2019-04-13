@@ -367,15 +367,24 @@ class Account extends Base
             // 验证失败 输出错误信息
             return msg(-1, '', $result);
         }
+        $id = session('id');
+        $uid = $this->get_user($id);
         $stock = new StockModel();
         //查询要分配的库存
         $stock_id = $stock
             ->where([
                 'bunled_id' => $param['bid'],
-                'product_id' => $param['pid']
+                'product_id' => $param['pid'],
+                'input_user'=>['in',$uid],
+                'user'=>['eq',0],
+                'status'=>1
             ])
             ->limit($param['num'])
             ->column('id');
+        if(count($stock_id) < $param['num']){
+            // 数量不足 输出错误信息
+            return msg(-1, '', '库存不足');
+        }
         $stock_id = implode(',', $stock_id);
         $stocks = $stock
             ->where('id','in',$stock_id)
