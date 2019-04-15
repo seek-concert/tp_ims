@@ -101,7 +101,7 @@ class Allstock extends Base
         if($out_time_end != '' || $status == 4){
             $lists = $stock_model->getAllStockOutDesc($param['pageNumber'],$param['pageSize'],$sqlmap); 
         }else{
-            $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
+            $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap,'input_time desc');
         }
        
         //整理返回数据

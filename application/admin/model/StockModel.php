@@ -31,9 +31,9 @@ class StockModel extends Model
      * @param $limit 每页个数
      * @param $where  查询条件
      */
-    public function getAllStock($page, $limit, $where)
+    public function getAllStock($page, $limit, $where ,$order = 'id desc')
     {
-        $obj_lists = $this->where($where)->page($page, $limit)->order('bunled_id asc,product_id asc,input_time desc,out_time desc')->select();
+        $obj_lists = $this->where($where)->page($page, $limit)->order($order)->select();
         return objToArray($obj_lists);
     }
 

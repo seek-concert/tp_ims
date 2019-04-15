@@ -144,7 +144,7 @@ class Stock extends Base
         }
         
       
-        $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp);
+        $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp,'bunled_id asc,product_id asc,input_time desc,out_time desc');
       
         //组装列表数据
         foreach ($selectResult as $key => $value) {
