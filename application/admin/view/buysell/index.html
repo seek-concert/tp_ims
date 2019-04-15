@@ -313,8 +313,16 @@ function get_return(id){
 
     function return_order(id){
         layer.alert('是否撤销订单?', {title: '提示', icon: 1}, function(){
-            $.post("{:url('return_order')}",{id:id},function(){
-                
+            $.post("{:url('return_order')}",{id:id},function(ret){
+                if(ret.code == 1){
+                layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
+                        initTable();
+                    });
+            }else{
+                layer.alert(ret.msg, {title: '提示', icon: 2}, function(){
+                        initTable();
+                    });
+            }
             })
         });
     }

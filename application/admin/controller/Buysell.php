@@ -92,7 +92,14 @@ class Buysell extends Base
         $uid = $this->get_user($id);
         $stock = new StockModel();
         //查找相关库存--应用名称
-        $where['input_user'] = ['in',$uid];
+        $userinfo = $this->user_model->where(['id'=>$id])->find();
+        if(!$userinfo['pid']){
+            $where['input_user'] = ['in',$uid];
+            $where['user'] = 0;
+        }else{
+            $where['input_user'] = $id;
+        }
+        
         $where['status'] = ['eq',1];
         $stocks = $this->stock_model ->where($where) ->field('bunled_id') ->group('bunled_id') ->select();
         $bunled = new BunledModel();
@@ -114,7 +121,13 @@ class Buysell extends Base
         //相关用户id
         $uid = $this->get_user($id);
         //查找相关库存--档位名称与对应数量
-        $where['input_user'] = ['in',$uid];
+        $userinfo = $this->user_model->where(['id'=>$id])->find();
+        if(!$userinfo['pid']){
+            $where['input_user'] = ['in',$uid];
+            $where['user'] = 0;
+        }else{
+            $where['input_user'] = $id;
+        }
         $where['bunled_id'] = ['eq',$bid];
         $where['status'] = ['eq',1];
         $stocks = $this->stock_model->where($where)->field('product_id,count(*) as num')->group('product_id')->select();
@@ -140,10 +153,12 @@ class Buysell extends Base
         $id = session('id');
         $uid = $this->get_user($id);
         $sql_password = $this->user_detail_model->get_user_one($id,'password');
-       
-
-        $stock_count = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>['in',$uid]])->count();
-
+        $userinfo = $this->user_model->where(['id'=>$id])->find();
+        if(!$userinfo['pid']){
+            $stock_count = $this->stock_model->where(['product_id'=>$param['product_id'],'user'=>0,'bunled_id'=>$param['bunled_id'],'status'=>1,'user'=>0,'input_user'=>['in',$uid]])->count();
+        }else{
+            $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>$id])->order('id asc')->count();
+        }
         if($stock_count < $param['num']){
             $this->error('发布数量不得大于持有数量');
         }
@@ -163,7 +178,15 @@ class Buysell extends Base
         $sqlmap['product_name'] = $this->product_model->get_product_name($sqlmap['product_id']);
         $sqlmap['bunled_name'] = $this->bunled_model->get_bunled_name($sqlmap['bunled_id']);
         $sqlmap['user_id'] = $id;
-        $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>['in',$uid]])->order('id asc')->limit($param['num'])->column('id');
+       
+        if(!$userinfo['pid']){
+            //普通会员能出售他下级入库的和他本身库存
+            $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'user'=>0,'input_user'=>['in',$uid]])->order('id asc')->limit($param['num'])->column('id');
+        }else{
+            //下级会员只能交易他自己的
+            $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>$id])->order('id asc')->limit($param['num'])->column('id');
+        }
+        
         
          //开启事务
          Db::startTrans();
@@ -210,7 +233,7 @@ class Buysell extends Base
         $product_id = $order_info['product_id'];
         $bunled_id = $order_info['bunled_id'];
         $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'input_user'=>$user_id])->order('id desc')->limit($num)->column('id');
-         //开启事务
+        //开启事务
          Db::startTrans();
          try {
              $edit_order_status = Db::name('order')->where(['id'=>$id])->update(['status'=>3]);
