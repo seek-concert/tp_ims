@@ -103,7 +103,7 @@ class Allstock extends Base
         }else{
             $lists = $stock_model->getAllStock($param['pageNumber'],$param['pageSize'],$sqlmap); 
         }
-       
+     
         //整理返回数据
         foreach ($lists as $key => $value) {
             $bunled_name = $lists[$key]['bunled_name'] = $bunled_model->get_bunled_name($value['bunled_id']);

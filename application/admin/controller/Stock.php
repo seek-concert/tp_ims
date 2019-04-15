@@ -105,7 +105,10 @@ class Stock extends Base
         $out_user = isset($param['out_user'])?(int)$param['out_user']:0;
         $input_user = isset($param['input_user'])?(int)$param['input_user']:0;
         $status = isset($param['status'])?(int)$param['status']:0;
-      
+        $input_time_start = isset($param['input_time_start'])?strtotime($param['input_time_start']):'';
+        $input_time_end = isset($param['input_time_end'])?strtotime($param['input_time_end']):'';
+        $out_time_start = isset($param['out_time_start'])?strtotime($param['out_time_start']):'';
+        $out_time_end = isset($param['out_time_end'])?strtotime($param['out_time_end']):'';
         $id = session('id');
         $pid = $user_model->get_user_one_data($id,'pid');
         $power = $user_model->get_user_one_data($id,'power');
@@ -126,12 +129,35 @@ class Stock extends Base
                   
                     $sqlamp['input_user'] = $id;
                 }else{
-                  
                     $sqlamp['out_user'] = $id;
                 }
             }
             
 
+        }
+         //查询某个入库时间之后
+         if($input_time_start != ''&& $input_time_end == ''){ 
+            $sqlamp['input_time'] = ['gt',$input_time_start];
+        }
+        //查询某个入库时间之前
+        if($input_time_start == ''&& $input_time_end != ''){
+            $sqlamp['input_time'] = ['lt',$input_time_end];
+        }
+        //查询某个入库时间段
+        if($input_time_start != ''&& $input_time_end != ''){
+            $sqlamp['input_time'] = ['between',[$input_time_start,$input_time_end]];
+        }
+        //查询某个出库时间之后
+        if($out_time_start != ''&& $out_time_end == ''){
+            $sqlamp['outx_time'] = ['gt',$out_time_start];
+        }
+        //查询某个出库时间之前
+        if($out_time_start == ''&& $out_time_end != ''){
+            $sqlamp['out_time'] = ['lt',$out_time_end];
+        }
+        //查询某个出库时间段
+        if($out_time_start != ''&& $out_time_end != ''){
+            $sqlamp['out_time'] = ['between',[$out_time_start,$out_time_end]];
         }
         if(!empty($status)){
             $sqlamp['status'] = $status;
@@ -143,8 +169,11 @@ class Stock extends Base
            $sqlamp['bunled_id'] = ['in',$bunled_ids];
         }
         
-      
-        $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp);
+        if($status == 4){
+            $selectResult = $stock_model->getAllStockOutDesc($page, $limit, $sqlamp);
+        }else{
+            $selectResult = $stock_model->getAllStock($page, $limit, $sqlamp);
+        }   
       
         //组装列表数据
         foreach ($selectResult as $key => $value) {

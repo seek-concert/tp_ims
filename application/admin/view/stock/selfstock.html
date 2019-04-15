@@ -11,7 +11,7 @@
     <link href="__CSS__/animate.min.css" rel="stylesheet">
     <link href="__CSS__/style.min.css?v=4.1.0" rel="stylesheet">
     <link href="__CSS__/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-
+    <link href="__JS__/plugins/datapicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet"> 
 </head>
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -27,8 +27,37 @@
                 {/if}
             </div> -->
             <!--搜索框开始-->
+
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
+                        <label>入库时间查询：</label>
+                        <div class='input-group date' id='datetimepicker1' style="width: 150px;">
+                            <input type='text' class="form-control" id="input_time_start" name="input_time_start"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        ----
+                        <div class='input-group date' id='datetimepicker2' style="width: 150px;">
+                            <input type='text' class="form-control" id="input_time_end" name="input_time_end"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        <label>出库时间查询：</label>
+                        <div class='input-group date' id='datetimepicker3' style="width: 150px;">
+                            <input type='text' class="form-control" id="out_time_start" name="out_time_start"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        ----
+                        <div class='input-group date' id='datetimepicker4' style="width: 150px;">
+                            <input type='text' class="form-control" id="out_time_end" name="out_time_end"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
                     <div class="form-group">
                 
                         <select name="out_user" id="out_user" class="form-control" id="">
@@ -112,6 +141,8 @@
 <script src="__JS__/plugins/layer/laydate/laydate.js"></script>
 <script src="__JS__/plugins/sweetalert/sweetalert.min.js"></script>
 <script src="__JS__/plugins/layer/layer.min.js"></script>
+<script src="__JS__/moment-with-locales.min.js"></script>
+<script src="__JS__/plugins/datapicker/js/bootstrap-datetimepicker.min.js"></script>
 <link rel="stylesheet" href="__JS__/plugins/zTree/zTreeStyle.css" type="text/css">
 <script type="text/javascript" src="__JS__/plugins/zTree/jquery.ztree.core-3.5.js"></script>
 <script type="text/javascript" src="__JS__/plugins/zTree/jquery.ztree.excheck-3.5.js"></script>
@@ -143,6 +174,10 @@
                     out_user:$('#out_user').val(),
                     input_user:$('#input_user').val(),
                     status:$('#status').val(),
+                    input_time_start:$('#input_time_start').val(),
+                    input_time_end:$('#input_time_end').val(),
+                    out_time_start:$('#out_time_start').val(),
+                    out_time_end:$('#out_time_end').val(),
                 };
                 return param;
             },
@@ -166,7 +201,18 @@
         //当点击查询按钮的时候执行
         $("#search").bind("click", initTable);
 
-       
+        $('#datetimepicker1').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss'
+        });
+        $('#datetimepicker2').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss'
+        });
+        $('#datetimepicker3').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss'
+        });
+        $('#datetimepicker4').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss'
+        });
     });
 
     
