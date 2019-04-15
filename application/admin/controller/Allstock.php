@@ -372,7 +372,7 @@ class Allstock extends Base
         $param = input('');
         $id = $param['id'];
         $userid = $param['user'];
-        $ret = $stock_model->where(['id'=>$id])->update(['user'=>$userid,'input_user'=>$userid]);
+        $ret = $stock_model->where(['id'=>$id])->update(['input_user'=>$userid]);
         if(!$ret){
             $this->error('修改出错,请重试');
         }else{
