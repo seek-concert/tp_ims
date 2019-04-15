@@ -511,7 +511,7 @@ class Account extends Base
         $user = new UserModel();
         $user_detail = new UserDetailModel();
         $time = strtotime(date('Y-m-d'));
-        $row = $user->field('id,real_name')->select();
+        $row = $user->where(['pid'=>0])->field('id,real_name')->select();
         foreach ($row as $k=>$v){
             $duetime = $user_detail->where('uid',$v['id'])->value('duetime');
             if(empty($duetime)){

@@ -245,7 +245,7 @@ class Index extends Controller
             $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'user'=>$token['id']])->find();
         }else{
             //如果是主账户 就只能出主账户的 依靠未分配的user字段以及入库人input_user字段判断
-            $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'input_user'=>$uids,'user'=>['eq',0]])->find();
+            $stock_info = StockModel::where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>1,'input_user'=>['in',$uids],'user'=>0])->find();
         }
 
         if(!$stock_info){
