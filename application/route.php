@@ -27,3 +27,7 @@ Route::rule('/product/query','api/files/product_query');
 Route::rule('/product/modify','api/files/product_modify');
 
 Route::rule('/product/delete','api/files/product_delete');
+
+
+
+Route::rule('/tool/query','api/moble/query');

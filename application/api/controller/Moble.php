@@ -5,9 +5,10 @@ use app\api\model\BunledModel;
 use app\api\model\ProductModel;
 use app\api\model\StockModel;
 use app\api\model\UserModel;
+use app\admin\model\MobleModel;
 use think\Controller;
 
-class Files extends Controller
+class Moble extends Controller
 {
     //协议类型
     private $is_https = true;
@@ -20,8 +21,8 @@ class Files extends Controller
         if(false===$is_https){
             $this->is_https=false;
         }
-
-
+        $this->user_model = new UserModel;
+        $this->moble_model = new MobleModel;
     }
 
         //登陆
@@ -96,5 +97,48 @@ class Files extends Controller
             if(false==$this->is_https){
                return msg(-1,'当前接口暂不支持此协议');
            }
+
+           //数据检测
+        $rule = [
+            ['token', 'require', '请输入token令牌!']
+        ];
+        $result = $this->validate(input(''), $rule);
+        if (true !== $result) {
+            return msg(1, $result);
+        }
+        //token检测
+        $token = stripTags(input('token/s'));
+        $user_id = $this->user_model->where(['token'=>$token])->value('id');
+        if(!$user_id){
+            return msg(1,'token令牌不存在');
+        }
+
+        //获取保存的14码数据
+        $moble_info = $this->moble_model->where(['user_id'=>$user_id])->select();
+        if(!$moble_info){
+            return msg(10001,'该用户未查询到14码');
+        }
+        $devices = [];
+        foreach ($moble_info as $key => $value) {
+            $devices[$key]['name'] = $value['name'];
+            $devices[$key]['sn'] = $value['sn'];
+            $devices[$key]['wifi'] = $value['wifi'];
+            $devices[$key]['ecid'] = hexToDecimal($value['ecid']);
+            $devices[$key]['udid'] = $value['udid'];
+            $devices[$key]['imei'] = $value['imei'];
+            $devices[$key]['meid'] = $value['meid'];
+            $devices[$key]['model_number'] = $value['model_number'];
+            $devices[$key]['region_code'] = $value['region_code'];
+            $devices[$key]['product_version'] = $value['product_version'];
+            $devices[$key]['build_version'] = $value['build_version'];
+            $devices[$key]['hardware_platform'] = $value['hardware_platform'];
+            $devices[$key]['model_str'] = $value['model_str'];
+            $devices[$key]['product_type'] = $value['product_type'];
+            $devices[$key]['mlbsn'] = $value['mlbsn'];
+        }
+      
+        $errno = 0;
+        $txt = '获取成功';
+        return json(compact('errno', 'txt', 'devices'));
        }
 }

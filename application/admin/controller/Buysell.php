@@ -155,7 +155,7 @@ class Buysell extends Base
         $sql_password = $this->user_detail_model->get_user_one($id,'password');
         $userinfo = $this->user_model->where(['id'=>$id])->find();
         if(!$userinfo['pid']){
-            $stock_count = $this->stock_model->where(['product_id'=>$param['product_id'],'user'=>0,'bunled_id'=>$param['bunled_id'],'status'=>1,'user'=>0,'input_user'=>['in',$uid]])->count();
+            $stock_count = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'user'=>0,'input_user'=>['in',$uid]])->count();
         }else{
             $stock_ids = $this->stock_model->where(['product_id'=>$param['product_id'],'bunled_id'=>$param['bunled_id'],'status'=>1,'input_user'=>$id])->order('id asc')->count();
         }
@@ -230,9 +230,15 @@ class Buysell extends Base
         $num = $order_info['num'] - $order_info['sell_num'];
         $user_id = session('id');
         $uid = $this->get_user($user_id);
+        $userinfo = $this->user_model->where(['id'=>$id])->find();
         $product_id = $order_info['product_id'];
         $bunled_id = $order_info['bunled_id'];
-        $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'input_user'=>$user_id])->order('id desc')->limit($num)->column('id');
+        if(!$userinfo['pid']){
+            $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'user'=>0,'input_user'=>['in',$uid]])->order('id desc')->limit($num)->column('id');
+        }else{
+            $stock_ids = $this->stock_model->where(['product_id'=>$product_id,'bunled_id'=>$bunled_id,'status'=>3,'input_user'=>$user_id])->order('id desc')->limit($num)->column('id');
+        }
+        
         //开启事务
          Db::startTrans();
          try {
