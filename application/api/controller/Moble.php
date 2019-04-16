@@ -19,8 +19,6 @@ class Moble extends Controller
         if (false === $is_https) {
             $this->is_https = false;
         }
-
-
     }
 
     //登陆
@@ -85,8 +83,7 @@ class Moble extends Controller
             ['password', 'require', '请填写密码!']
         ];
     }
-
-
+    
     /*
     *
     *查询设备信息
