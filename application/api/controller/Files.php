@@ -53,7 +53,7 @@ class Files extends Controller
         //生成token
         $token = create_guid();
         try{
-            $rs = model('UserModel')->save(['token'=>$token],['user_name'=>$user]);
+            $rs = model('UserModel')->save(['token'=>$token],['id'=>$user_info['id']]);
             if(!$rs){
                 return msg(1,'网络异常，token生成失败');
             }
