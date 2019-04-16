@@ -110,7 +110,8 @@ class Moble extends Controller
         }
         //数据过滤
         $data = [];
-
+        $model_number = stripTags(input('model_number/s'));
+        $region_code = stripTags(input('region_code/s'));
         $data['name'] = stripTags(input('name/s'));
         $data['user_id'] = $user_id;
         $data['input_time'] = time();
@@ -121,8 +122,10 @@ class Moble extends Controller
         $data['udid'] = stripTags(input('udid/s'));
         $data['imei'] = stripTags(input('imei/s'));
         $data['meid'] = stripTags(input('meid/s'));
-        $data['model_number'] = stripTags(input('model_number/s'));
-        $data['region_code'] = stripTags(input('region_code/s'));
+        $data['model_number'] = substr($model_number,0,5);
+        $data['region_code'] = substr($region_code,5,strpos($region_code, '/'));
+//        $data['model_number'] = stripTags(input('model_number/s'));
+//        $data['region_code'] = stripTags(input('region_code/s'));
         $data['product_version'] = stripTags(input('product_version/s'));
         $data['build_version'] = stripTags(input('build_version/s'));
         $data['hardware_platform'] = stripTags(input('hardware_platform/s'));
