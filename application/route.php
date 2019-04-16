@@ -28,6 +28,8 @@ Route::rule('/product/modify','api/files/product_modify');
 
 Route::rule('/product/delete','api/files/product_delete');
 
+Route::rule('/tool/login','api/moble/login');
 
+Route::rule('/tool/add','api/moble/add');
 
 Route::rule('/tool/query','api/moble/query');

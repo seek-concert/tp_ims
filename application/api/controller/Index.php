@@ -74,7 +74,7 @@ class Index extends Controller
     //入库
     public function inbound(){
         if(false==$this->is_https){
-            //return msg(-1,'当前接口暂不支持此协议');
+            return msg(-1,'当前接口暂不支持此协议');
         }
         //数据检测
         $rule = [

@@ -75,16 +75,70 @@ class Moble extends Controller
     */
     public function add()
     {
-        //检测协议
         if (false == $this->is_https) {
             return msg(-1, '当前接口暂不支持此协议');
         }
-
         //数据检测
         $rule = [
-            ['username', 'require', '请填写账号!'],
-            ['password', 'require', '请填写密码!']
+            ['token', 'require', '请输入token令牌!'],
+            ['name', 'require', '请输入设备名称!'],
+            ['sn', 'require', '请输入序列号!'],
+            ['wifi', 'require', '请输入Wi-Fi地址!'],
+            ['bluetooth', 'require', '请输入蓝牙地址!'],
+            ['ecid', 'require', '请输入芯片标识!'],
+            ['udid', 'require', '请输入唯一设备识别符!'],
+            ['imei', 'require', '请输入imei!'],
+            ['meid', 'require', '请输入meid!'],
+            ['model_number', 'require', '请输入设备型号!'],
+            ['region_code', 'require', '请输入区域码!'],
+            ['product_version', 'require', '请输入系统版本!'],
+            ['build_version', 'require', '请输入产品版本!'],
+            ['hardware_platform', 'require', '请输入硬件平台!'],
+            ['model_str', 'require', '请输入硬件型号!'],
+            ['product_type', 'require', '请输入产品类型!'],
+            ['mlbsn', 'require', '请输入MLB序列号!']
         ];
+        $result = $this->validate(input(''), $rule);
+        if (true !== $result) {
+            return msg(1, $result);
+        }
+        //token检测
+        $token = stripTags(input('token/s'));
+        $user_id = $this->user_model->where(['token' => $token])->value('id');
+        if (!$user_id) {
+            return msg(1, 'token令牌不存在');
+        }
+        //数据过滤
+        $data = [];
+
+        $data['name'] = stripTags(input('name/s'));
+        $data['user_id'] = $user_id;
+        $data['input_time'] = time();
+        $data['sn'] = stripTags(input('sn/s'));
+        $data['wifi'] = stripTags(input('wifi/s'));
+        $data['bluetooth'] = stripTags(input('bluetooth/s'));
+        $data['ecid'] = stripTags(input('ecid/s'));
+        $data['udid'] = stripTags(input('udid/s'));
+        $data['imei'] = stripTags(input('imei/s'));
+        $data['meid'] = stripTags(input('meid/s'));
+        $data['model_number'] = stripTags(input('model_number/s'));
+        $data['region_code'] = stripTags(input('region_code/s'));
+        $data['product_version'] = stripTags(input('product_version/s'));
+        $data['build_version'] = stripTags(input('build_version/s'));
+        $data['hardware_platform'] = stripTags(input('hardware_platform/s'));
+        $data['model_str'] = stripTags(input('model_str/s'));
+        $data['product_type'] = stripTags(input('product_type/s'));
+        $data['mlbsn'] = stripTags(input('mlbsn/s'));
+
+        //新增
+        $rs = $this->moble_model->save($data);
+        if(!$rs){
+            return msg(1,'添加设备信息失败');
+        }
+
+        $errno = 0;
+        $txt = '添加设备信息成功';
+        return msg($errno, $txt);
     }
 
     /*
@@ -100,15 +154,15 @@ class Moble extends Controller
 
         //token检测
         $token = stripTags(input('token/s'));
-        $user_id = $this->user_model->where(['token'=>$token])->value('id');
-        if(!$user_id){
-            return msg(1,'token令牌不存在');
+        $user_id = $this->user_model->where(['token' => $token])->value('id');
+        if (!$user_id) {
+            return msg(1, 'token令牌不存在');
         }
 
         //获取保存的14码数据
-        $moble_info = $this->moble_model->where(['user_id'=>$user_id])->select();
-        if(!$moble_info){
-            return msg(10001,'该用户未查询到14码');
+        $moble_info = $this->moble_model->where(['user_id' => $user_id])->select();
+        if (!$moble_info) {
+            return msg(10001, '该用户未查询到14码');
         }
         $devices = [];
         foreach ($moble_info as $key => $value) {
