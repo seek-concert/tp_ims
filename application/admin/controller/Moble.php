@@ -18,18 +18,22 @@ class Moble extends Base
     public function __construct()
     {
         parent::__construct();
-        //检测时间是否到期
+        //检测是否有权限 时间是否到期
         $user_id = session('id');
-        $user_detail_model = new UserDetailModel();
-        $moble_time = $user_detail_model->where(['uid'=>$user_id])->value('moble_time');
-        if(empty($moble_time)){
-            echo '您没有权限';
-            exit;
-        }
-        $time = time();
-        if($moble_time < $time){
-            echo '使用时间已到期！';
-            exit;
+        $user_rule = session('rule');
+        //是否为超级管理员
+        if ($user_rule != '*') {
+            $user_detail_model = new UserDetailModel();
+            $moble_time = $user_detail_model->where(['uid' => $user_id])->value('moble_time');
+            if (empty($moble_time)) {
+                echo '您没有权限';
+                exit;
+            }
+            $time = time();
+            if ($moble_time < $time) {
+                echo '使用时间已到期！';
+                exit;
+            }
         }
     }
 
@@ -49,20 +53,20 @@ class Moble extends Base
                 $where['user_id'] = ['eq', $param['user_id']];
             }
             $moble = new MobleModel();
-            if($id != 1){
-                $where['user_id'] = ['eq',$id];
+            if ($id != 1) {
+                $where['user_id'] = ['eq', $id];
             }
             $selectResult = $moble->getMobleByWhere($where, $offset, $limit);
             // 拼装参数
             foreach ($selectResult as $key => $vo) {
                 $selectResult[$key]['user_id'] = $user->getOneRealName($vo['user_id']);
-                $selectResult[$key]['input_time'] = date('Y-m-d H:i:s',$vo['input_time']);
+                $selectResult[$key]['input_time'] = date('Y-m-d H:i:s', $vo['input_time']);
                 $selectResult[$key]['operate'] = showOperate($this->makeButton($vo['id']));
-                $selectResult[$key]['is_status'] = '<input name="my_stock" value="'.$vo['id'].'" type="checkbox"';
-                if($vo['status'] == 1){
+                $selectResult[$key]['is_status'] = '<input name="my_stock" value="' . $vo['id'] . '" type="checkbox"';
+                if ($vo['status'] == 1) {
                     $selectResult[$key]['is_status'] .= 'checked';
                 }
-                $selectResult[$key]['is_status'] .=' /> </div>';
+                $selectResult[$key]['is_status'] .= ' /> </div>';
             }
             $return['total'] = $moble->getAllMoble($where);  //总数据
             $return['rows'] = $selectResult;
@@ -81,21 +85,22 @@ class Moble extends Base
      *
      *
      */
-    public function get_check(){
+    public function get_check()
+    {
         $moble_model = new MobleModel();
         $param = input('');
-        $id = isset($param['id'])?$param['id']:0;
-        if($id == 0){
+        $id = isset($param['id']) ? $param['id'] : 0;
+        if ($id == 0) {
             $this->error('请勿非法访问');
         }
-        $info = $moble_model->where(['id'=>$id])->find();
-        if(!empty($info['status']) && $info['status'] == 1){
+        $info = $moble_model->where(['id' => $id])->find();
+        if (!empty($info['status']) && $info['status'] == 1) {
             $status = -1;
-        }else{
+        } else {
             $status = 1;
         }
 
-        $moble_model->where(['id'=>$id])->setField('status',$status);
+        $moble_model->where(['id' => $id])->setField('status', $status);
     }
 
     /*
@@ -103,38 +108,38 @@ class Moble extends Base
      */
     public function mobleadd()
     {
-        if(request()->isPost()){
+        if (request()->isPost()) {
             $code = input('param.code');
-            $code = explode("\n",$code);
+            $code = explode("\n", $code);
             //过滤多余空换行
-            foreach ($code as $k=>$v){
-                if(!empty($v)){
+            foreach ($code as $k => $v) {
+                if (!empty($v)) {
                     $codes[] = $v;
                 }
             }
-            if(empty($codes)){
-                return msg(-1,'','14码填写有误');
+            if (empty($codes)) {
+                return msg(-1, '', '14码填写有误');
             }
             //拆分字符串为数组
-            foreach ($codes as $k=>$v){
-                $codes[$k] = explode("----",$v);
-                if(count($codes[$k]) != 14){
-                    return msg(-1,'','14码填写有误');
+            foreach ($codes as $k => $v) {
+                $codes[$k] = explode("----", $v);
+                if (count($codes[$k]) != 14) {
+                    return msg(-1, '', '14码填写有误');
                 }
             }
             //定义字段名
-            $name = ['sn','imei','meid','wifi','bluetootn','ecid','udid','mlbsn','product_type','model_code','model_str','hardware_platform','product_version','build_version'];
+            $name = ['sn', 'imei', 'meid', 'wifi', 'bluetootn', 'ecid', 'udid', 'mlbsn', 'product_type', 'model_code', 'model_str', 'hardware_platform', 'product_version', 'build_version'];
             //合并数组
-            foreach ($codes as $k=>$v){
-                $row[]=array_combine($name,$v);
+            foreach ($codes as $k => $v) {
+                $row[] = array_combine($name, $v);
             }
             //拆分model_code为model_number region_code
-            foreach ($row as $k=>$v){
+            foreach ($row as $k => $v) {
                 $row[$k]['input_time'] = time();
                 $row[$k]['name'] = session('username');
                 $row[$k]['user_id'] = session('id');
-                $row[$k]['model_number'] = substr($v['model_code'],0,5);
-                $row[$k]['region_code'] = substr($v['model_code'],5,strpos($v['model_code'], '/'));
+                $row[$k]['model_number'] = substr($v['model_code'], 0, 5);
+                $row[$k]['region_code'] = substr($v['model_code'], 5, strpos($v['model_code'], '/'));
                 unset($row[$k]['model_code']);
             }
             $moble = new MobleModel();
@@ -154,8 +159,8 @@ class Moble extends Base
         $user = new UserModel();
         $row = $moble->getOneMoble($id);
         $row['user_id'] = $user->getOneRealName($row['user_id']);
-        $row['input_time'] = date('Y-m-d H:i:s',$row['input_time']);
-        $row['status'] = $row['status']==1?'启用':'禁用';
+        $row['input_time'] = date('Y-m-d H:i:s', $row['input_time']);
+        $row['status'] = $row['status'] == 1 ? '启用' : '禁用';
         $this->assign([
             'row' => $row,
         ]);
@@ -190,7 +195,7 @@ class Moble extends Base
             ],
             '删除' => [
                 'auth' => 'moble/mobledel',
-                'href' => "javascript:mobledel(" .$id .")",
+                'href' => "javascript:mobledel(" . $id . ")",
                 'btnStyle' => 'danger',
                 'icon' => 'fa fa-trash-o'
             ]
