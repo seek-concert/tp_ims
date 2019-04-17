@@ -61,15 +61,15 @@ class Moble extends Controller
         }
 
         //权限检测--使用时间是否到期
-        $moble_time = $this->user_detail_model->where(['uid'=>$user_info['id']])->value('moble_time');
-        if(empty($moble_time)){
+        $moble_time = $this->user_detail_model->where(['uid' => $user_info['id']])->value('moble_time');
+        if (empty($moble_time)) {
             return msg(1, '您没有权限');
         }
         $time = time();
-        if($moble_time < $time){
+        if ($moble_time < $time) {
             return msg(1, '使用时间已到期');
         }
-        
+
         //生成token
         $token = create_guid();
         try {
@@ -128,12 +128,12 @@ class Moble extends Controller
         }
 
         //权限检测--使用时间是否到期
-        $moble_time = $this->user_detail_model->where(['uid'=>$user_id])->value('moble_time');
-        if(empty($moble_time)){
+        $moble_time = $this->user_detail_model->where(['uid' => $user_id])->value('moble_time');
+        if (empty($moble_time)) {
             return msg(1, '您没有权限');
         }
         $time = time();
-        if($moble_time < $time){
+        if ($moble_time < $time) {
             return msg(1, '使用时间已到期');
         }
 
@@ -151,8 +151,8 @@ class Moble extends Controller
         $data['udid'] = stripTags(input('udid/s'));
         $data['imei'] = stripTags(input('imei/s'));
         $data['meid'] = stripTags(input('meid/s'));
-        $data['model_number'] = substr($model_number,0,5);
-        $data['region_code'] = substr($region_code,5,strpos($region_code, '/'));
+        $data['model_number'] = substr($model_number, 0, 5);
+        $data['region_code'] = substr($region_code, 5, strpos($region_code, '/'));
 //        $data['model_number'] = stripTags(input('model_number/s'));
 //        $data['region_code'] = stripTags(input('region_code/s'));
         $data['product_version'] = stripTags(input('product_version/s'));
@@ -164,8 +164,8 @@ class Moble extends Controller
 
         //新增
         $rs = $this->moble_model->save($data);
-        if(!$rs){
-            return msg(1,'添加设备信息失败');
+        if (!$rs) {
+            return msg(1, '添加设备信息失败');
         }
 
         $errno = 0;
@@ -192,12 +192,12 @@ class Moble extends Controller
         }
 
         //权限检测--使用时间是否到期
-        $moble_time = $this->user_detail_model->where(['uid'=>$user_id])->value('moble_time');
-        if(empty($moble_time)){
+        $moble_time = $this->user_detail_model->where(['uid' => $user_id])->value('moble_time');
+        if (empty($moble_time)) {
             return msg(1, '您没有权限');
         }
         $time = time();
-        if($moble_time < $time){
+        if ($moble_time < $time) {
             return msg(1, '使用时间已到期');
         }
 
