@@ -4,6 +4,7 @@
 namespace app\api\controller;
 
 use app\admin\model\MobleModel;
+use app\admin\model\UserDetailModel;
 use app\api\model\UserModel;
 use think\Controller;
 
@@ -21,6 +22,7 @@ class Moble extends Controller
             $this->is_https = false;
         }
         $this->user_model = new UserModel();
+        $this->user_detail_model = new UserDetailModel();
         $this->moble_model = new MobleModel();
     }
 
@@ -31,6 +33,7 @@ class Moble extends Controller
         if (false == $this->is_https) {
             return msg(-1, '当前接口暂不支持此协议');
         }
+
         //数据检测
         $rule = [
             ['username', 'require', '请填写账号!'],
@@ -40,9 +43,11 @@ class Moble extends Controller
         if (true !== $result) {
             return msg(1, $result);
         }
+
         //账号密码过滤
         $user = stripTags(input('username/s'));
         $pwd = stripTags(input('password/s'));
+
         //数据检测
         $user_info = UserModel::field(['id', 'user_name', 'password', 'status', 'token'])->where(['user_name' => $user])->find();
         if (!$user_info) {
@@ -54,6 +59,17 @@ class Moble extends Controller
         if (md5($pwd) !== $user_info['password']) {
             return msg(1, '密码错误，请重新输入');
         }
+
+        //权限检测--使用时间是否到期
+        $moble_time = $this->user_detail_model->where(['uid'=>$user_info['id']])->value('moble_time');
+        if(empty($moble_time)){
+            return msg(1, '您没有权限');
+        }
+        $time = time();
+        if($moble_time < $time){
+            return msg(1, '使用时间已到期');
+        }
+        
         //生成token
         $token = create_guid();
         try {
@@ -78,6 +94,7 @@ class Moble extends Controller
         if (false == $this->is_https) {
             return msg(-1, '当前接口暂不支持此协议');
         }
+
         //数据检测
         $rule = [
             ['token', 'require', '请输入token令牌!'],
@@ -102,12 +119,24 @@ class Moble extends Controller
         if (true !== $result) {
             return msg(1, $result);
         }
+
         //token检测
         $token = stripTags(input('token/s'));
         $user_id = $this->user_model->where(['token' => $token])->value('id');
         if (!$user_id) {
             return msg(1, 'token令牌不存在');
         }
+
+        //权限检测--使用时间是否到期
+        $moble_time = $this->user_detail_model->where(['uid'=>$user_id])->value('moble_time');
+        if(empty($moble_time)){
+            return msg(1, '您没有权限');
+        }
+        $time = time();
+        if($moble_time < $time){
+            return msg(1, '使用时间已到期');
+        }
+
         //数据过滤
         $data = [];
         $model_number = stripTags(input('model_number/s'));
@@ -160,6 +189,16 @@ class Moble extends Controller
         $user_id = $this->user_model->where(['token' => $token])->value('id');
         if (!$user_id) {
             return msg(1, 'token令牌不存在');
+        }
+
+        //权限检测--使用时间是否到期
+        $moble_time = $this->user_detail_model->where(['uid'=>$user_id])->value('moble_time');
+        if(empty($moble_time)){
+            return msg(1, '您没有权限');
+        }
+        $time = time();
+        if($moble_time < $time){
+            return msg(1, '使用时间已到期');
         }
 
         //获取保存的14码数据

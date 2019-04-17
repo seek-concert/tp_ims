@@ -10,10 +10,29 @@ namespace app\admin\controller;
 
 
 use app\admin\model\MobleModel;
+use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
 
 class Moble extends Base
 {
+    public function __construct()
+    {
+        parent::__construct();
+        //检测时间是否到期
+        $user_id = session('id');
+        $user_detail_model = new UserDetailModel();
+        $moble_time = $user_detail_model->where(['uid'=>$user_id])->value('moble_time');
+        if(empty($moble_time)){
+            echo '您没有权限';
+            exit;
+        }
+        $time = time();
+        if($moble_time < $time){
+            echo '使用时间已到期！';
+            exit;
+        }
+    }
+
     /*
      * 14码列表
      */

@@ -528,6 +528,56 @@ class Account extends Base
     }
 
     /*
+     * 14码使用时间充值
+     */
+    public function moble_recharge()
+    {
+        if(request()->isPost()){
+            $param = input('param.');
+            //验证数据
+            $result = $this->validate($param, 'VipRechargeValidate');
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                return msg(-1, '', $result);
+            }
+            if($param['num'] <= 0){
+                return msg(-1, '', '请输入正整数');
+            }
+            $user_detail = new UserDetailModel();
+            $moble_time = $user_detail->where(['uid'=>$param['user_id']])->value('moble_time');
+            if(empty($moble_time)){
+                $time = strtotime(date('Y-m-d'));
+                $times = $time+($param['num'] * 86400);
+            }else{
+                $times = $moble_time+($param['num'] * 86400);
+            }
+            $flag = $user_detail->where(['uid'=>$param['user_id']])->setField('moble_time',$times);
+            if($flag){
+                return msg(1, url('account/moble_recharge'), '充值成功');
+            }else{
+                return msg(-2, '', '充值失败');
+            }
+        }
+        $user = new UserModel();
+        $user_detail = new UserDetailModel();
+        $time = strtotime(date('Y-m-d'));
+        $row = $user->where(['pid'=>0])->field('id,real_name')->select();
+        foreach ($row as $k=>$v){
+            $moble_time = $user_detail->where('uid',$v['id'])->value('moble_time');
+            if(empty($moble_time)){
+                $times = 0;
+            }else{
+                $times = intval(($moble_time-$time)/86400);
+            }
+            $row[$k]['moble_time'] = $times;
+        }
+        $this->assign([
+            'row' => $row
+        ]);
+        return $this->fetch();
+    }
+
+    /*
      * btc地址修改
      */
     public function btc()
