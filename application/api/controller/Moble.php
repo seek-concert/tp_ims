@@ -151,10 +151,10 @@ class Moble extends Controller
         $data['udid'] = stripTags(input('udid/s'));
         $data['imei'] = stripTags(input('imei/s'));
         $data['meid'] = stripTags(input('meid/s'));
-        $data['model_number'] = substr($model_number, 0, 5);
-        $data['region_code'] = substr(substr($region_code, 0, strpos($region_code, '/')),5);
-//        $data['model_number'] = stripTags(input('model_number/s'));
-//        $data['region_code'] = stripTags(input('region_code/s'));
+//        $data['model_number'] = substr($model_number, 0, 5);
+//        $data['region_code'] = substr(substr($region_code, 0, strpos($region_code, '/')),5);
+        $data['model_number'] = stripTags(input('model_number/s'));
+        $data['region_code'] = stripTags(input('region_code/s'));
         $data['product_version'] = stripTags(input('product_version/s'));
         $data['build_version'] = stripTags(input('build_version/s'));
         $data['hardware_platform'] = stripTags(input('hardware_platform/s'));
@@ -211,7 +211,7 @@ class Moble extends Controller
             $devices[$key]['name'] = $value['name'];
             $devices[$key]['sn'] = $value['sn'];
             $devices[$key]['wifi'] = $value['wifi'];
-            $devices[$key]['ecid'] = hexToDecimal($value['ecid']);
+            $devices[$key]['ecid'] = $value['ecid'];
             $devices[$key]['udid'] = $value['udid'];
             $devices[$key]['imei'] = $value['imei'];
             $devices[$key]['meid'] = $value['meid'];

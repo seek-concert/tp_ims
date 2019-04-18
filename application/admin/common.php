@@ -226,7 +226,8 @@ function create_guid(){
 function hexToDecimal($hexadecimal=''){
     $hexadecimal = hexdec($hexadecimal);
     $decimal =number_format($hexadecimal, 0, '', '');
-    return base_convert($decimal, 10, 16);
+//    return base_convert($decimal, 10, 16);
+    return $decimal;
 }
 
 

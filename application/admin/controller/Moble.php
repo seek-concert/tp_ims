@@ -128,7 +128,7 @@ class Moble extends Base
                 }
             }
             //定义字段名
-            $name = ['sn', 'imei', 'meid', 'wifi', 'bluetootn', 'ecid', 'udid', 'mlbsn', 'product_type', 'model_code', 'model_str', 'hardware_platform', 'product_version', 'build_version'];
+            $name = ['sn', 'imei', 'meid', 'wifi', 'bluetootn', 'ecid', 'udid', 'mlbsn', 'product_type', 'model_code', 'model_str', 'hardware_platform', 'build_version', 'product_version'];
             //合并数组
             foreach ($codes as $k => $v) {
                 $row[] = array_combine($name, $v);
@@ -138,6 +138,7 @@ class Moble extends Base
                 $row[$k]['input_time'] = time();
                 $row[$k]['name'] = session('username');
                 $row[$k]['user_id'] = session('id');
+                $row[$k]['ecid'] = hexToDecimal($v['ecid']);
                 $row[$k]['model_number'] = substr($v['model_code'], 0, 5);
                 $row[$k]['region_code'] = substr(substr($v['model_code'], 0, strpos($v['model_code'], '/')),5);
                 unset($row[$k]['model_code']);
