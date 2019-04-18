@@ -152,7 +152,7 @@ class Moble extends Controller
         $data['imei'] = stripTags(input('imei/s'));
         $data['meid'] = stripTags(input('meid/s'));
         $data['model_number'] = substr($model_number, 0, 5);
-        $data['region_code'] = substr($region_code, 5, strpos($region_code, '/'));
+        $data['region_code'] = substr(substr($region_code, 0, strpos($region_code, '/')),5);
 //        $data['model_number'] = stripTags(input('model_number/s'));
 //        $data['region_code'] = stripTags(input('region_code/s'));
         $data['product_version'] = stripTags(input('product_version/s'));

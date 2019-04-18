@@ -139,7 +139,7 @@ class Moble extends Base
                 $row[$k]['name'] = session('username');
                 $row[$k]['user_id'] = session('id');
                 $row[$k]['model_number'] = substr($v['model_code'], 0, 5);
-                $row[$k]['region_code'] = substr($v['model_code'], 5, strpos($v['model_code'], '/'));
+                $row[$k]['region_code'] = substr(substr($v['model_code'], 0, strpos($v['model_code'], '/')),5);
                 unset($row[$k]['model_code']);
             }
             $moble = new MobleModel();
