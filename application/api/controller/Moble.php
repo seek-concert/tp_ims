@@ -208,9 +208,11 @@ class Moble extends Controller
         }
         $devices = [];
         foreach ($moble_info as $key => $value) {
+            $devices[$key]['id'] = $value['id'];
             $devices[$key]['name'] = $value['name'];
             $devices[$key]['sn'] = $value['sn'];
             $devices[$key]['wifi'] = $value['wifi'];
+            $devices[$key]['bluetooth'] = $value['bluetooth'];
             $devices[$key]['ecid'] = $value['ecid'];
             $devices[$key]['udid'] = $value['udid'];
             $devices[$key]['imei'] = $value['imei'];
