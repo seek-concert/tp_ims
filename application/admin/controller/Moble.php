@@ -128,7 +128,7 @@ class Moble extends Base
                 }
             }
             //定义字段名
-            $name = ['sn', 'imei', 'meid', 'wifi', 'bluetootn', 'ecid', 'udid', 'mlbsn', 'product_type', 'model_code', 'model_str', 'hardware_platform', 'build_version', 'product_version'];
+            $name = ['sn', 'imei', 'meid', 'wifi', 'bluetooth', 'ecid', 'udid', 'mlbsn', 'product_type', 'model_code', 'model_str', 'hardware_platform', 'build_version', 'product_version'];
             //合并数组
             foreach ($codes as $k => $v) {
                 $row[] = array_combine($name, $v);
