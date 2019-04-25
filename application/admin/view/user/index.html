@@ -31,6 +31,13 @@
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
                     <div class="form-group">
+                        <label>角色名称：</label>
+                        <select name="role_id" class="form-control" id="role_id">
+                            <option value="">请选择！</option>
+                            {foreach $role as $v}
+                            <option value="{$v['id']}">{$v['role_name']}</option>
+                            {/foreach}
+                        </select>
                         <label>管理员账号：</label>
                         <input type="text" class="form-control" id="username" name="user_name">
                     </div>
@@ -47,6 +54,7 @@
                         <thead>
                         <th data-field="id">管理员ID</th>
                         <th data-field="user_name">管理员账号</th>
+                        <th data-field="money">账户余额</th>
                         <th data-field="role_name">管理员角色</th>
                         <th data-field="login_times">登录次数</th>
                         <th data-field="last_login_time">上次登录时间</th>
@@ -96,7 +104,8 @@
                 var param = {
                     pageNumber: params.pageNumber,
                     pageSize: params.pageSize,
-                    searchText:$('#username').val()
+                    searchText:$('#username').val(),
+                    role_id:$('#role_id').val()
                 };
                 return param;
             },

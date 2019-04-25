@@ -12,6 +12,7 @@ namespace app\admin\controller;
 
 
 use app\admin\model\RoleModel;
+use app\admin\model\UserDetailModel;
 use app\admin\model\UserModel;
 use think\Db;
 
@@ -31,12 +32,17 @@ class User extends Base
             if (!empty($param['searchText'])) {
                 $where['user_name'] = ['like', '%' . $param['searchText'] . '%'];
             }
+            if (!empty($param['role_id'])) {
+                $where['role_id'] = ['eq',$param['role_id']];
+            }
             $user = new UserModel();
+            $user_detail = new UserDetailModel();
             $selectResult = $user->getUsersByWhere($where, $offset, $limit);
 
             $status = config('user_status');
             // 拼装参数
             foreach($selectResult as $key=>$vo){
+                $selectResult[$key]['money'] = $user_detail->where(['uid'=>$vo['id']])->value('balance');
                 if(!empty($vo['last_login_time'])){
                     $selectResult[$key]['last_login_time'] = date('Y-m-d H:i:s', $vo['last_login_time']);
                 }else{
@@ -57,6 +63,10 @@ class User extends Base
             return json($return);
         }
 
+        $role = new RoleModel();
+        $this->assign([
+            'role' => $role->getRole()
+        ]);
         return $this->fetch();
     }
 
