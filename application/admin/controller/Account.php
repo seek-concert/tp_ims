@@ -499,7 +499,12 @@ class Account extends Base
                 $time = strtotime(date('Y-m-d'));
                 $times = $time+($param['num'] * 86400);
             }else{
-                $times = $duetime+($param['num'] * 86400);
+                $time = strtotime(date('Y-m-d'));
+                if($duetime < $time){
+                    $times = $time+($param['num'] * 86400);
+                }else{
+                    $times = $duetime+($param['num'] * 86400);
+                }
             }
             $flag = $user_detail->where(['uid'=>$param['user_id']])->setField('duetime',$times);
             if($flag){
@@ -549,7 +554,12 @@ class Account extends Base
                 $time = strtotime(date('Y-m-d'));
                 $times = $time+($param['num'] * 86400);
             }else{
-                $times = $moble_time+($param['num'] * 86400);
+                $time = strtotime(date('Y-m-d'));
+                if($moble_time < $time){
+                    $times = $time+($param['num'] * 86400);
+                }else{
+                    $times = $moble_time+($param['num'] * 86400);
+                }
             }
             $flag = $user_detail->where(['uid'=>$param['user_id']])->setField('moble_time',$times);
             if($flag){

@@ -241,14 +241,14 @@ class Index extends Base
                 if (empty($user_details['duetime'])) {
                     $times = strtotime(date("Y-m-d", strtotime("+4 month")));
                 } else {
-                    $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +1 month')));
+                    $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +4 month')));
                 }
                 break;
             case 2:
                 if (empty($user_details['duetime'])) {
                     $times = strtotime(date("Y-m-d", strtotime("+8 month")));
                 } else {
-                    $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +6 month')));
+                    $times = strtotime(date('Y-m-d', strtotime(date('Y-m-d', $user_details['duetime']) . ' +8 month')));
                 }
                 break;
             case 3:
