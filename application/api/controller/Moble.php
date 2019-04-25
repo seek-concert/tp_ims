@@ -208,23 +208,23 @@ class Moble extends Controller
         }
         $devices = [];
         foreach ($moble_info as $key => $value) {
-            $devices[$key]['id'] = $value['id'];
-            $devices[$key]['name'] = $value['name'];
-            $devices[$key]['sn'] = $value['sn'];
-            $devices[$key]['wifi'] = $value['wifi'];
-            $devices[$key]['bluetooth'] = $value['bluetooth'];
-            $devices[$key]['ecid'] = $value['ecid'];
-            $devices[$key]['udid'] = $value['udid'];
-            $devices[$key]['imei'] = $value['imei'];
-            $devices[$key]['meid'] = $value['meid'];
-            $devices[$key]['model_number'] = $value['model_number'];
-            $devices[$key]['region_code'] = $value['region_code'];
-            $devices[$key]['product_version'] = $value['product_version'];
-            $devices[$key]['build_version'] = $value['build_version'];
-            $devices[$key]['hardware_platform'] = $value['hardware_platform'];
-            $devices[$key]['model_str'] = $value['model_str'];
-            $devices[$key]['product_type'] = $value['product_type'];
-            $devices[$key]['mlbsn'] = $value['mlbsn'];
+            $devices[$key]['id'] = isset($value['id'])?$value['id']:'';
+            $devices[$key]['name'] = isset($value['name'])?$value['name']:'';
+            $devices[$key]['sn'] = isset($value['sn'])?$value['sn']:'';
+            $devices[$key]['wifi'] = isset($value['wifi'])?$value['wifi']:'';
+            $devices[$key]['bluetooth'] = isset($value['bluetooth'])?$value['bluetooth']:'';
+            $devices[$key]['ecid'] = isset($value['ecid'])?$value['ecid']:'';
+            $devices[$key]['udid'] = isset($value['udid'])?$value['udid']:'';
+            $devices[$key]['imei'] = isset($value['imei'])?$value['imei']:'';
+            $devices[$key]['meid'] = isset($value['meid'])?$value['meid']:'';
+            $devices[$key]['model_number'] = isset($value['model_number'])?$value['model_number']:'';
+            $devices[$key]['region_code'] = isset($value['region_code'])?$value['region_code']:'';
+            $devices[$key]['product_version'] = isset($value['product_version'])?$value['product_version']:'';
+            $devices[$key]['build_version'] = isset($value['build_version'])?$value['build_version']:'';
+            $devices[$key]['hardware_platform'] = isset($value['hardware_platform'])?$value['hardware_platform']:'';
+            $devices[$key]['model_str'] = isset($value['model_str'])?$value['model_str']:'';
+            $devices[$key]['product_type'] = isset($value['product_type'])?$value['product_type']:'';
+            $devices[$key]['mlbsn'] = isset($value['mlbsn'])?$value['mlbsn']:'';
         }
 
         $errno = 0;
