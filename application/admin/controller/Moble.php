@@ -136,7 +136,7 @@ class Moble extends Base
             //拆分model_code为model_number region_code
             foreach ($row as $k => $v) {
                 $row[$k]['input_time'] = time();
-                $row[$k]['name'] = session('username');
+                $row[$k]['name'] = rand(1000,9999);
                 $row[$k]['user_id'] = session('id');
                 $row[$k]['ecid'] = hexToDecimal($v['ecid']);
                 $row[$k]['model_number'] = substr($v['model_code'], 0, 5);

@@ -23,8 +23,23 @@ class Allstock extends Base
      */
     public function index(){
         $user_model = new UserModel();
+        $stock_model = new StockModel();
+        $price_model = new PriceModel();
         $user_lists = $user_model->where(['pid'=>0,'id'=>['neq',1]])->column('real_name','id');
+        //获取全部库存
+        $stocks = $stock_model->field('bunled_id,product_id,status')->select();
+        //计算面值
+        $not_price = 0;
+        $all_price = 0;
+        foreach ($stocks as $k=>$v){
+            if($v['status'] == 1){
+                $not_price += $price_model->get_one_data(['pid'=>$v['product_id'],'bid'=>$v['bunled_id']],'price');
+            }
+            $all_price += $price_model->get_one_data(['pid'=>$v['product_id'],'bid'=>$v['bunled_id']],'price');
+        }
         $return_data = [];
+        $return_data['not_price'] = $not_price;
+        $return_data['all_price'] = $all_price;
         $return_data['user_lists'] = $user_lists;
         return view('',$return_data);
     }

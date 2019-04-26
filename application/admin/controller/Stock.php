@@ -74,12 +74,25 @@ class Stock extends Base
         //实例化模型
         $stock_model = new StockModel();
         $user_model = new UserModel();
+        $price_model = new PriceModel();
         //获取所有子用户列表
         $id = session('id');
         $uid = $this->get_user($id);
-        $all_price = $stock_model->where('input_user','in',$uid)->sum('tprice');
+        //获取相关的库存
+        $sqlamp['input_user|out_user'] = ['in',$uid];
+        $stocks = $stock_model->where($sqlamp)->field('bunled_id,product_id,status')->select();
+        //计算面值
+        $not_price = 0;
+        $all_price = 0;
+        foreach ($stocks as $k=>$v){
+            if($v['status'] == 1){
+                $not_price += $price_model->get_one_data(['pid'=>$v['product_id'],'bid'=>$v['bunled_id']],'price');
+            }
+            $all_price += $price_model->get_one_data(['pid'=>$v['product_id'],'bid'=>$v['bunled_id']],'price');
+        }
         $child_lists = $user_model->get_child_lists($id);
         $return_data = [];
+        $return_data['not_price'] = $not_price;
         $return_data['all_price'] = $all_price;
         $return_data['child_lists'] = $child_lists;
         return view('',$return_data);

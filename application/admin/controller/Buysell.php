@@ -299,7 +299,6 @@ class Buysell extends Base
             if($value['status'] == 1){
                 $lists[$key]['operate'] = "<a href='javascript:;' onclick='buy_this(".$value['id'].")'>选择要购买的数量</a>";
             }
-
             $lists[$key]['only_num'] = $value['num'] - $value['sell_num'];
             $lists[$key]['end_time'] = date('Y-m-d H:i:s',$value['end_time']);
             $lists[$key]['all_price'] =($value['num'] - $value['sell_num'])*$value['price'];
@@ -314,9 +313,7 @@ class Buysell extends Base
                 }else{
                     $lists[$key]['status'] = '订单发布中';
                 }
-                
             }
-
         }
         $count = $this->order_model->getAllCount($sqlmap);
         $return['total'] = $count;  //总数据
@@ -348,7 +345,7 @@ class Buysell extends Base
         //二级密码
         $password = isset($param['password'])?$param['password']:'';
         //其他
-        $note = isset($param['note'])?$param['note']:0;
+        $note = isset($param['note'])?$param['note']:'';
         if(empty($order_id)){
             $this->error('非法访问');
         }

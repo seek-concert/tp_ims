@@ -60,7 +60,7 @@
                         </div>
                     <div class="form-group">
                 
-                        <select name="out_user" id="out_user" class="form-control" id="">
+                        <select name="out_user" id="out_user" class="form-control" >
                             <option value="">出库人</option>
                             {foreach $child_lists as $k => $v}
                                 <option value="{$k}">{$v}</option>
@@ -69,7 +69,7 @@
                     </div>
                     <div class="form-group">
                 
-                        <select name="input_user" id="input_user" class="form-control" id="">
+                        <select name="input_user" id="input_user" class="form-control" >
                             <option value="">入库人</option>
                             {foreach $child_lists as $k => $v}
                                 <option value="{$k}">{$v}</option>
@@ -78,7 +78,7 @@
                     </div>
                     <div class="form-group">
                 
-                        <select name="status" id="status" class="form-control" id="">
+                        <select name="status" id="status" class="form-control" >
                             <option value="">选择库存状态</option>
                             <option value="1">未使用</option>
                             <option value="3">发布中</option>
@@ -120,6 +120,7 @@
                 </div>
             </div>
             入库总价格<font color="red">￥{$all_price}</font>
+            入库未使用价格<font color="red">￥{$not_price}</font>
             <!-- End Example Pagination -->
         </div>
     </div>

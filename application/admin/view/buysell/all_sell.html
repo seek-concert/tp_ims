@@ -80,7 +80,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title-kallocation">发布商品</h4>
+                <h4 class="modal-title-kallocation">购买商品</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal m-t" id="kallocationForm" method="post" action="">
@@ -276,8 +276,8 @@ function get_return(id){
     }
 
     $("#buy_num").on("input propertychange",function(event){
-        var buy_num = $("#buy_num").val();
-        var all_num = $('#can_buy_num').val();
+        var buy_num = parseInt($("#buy_num").val());
+        var all_num = parseInt($('#can_buy_num').val());
         var price = $('#price').val();
         if(buy_num > all_num){
            index =  layer.alert('购买数量不能超过可买数量', {title: '提示', icon: 2}, function(){
@@ -293,19 +293,25 @@ function get_return(id){
 
     function get_buy(){
         var order_id = $('#order_id').val();
-        var buy_num = $('#buy_num').val();
+        var buy_num = parseInt($('#buy_num').val());
+        var all_num = parseInt($('#can_buy_num').val());
         var password = $('#password').val();
         var note = $('#note').val();
-        if(!order_id || !buy_num || !password ){
+        if(!buy_num || password == ''){
             layer.alert('请填写完整购买信息', {title: '提示', icon: 2});
+            return;
         }
-        gets = {
-            order_id:order_id,
-            buy_num:buy_num,
-            buy_num:buy_num,
-            password:password,
-            note:note,
+        if(buy_num > all_num){
+            layer.alert('购买数量不能超过可买数量', {title: '提示', icon: 2});
+            return;
         }
+        var gets = {
+            'order_id':order_id,
+            'buy_num':buy_num,
+            'buy_num':buy_num,
+            'password':password,
+            'note':note
+        };
         $.post('{:url("get_buy")}',gets,function(ret){
             if(ret.code == 1){
                 layer.alert(ret.msg, {title: '提示', icon: 1}, function(){
