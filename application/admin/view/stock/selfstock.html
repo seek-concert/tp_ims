@@ -21,13 +21,15 @@
             <h5>我的库存</h5>
         </div>
         <div class="ibox-content">
-            <!-- <div class="form-group clearfix col-sm-1">
-                {if authCheck('role/roleadd')}
-                <a href="{:url('role/roleAdd')}"><button class="btn btn-outline btn-primary" type="button">添加角色</button></a>
-                {/if}
-            </div> -->
+            {if authCheck('stock/exportexcel')}
+             <div class="form-group clearfix col-sm-1">
+                <button class="btn btn-outline btn-primary" type="button" onclick="excel()">导出EXCEL</button>
+                 <form action="{:url('stock/exportexcel')}" id="excelForm" method="post">
+                     <input type="hidden" name="ids" id="ids">
+                 </form>
+            </div>
+            {/if}
             <!--搜索框开始-->
-
             <form id='commentForm' role="form" method="post" class="form-inline pull-right">
                 <div class="content clearfix m-b">
                         <label>入库时间查询：</label>
@@ -103,6 +105,7 @@
                 <div class="example">
                     <table id="cusTable">
                         <thead>
+                        <th data-field=""></th>
                         <th data-field="id">ID</th>
                         <th data-field="bname">库存名称</th>
                         <th data-field="pname">档位名称</th>
@@ -167,6 +170,11 @@
             paginationNextText: "下一页",
             paginationLastText: "尾页",
             queryParamsType : "undefined",
+            columns:[
+                {
+                    checkbox:true
+                }
+            ],
             queryParams: function queryParams(params) {   //设置查询参数
                 var param = {
                     pageNumber: params.pageNumber,
@@ -216,7 +224,24 @@
         });
     });
 
-    
+    function excel() {
+        var rows = $("#cusTable").bootstrapTable('getSelections');
+        // rows 主要是为了判断是否选中，下面的else内容才是主要
+        if (rows.length == 0) {
+            layer.msg("请选择需要导出的数据！");
+            return;
+        } else {
+            // 声明一个数组
+            var ids = new Array();
+            // 通过获得别选中的来进行遍历
+            $(rows).each(function() {
+                // cid为获得到的整条数据中的一列
+                ids.push(this.id);
+            });
+            $('#ids').val(ids);
+            $('#excelForm').submit();
+        }
+    }
 </script>
 </body>
 </html>
