@@ -523,6 +523,9 @@ class Account extends Base
                 $times = 0;
             }else{
                 $times = intval(($duetime-$time)/86400);
+                if($times < 0){
+                    $times = 0;
+                }
             }
             $row[$k]['duetime'] = $times;
         }
@@ -578,6 +581,9 @@ class Account extends Base
                 $times = 0;
             }else{
                 $times = intval(($moble_time-$time)/86400);
+                if($times < 0){
+                    $times = 0;
+                }
             }
             $row[$k]['moble_time'] = $times;
         }
